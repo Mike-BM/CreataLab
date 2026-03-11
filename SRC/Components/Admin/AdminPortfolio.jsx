@@ -32,7 +32,7 @@ export default function AdminPortfolio() {
             // Let's modify the frontend to fetch from /api/projects without the published filter if admin, or we need to update the backend route.
             // For this demo, let's fetch directly using the same endpoint shape, assuming we'll fix the backend or it's fine for now.
 
-            const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects`);
+            const response = await fetch(`${appConfig.api.base}/projects`);
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);
