@@ -174,6 +174,7 @@ app.get('/api/posts', async (req, res) => {
     console.error('Supabase error on list posts:', error.message);
     return res.status(500).json({ error: 'Failed to load posts' });
   }
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.json(data ?? []);
 });
 
@@ -293,6 +294,7 @@ app.get('/api/projects', async (req, res) => {
     console.error('Supabase error on list projects:', error.message);
     return res.status(500).json({ error: 'Failed to load projects' });
   }
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.json(data ?? []);
 });
 
