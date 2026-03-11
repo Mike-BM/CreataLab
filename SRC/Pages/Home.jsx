@@ -1,15 +1,15 @@
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Navbar from '@/components/Landing/Navbar';
-import Hero from '@/components/Landing/Hero';
-import About from '@/components/Landing/About';
-import Services from '@/components/Landing/Services';
-import Portfolio from '@/components/Landing/Portfolio';
-import WhyChooseUs from '@/components/Landing/WhyChooseUs';
-import Founder from '@/components/Landing/Founder';
-import Contact from '@/components/Landing/Contact';
-import Footer from '@/components/Landing/Footer';
-import FloatingBookingButton from '@/components/Landing/FloatingBookingButton';
+import Navbar from '@/Components/Landing/Navbar';
+import Hero from '@/Components/Landing/Hero';
+import About from '@/Components/Landing/About';
+import Services from '@/Components/Landing/Services';
+import Portfolio from '@/Components/Landing/Portfolio';
+import WhyChooseUs from '@/Components/Landing/WhyChooseUs';
+import Founder from '@/Components/Landing/Founder';
+import Contact from '@/Components/Landing/Contact';
+import Footer from '@/Components/Landing/Footer';
+import FloatingBookingButton from '@/Components/Landing/FloatingBookingButton';
 import { Button } from '@/UI/button';
 
 const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'why-us', 'founder'];
