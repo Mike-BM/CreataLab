@@ -14,9 +14,9 @@ import {
   ChevronRight,
   FolderOpen
 } from 'lucide-react';
-import { adminAuth } from '@/lib/admin-auth';
+import { adminAuth } from '@/Lib/admin-auth';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 
 const adminMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },

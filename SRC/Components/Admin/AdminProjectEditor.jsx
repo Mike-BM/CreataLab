@@ -6,8 +6,8 @@ import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { Textarea } from './UI/textarea';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
-import { adminAuth } from '@/lib/admin-auth';
+import { appConfig } from '@/Lib/config';
+import { adminAuth } from '@/Lib/admin-auth';
 
 export default function AdminProjectEditor({ mode = 'create' }) {
     const navigate = useNavigate();

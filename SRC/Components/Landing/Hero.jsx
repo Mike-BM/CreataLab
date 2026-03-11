@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/UI/button';
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 import BookingModal from './BookingModal';
 
 export default function Hero() {

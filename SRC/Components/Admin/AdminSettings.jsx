@@ -4,7 +4,7 @@ import { Save, Globe, Mail, Lock, Bell } from 'lucide-react';
 import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { toast } from 'sonner';
-import { adminAuth } from '@/lib/admin-auth';
+import { adminAuth } from '@/Lib/admin-auth';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({

@@ -7,7 +7,7 @@ import { Input } from '@/UI/input';
 import { Textarea } from '@/UI/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/UI/select';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 
 const services = [
   "Brand Identity & Graphic Design",

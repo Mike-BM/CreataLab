@@ -5,8 +5,8 @@ import { Plus, Edit, Trash2, Eye, Search, X, Filter, FolderOpen, Image } from 'l
 import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
-import { adminAuth } from '@/lib/admin-auth';
+import { appConfig } from '@/Lib/config';
+import { adminAuth } from '@/Lib/admin-auth';
 
 export default function AdminPortfolio() {
     const navigate = useNavigate();

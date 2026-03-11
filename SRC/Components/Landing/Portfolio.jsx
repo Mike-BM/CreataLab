@@ -5,7 +5,7 @@ import ProjectModal from './ProjectModal';
 
 const categories = ["All", "Branding", "Digital", "Data", "Web"];
 
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 
 export default function Portfolio() {
   const [activeFilter, setActiveFilter] = useState("All");

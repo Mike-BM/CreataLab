@@ -6,7 +6,7 @@ import { Button } from '@/UI/button';
 import { Input } from '@/UI/input';
 import { Textarea } from '@/UI/textarea';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 
 export default function Contact() {
   const [formData, setFormData] = useState({

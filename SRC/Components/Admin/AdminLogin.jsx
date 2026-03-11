@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, Shield } from 'lucide-react';
 import { Button } from './UI/button';
 import { Input } from './UI/input';
-import { adminAuth } from '@/lib/admin-auth';
+import { adminAuth } from '@/Lib/admin-auth';
 import { toast } from 'sonner';
 
 export default function AdminLogin() {

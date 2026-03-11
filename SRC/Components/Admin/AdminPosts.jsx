@@ -5,8 +5,8 @@ import { Plus, Edit, Trash2, Eye, Search, Calendar, User, X, Filter, TrendingUp,
 import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { toast } from 'sonner';
-import { adminAuth } from '@/lib/admin-auth';
-import { appConfig } from '@/lib/config';
+import { adminAuth } from '@/Lib/admin-auth';
+import { appConfig } from '@/Lib/config';
 
 // Mock blog posts data - in production, fetch from API
 const mockPosts = [

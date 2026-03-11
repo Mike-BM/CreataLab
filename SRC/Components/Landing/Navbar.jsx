@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 import { Button } from '@/UI/button';
-import { appConfig } from '@/lib/config';
+import { appConfig } from '@/Lib/config';
 
 const navLinks = [
   { label: "About", href: "#about" },
