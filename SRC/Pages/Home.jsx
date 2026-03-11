@@ -1,16 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from '@/Components/Landing/Navbar';
 import Hero from '@/Components/Landing/Hero';
-import About from '@/Components/Landing/About';
-import Services from '@/Components/Landing/Services';
-import Portfolio from '@/Components/Landing/Portfolio';
-import WhyChooseUs from '@/Components/Landing/WhyChooseUs';
-import Founder from '@/Components/Landing/Founder';
-import Contact from '@/Components/Landing/Contact';
-import Footer from '@/Components/Landing/Footer';
 import FloatingBookingButton from '@/Components/Landing/FloatingBookingButton';
 import { Button } from '@/UI/button';
+
+// Lazy load heavy components for performance
+const About = lazy(() => import('@/Components/Landing/About'));
+const Services = lazy(() => import('@/Components/Landing/Services'));
+const Portfolio = lazy(() => import('@/Components/Landing/Portfolio'));
+const WhyChooseUs = lazy(() => import('@/Components/Landing/WhyChooseUs'));
+const Founder = lazy(() => import('@/Components/Landing/Founder'));
+const Contact = lazy(() => import('@/Components/Landing/Contact'));
+const Footer = lazy(() => import('@/Components/Landing/Footer'));
 
 const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'why-us', 'founder'];
 
@@ -59,7 +61,9 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4, ease: 'easeInOut' }}
             >
-              <ActiveComponent />
+              <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center text-white/50">Loading section...</div>}>
+                <ActiveComponent />
+              </Suspense>
             </motion.div>
           </AnimatePresence>
 
