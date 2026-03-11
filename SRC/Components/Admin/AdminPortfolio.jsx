@@ -62,7 +62,7 @@ export default function AdminPortfolio() {
         if (window.confirm('Are you sure you want to delete this project?')) {
             try {
                 const token = adminAuth.getToken();
-                const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects/${id}`, {
+                const response = await fetch(`${appConfig.api.base}/projects/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

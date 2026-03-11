@@ -35,7 +35,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         if (mode === 'edit' && id) {
             const loadProject = async () => {
                 try {
-                    const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects/${id}`);
+                    const response = await fetch(`${appConfig.api.base}/projects/${id}`);
                     if (!response.ok) throw new Error('Failed to load project');
                     const data = await response.json();
                     setFormData({
@@ -82,8 +82,8 @@ export default function AdminProjectEditor({ mode = 'create' }) {
 
         try {
             const endpoint = mode === 'edit' && id
-                ? `${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects/${id}`
-                : `${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects`;
+                ? `${appConfig.api.base}/projects/${id}`
+                : `${appConfig.api.base}/projects`;
             const method = mode === 'edit' && id ? 'PUT' : 'POST';
 
             const token = adminAuth.getToken();

@@ -81,7 +81,7 @@ export default function AdminPosts() {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
         const token = adminAuth.getToken();
-        const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/posts/${id}`, {
+        const response = await fetch(`${appConfig.api.base}/posts/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -104,7 +104,7 @@ export default function AdminPosts() {
     if (!post) return;
     try {
       const token = adminAuth.getToken();
-      const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/posts/${id}`, {
+      const response = await fetch(`${appConfig.api.base}/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

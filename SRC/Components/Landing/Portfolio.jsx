@@ -17,7 +17,7 @@ export default function Portfolio() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects`);
+        const response = await fetch(`${appConfig.api.base}/projects`);
         if (response.ok) {
           const data = await response.json();
           // Transform image_url to image for compatibility with ProjectModal

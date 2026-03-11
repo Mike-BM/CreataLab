@@ -30,13 +30,13 @@ export default function AdminPostEditor({ mode = 'create' }) {
     if (mode === 'edit' && id) {
       const loadPost = async () => {
         try {
-          if (!appConfig.api.postsBase) {
-            console.warn('No posts API base configured. Skipping post load.');
+          if (!appConfig.api.base) {
+            console.warn('No API base configured. Skipping post load.');
             setIsLoading(false);
             return;
           }
 
-          const response = await fetch(`${appConfig.api.postsBase}/posts/${id}`);
+          const response = await fetch(`${appConfig.api.base}/posts/${id}`);
           if (!response.ok) throw new Error('Failed to load post');
           const data = await response.json();
           setFormData({
@@ -72,14 +72,14 @@ export default function AdminPostEditor({ mode = 'create' }) {
 
     try {
       const endpoint =
-        mode === 'edit' && id && appConfig.api.postsBase
-          ? `${appConfig.api.postsBase}/posts/${id}`
-          : appConfig.api.postsBase
-            ? `${appConfig.api.postsBase}/posts`
+        mode === 'edit' && id && appConfig.api.base
+          ? `${appConfig.api.base}/posts/${id}`
+          : appConfig.api.base
+            ? `${appConfig.api.base}/posts`
             : '';
       const method = mode === 'edit' && id ? 'PUT' : 'POST';
       if (!endpoint) {
-        console.warn('No posts API base configured. Running in demo mode.');
+        console.warn('No API base configured. Running in demo mode.');
       } else {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -127,7 +127,7 @@ export default function AdminPostEditor({ mode = 'create' }) {
               {mode === 'edit' ? 'Edit Post' : 'Create New Post'}
             </h1>
             <p className="text-sm text-gray-400">
-              Connects to your API at {appConfig.api.postsBase}/posts
+              Connects to your API at {appConfig.api.base}/posts
             </p>
           </div>
         </div>
