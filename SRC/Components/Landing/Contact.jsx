@@ -111,7 +111,7 @@ export default function Contact() {
   const socialLinks = [
     { icon: FaTiktok, href: "https://www.tiktok.com/@creatalab_ltd", label: "TikTok", color: "hover:text-purple-500" },
     { icon: FaInstagram, href: "https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1", label: "Instagram", color: "hover:text-pink-500" },
-    { icon: FaWhatsapp, href: "https://wa.me/0753436729", label: "WhatsApp", color: "hover:text-green-500" },
+    { icon: FaWhatsapp, href: "https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab...", label: "WhatsApp", color: "hover:text-green-500" },
   ];
 
   return (
@@ -234,7 +234,7 @@ export default function Contact() {
 
             {/* Enhanced WhatsApp CTA */}
             <motion.a
-              href="https://wa.me/0753436729"
+              href="https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab..."
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}

@@ -22,7 +22,7 @@ export default function Footer() {
     social: [
       { icon: FaTiktok, href: "https://www.tiktok.com/@creatalab_ltd", label: "TikTok" },
       { icon: FaInstagram, href: "https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1", label: "Instagram" },
-      { icon: FaWhatsapp, href: "https://wa.me/0753436729", label: "WhatsApp" },
+      { icon: FaWhatsapp, href: "https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab...", label: "WhatsApp" },
     ]
   };
 
