@@ -15,9 +15,9 @@ export const appConfig = {
 
   // API endpoints (automatically handles both local dev and Vercel production)
   api: {
-    contact: import.meta.env.PROD ? '/api/contact' : 'http://localhost:4000/api/contact',
-    bookings: import.meta.env.PROD ? '/api/bookings' : 'http://localhost:4000/api/bookings',
-    postsBase: import.meta.env.PROD ? '/api/posts' : 'http://localhost:4000/api/posts',
+    contact: typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:4000/api/contact' : '/api/contact',
+    bookings: typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:4000/api/bookings' : '/api/bookings',
+    postsBase: typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:4000/api/posts' : '/api/posts',
   },
 
   // Company information
