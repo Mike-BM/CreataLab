@@ -13,11 +13,11 @@ export const appConfig = {
     whatsapp: import.meta.env.VITE_SOCIAL_WHATSAPP || 'https://wa.me/0753436729',
   },
 
-  // API endpoints (set these via environment variables in production)
+  // API endpoints (automatically handles both local dev and Vercel production)
   api: {
-    contact: import.meta.env.VITE_CONTACT_API_URL || '',
-    bookings: import.meta.env.VITE_BOOKING_API_URL || '',
-    postsBase: import.meta.env.VITE_POSTS_API_BASE || '',
+    contact: import.meta.env.PROD ? '/api/contact' : 'http://localhost:4000/api/contact',
+    bookings: import.meta.env.PROD ? '/api/bookings' : 'http://localhost:4000/api/bookings',
+    postsBase: import.meta.env.PROD ? '/api/posts' : 'http://localhost:4000/api/posts',
   },
 
   // Company information
