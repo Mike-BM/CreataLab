@@ -10,7 +10,7 @@ export const appConfig = {
   socialLinks: {
     instagram: import.meta.env.VITE_SOCIAL_INSTAGRAM || 'https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1',
     tiktok: import.meta.env.VITE_SOCIAL_TIKTOK || 'https://www.tiktok.com/@creatalab_ltd',
-    whatsapp: import.meta.env.VITE_SOCIAL_WHATSAPP || 'https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab...',
+    whatsapp: import.meta.env.VITE_SOCIAL_WHATSAPP || 'https://wa.me/254753436729?text=Hello%20Welcome%20to%20CreataLab%20%E2%80%93%20Where%20Creativity%20Meets%20Data!%20We%20craft%20Graphic%20Design%2C%20Branding%2C%20Data%20Analysis%2C%20AI%2C%20and%20Web%20Development%20solutions%20that%20elevate%20your%20ideas.%20Let%E2%80%99s%20create%20something%20extraordinary%20%E2%80%93%20how%20can%20we%20help%20you%20today%3F',
   },
 
   // API endpoints (automatically handles both local dev and Vercel production)

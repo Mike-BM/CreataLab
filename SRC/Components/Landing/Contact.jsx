@@ -111,7 +111,7 @@ export default function Contact() {
   const socialLinks = [
     { icon: FaTiktok, href: "https://www.tiktok.com/@creatalab_ltd", label: "TikTok", color: "hover:text-purple-500" },
     { icon: FaInstagram, href: "https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1", label: "Instagram", color: "hover:text-pink-500" },
-    { icon: FaWhatsapp, href: "https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab...", label: "WhatsApp", color: "hover:text-green-500" },
+    { icon: FaWhatsapp, href: "https://wa.me/254753436729?text=Hello%20Welcome%20to%20CreataLab%20%E2%80%93%20Where%20Creativity%20Meets%20Data!%20We%20craft%20Graphic%20Design%2C%20Branding%2C%20Data%20Analysis%2C%20AI%2C%20and%20Web%20Development%20solutions%20that%20elevate%20your%20ideas.%20Let%E2%80%99s%20create%20something%20extraordinary%20%E2%80%93%20how%20can%20we%20help%20you%20today%3F", label: "WhatsApp", color: "hover:text-green-500" },
   ];
 
   return (
@@ -234,7 +234,7 @@ export default function Contact() {
 
             {/* Enhanced WhatsApp CTA */}
             <motion.a
-              href="https://wa.me/254753436729?text=Thank%20you%20for%20contacting%20CreataLab..."
+              href="https://wa.me/254753436729?text=Hello%20Welcome%20to%20CreataLab%20%E2%80%93%20Where%20Creativity%20Meets%20Data!%20We%20craft%20Graphic%20Design%2C%20Branding%2C%20Data%20Analysis%2C%20AI%2C%20and%20Web%20Development%20solutions%20that%20elevate%20your%20ideas.%20Let%E2%80%99s%20create%20something%20extraordinary%20%E2%80%93%20how%20can%20we%20help%20you%20today%3F"
               target="_blank"
               rel="noopener noreferrer"
               initial={{ opacity: 0, y: 20 }}
