@@ -38,13 +38,15 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               </button>
 
               {/* Image */}
-              <div className="relative h-[400px] overflow-hidden rounded-t-3xl">
+              <div className="relative w-full bg-[#0a0a0f] flex justify-center rounded-t-3xl">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-cover"
+                  className="w-full max-h-[75vh] object-contain rounded-t-3xl"
+                  loading="lazy"
+                  decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#111118] to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#111118] via-transparent to-transparent pointer-events-none" />
               </div>
 
               {/* Content */}
