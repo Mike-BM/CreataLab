@@ -167,27 +167,18 @@ export default function Navbar({ activeSection, onSectionChange }) {
                 >
                   {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 </motion.button>
-                {socialLinks.map((social, index) => (
-                  <motion.a
+                {socialLinks.map((social) => (
+                  <a
                     key={social.label}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600/10 to-cyan-600/10 hover:from-purple-600/30 hover:to-cyan-600/30 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-white transition-all duration-300 relative overflow-hidden group"
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
+                    className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600/10 to-cyan-600/10 hover:from-purple-600/30 hover:to-cyan-600/30 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-white transition-all duration-300 relative overflow-hidden group hover:scale-110 active:scale-95"
                   >
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-cyan-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                     <social.icon className="w-4 h-4 relative z-10" />
-                    <motion.div
-                      className="absolute inset-0 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                  </motion.a>
+                    <div className="absolute inset-0 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  </a>
                 ))}
               </div>
               <motion.div

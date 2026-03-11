@@ -160,26 +160,16 @@ export default function AdminPosts() {
             Manage all your blog posts and content
           </motion.p>
         </div>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
+        <div className="hover:scale-105 active:scale-95 transition-transform duration-300">
           <Button
             onClick={() => navigate('/admin/posts/new')}
             className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6 flex items-center gap-2 shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_40px_rgba(168,85,247,0.6)] transition-all overflow-hidden"
           >
-            <motion.div
-              animate={{ x: ['-100%', '100%'] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-            />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
             <Plus className="w-4 h-4 relative z-10 group-hover:rotate-90 transition-transform duration-300" />
             <span className="relative z-10">New Post</span>
           </Button>
-        </motion.div>
+        </div>
       </motion.div>
 
       {/* Stats Cards */}
