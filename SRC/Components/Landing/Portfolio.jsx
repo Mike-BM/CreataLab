@@ -1,53 +1,96 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Eye } from 'lucide-react';
+import { ExternalLink, Eye, RefreshCw } from 'lucide-react';
 import ProjectModal from './ProjectModal';
+import { appConfig } from '@/Lib/config';
 
 const categories = ["All", "Branding", "Digital", "Data", "Web"];
+const CACHE_KEY = 'creatalab_projects_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-import { appConfig } from '@/Lib/config';
+// Skeleton card for loading state
+function SkeletonCard() {
+  return (
+    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 bg-white/[0.03]">
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skeleton-shimmer" />
+      <div className="absolute bottom-0 left-0 right-0 p-5 space-y-2">
+        <div className="h-3 w-1/3 rounded-full bg-white/10" />
+        <div className="h-5 w-2/3 rounded-full bg-white/10" />
+        <div className="h-3 w-full rounded-full bg-white/5" />
+      </div>
+    </div>
+  );
+}
 
 export default function Portfolio() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [hoveredProject, setHoveredProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  useEffect(() => {
-    const fetchProjects = async () => {
+  const fetchProjects = useCallback(async (showLoadingSpinner = true) => {
+    if (showLoadingSpinner) setIsLoading(true);
+    setError(null);
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
+    try {
+      const response = await fetch(`${appConfig.api.base}/projects`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const formatted = data.map(p => ({ ...p, image: p.image_url }));
+
+      // Cache successful results
       try {
-        const response = await fetch(`${appConfig.api.base}/projects`);
-        if (response.ok) {
-          const data = await response.json();
-          // Transform image_url to image for compatibility with ProjectModal
-          const formattedData = data.map(p => ({
-            ...p,
-            image: p.image_url,
-          }));
-          setProjects(formattedData);
-        }
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-      } finally {
-        setIsLoading(false);
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data: formatted, ts: Date.now() }));
+      } catch (_) { /* ignore quota errors */ }
+
+      setProjects(formatted);
+    } catch (err) {
+      clearTimeout(timeout);
+      if (err.name !== 'AbortError') {
+        console.error('Portfolio fetch error:', err);
+        setError('Failed to load projects.');
       }
-    };
-    fetchProjects();
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // Try to load from cache first for instant display
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, ts } = JSON.parse(cached);
+        if (Date.now() - ts < CACHE_TTL) {
+          setProjects(data);
+          setIsLoading(false);
+          // Silently refresh in background (stale-while-revalidate)
+          fetchProjects(false);
+          return;
+        }
+      }
+    } catch (_) { /* ignore */ }
+
+    fetchProjects(true);
+  }, [fetchProjects]);
 
   useEffect(() => {
     const handleFilterEvent = (event) => {
       const category = event.detail;
-      if (typeof category !== 'string') return;
-      if (!categories.includes(category)) return;
+      if (typeof category !== 'string' || !categories.includes(category)) return;
       setActiveFilter(category);
-      const section = document.querySelector('#portfolio');
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-      }
+      document.querySelector('#portfolio')?.scrollIntoView({ behavior: 'smooth' });
     };
-
     window.addEventListener('portfolioFilter', handleFilterEvent);
     return () => window.removeEventListener('portfolioFilter', handleFilterEvent);
   }, []);
@@ -58,11 +101,24 @@ export default function Portfolio() {
 
   return (
     <section id="portfolio" className="py-32 bg-[#0a0a0f] relative">
+
+      {/* Add shimmer keyframe via inline style */}
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .skeleton-shimmer {
+          animation: shimmer 1.8s ease-in-out infinite;
+        }
+      `}</style>
+
       <ProjectModal
         project={selectedProject}
         isOpen={!!selectedProject}
         onClose={() => setSelectedProject(null)}
       />
+
       <div className="max-w-7xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -89,10 +145,11 @@ export default function Portfolio() {
             <button
               key={category}
               onClick={() => setActiveFilter(category)}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeFilter === category
-                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25'
-                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
-                }`}
+              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                activeFilter === category
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25'
+                  : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
             >
               {category}
             </button>
@@ -102,90 +159,134 @@ export default function Portfolio() {
         {/* Projects Grid */}
         <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
-            {isLoading ? (
-              <div className="col-span-full py-20 text-center text-gray-500">Loading portfolio...</div>
-            ) : filteredProjects.length === 0 ? (
-              <div className="col-span-full py-20 text-center text-gray-500">No projects found. Check back later!</div>
-            ) : (
-              filteredProjects.map((project) => (
-                <motion.div
-                  key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.4 }}
-                  onMouseEnter={() => setHoveredProject(project.id)}
-                  onMouseLeave={() => setHoveredProject(null)}
-                  onClick={() => setSelectedProject(project)}
-                  className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300"
+
+            {/* Skeleton Loading */}
+            {isLoading && (
+              <>
+                {[1, 2, 3, 4, 5, 6].map(i => (
+                  <motion.div
+                    key={`skeleton-${i}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <SkeletonCard />
+                  </motion.div>
+                ))}
+              </>
+            )}
+
+            {/* Error state */}
+            {!isLoading && error && (
+              <motion.div
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="col-span-full py-20 flex flex-col items-center gap-4"
+              >
+                <p className="text-gray-500 text-center">{error}</p>
+                <button
+                  onClick={() => fetchProjects(true)}
+                  className="flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all text-sm"
                 >
-                  {/* Image */}
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+                  <RefreshCw className="w-4 h-4" />
+                  Retry
+                </button>
+              </motion.div>
+            )}
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+            {/* Empty state */}
+            {!isLoading && !error && filteredProjects.length === 0 && (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="col-span-full py-20 text-center text-gray-500"
+              >
+                No projects found. Check back soon!
+              </motion.div>
+            )}
 
-                  {/* Content */}
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <span className="text-purple-400 text-sm font-medium mb-2">
-                      {project.category}
-                    </span>
-                    <h3 className="text-2xl font-bold text-white mb-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-300 text-sm mb-4">
-                      {project.description}
-                    </p>
-                    <div className="flex gap-3">
+            {/* Project Cards */}
+            {!isLoading && filteredProjects.map((project) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4 }}
+                onMouseEnter={() => setHoveredProject(project.id)}
+                onMouseLeave={() => setHoveredProject(null)}
+                onClick={() => setSelectedProject(project)}
+                className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+              >
+                {/* Image with blur-up loading */}
+                <img
+                  src={project.image}
+                  alt={project.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  onError={e => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+
+                {/* Always-visible subtle gradient at bottom for readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                {/* Category chip always visible */}
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-purple-400 text-xs font-medium border border-purple-500/30">
+                    {project.category}
+                  </span>
+                </div>
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
+                {/* Hover content */}
+                <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                  <h3 className="text-xl font-bold text-white mb-1">{project.title}</h3>
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{project.description}</p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={e => { e.stopPropagation(); setSelectedProject(project); }}
+                      className="w-10 h-10 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500 transition-colors shadow-[0_0_15px_rgba(168,85,247,0.5)]"
+                    >
+                      <Eye className="w-4 h-4 text-white" />
+                    </button>
+                    {project.link && (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedProject(project);
-                        }}
+                        onClick={e => { e.stopPropagation(); window.open(project.link, '_blank'); }}
                         className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors"
                       >
-                        <Eye className="w-4 h-4 text-white" />
+                        <ExternalLink className="w-4 h-4 text-white" />
                       </button>
-                      {project.link && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(project.link, '_blank');
-                          }}
-                          className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4 text-white" />
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </div>
-
-                  {/* Border gradient on hover */}
-                  <div className="absolute inset-0 rounded-2xl border border-white/0 group-hover:border-white/20 transition-colors duration-500" />
-                </motion.div>
-              )))}
+                </div>
+              </motion.div>
+            ))}
           </AnimatePresence>
         </motion.div>
 
         {/* View All Button */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-          <button className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white hover:bg-white/5 transition-all duration-300">
-            View All Projects
-            <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </motion.div>
+        {!isLoading && !error && filteredProjects.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <button className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white hover:bg-white/5 hover:border-purple-500/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] transition-all duration-300">
+              View All Projects
+              <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </motion.div>
+        )}
       </div>
     </section>
   );
