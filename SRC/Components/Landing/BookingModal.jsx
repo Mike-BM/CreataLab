@@ -153,7 +153,7 @@ export default function BookingModal({ isOpen, onClose }) {
                       <label className="text-gray-400 text-sm mb-2 block">Phone Number</label>
                       <Input
                         type="tel"
-                        placeholder="+234 800 000 0000"
+                        placeholder="0753 436 729"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-12 rounded-xl"
