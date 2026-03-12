@@ -84,5 +84,36 @@
 
   body {
     @apply bg-background text-foreground;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+}
+
+/* GPU-accelerated background orb animations (replaces heavy framer-motion loops) */
+@keyframes orbFloat1 {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(60px, -40px) scale(1.15); }
+  50%  { transform: translate(-30px, 30px) scale(0.95); }
+  75%  { transform: translate(40px, 60px) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes orbFloat2 {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(-50px, 80px) scale(1.2); }
+  50%  { transform: translate(40px, -30px) scale(0.9); }
+  75%  { transform: translate(-20px, 50px) scale(1.05); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Ensure animated background elements use the compositor thread */
+.will-change-transform {
+  will-change: transform;
+}
+
+/* Prevent animations from blocking scroll on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .will-change-transform {
+    animation-play-state: paused !important;
   }
 }

@@ -7,8 +7,7 @@ const ADMIN_SESSION_KEY = 'admin_session';
 export const adminAuth = {
   login: async (email, password) => {
     try {
-      const apiBaseUrl = appConfig.api.postsBase ? appConfig.api.postsBase.replace('/posts', '') : '/api';
-      const response = await fetch(`${apiBaseUrl}/auth/login`, {
+      const response = await fetch(`${appConfig.api.base}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

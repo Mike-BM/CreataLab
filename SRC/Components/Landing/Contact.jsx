@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useReducedMotion, motion } from 'framer-motion';
 import { Send, Mail, Phone, MessageCircle, MapPin, ArrowRight, CheckCircle } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 import { Button } from '@/UI/button';
@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { appConfig } from '@/Lib/config';
 
 export default function Contact() {
+  const shouldReduce = useReducedMotion();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -116,32 +117,14 @@ export default function Contact() {
 
   return (
     <section id="contact" className="py-32 bg-[#0a0a0f] relative overflow-hidden">
-      {/* Enhanced Background elements with animation */}
-      <motion.div
-        animate={{
-          scale: [1, 1.2, 1],
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[180px]"
+      {/* Background elements */}
+      <div
+        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-600/15 rounded-full blur-[180px] will-change-transform"
+        style={shouldReduce ? {} : { animation: 'orbFloat2 15s ease-in-out infinite' }}
       />
-      <motion.div
-        animate={{
-          scale: [1, 1.3, 1],
-          x: [0, -40, 0],
-          y: [0, 50, 0],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-600/15 rounded-full blur-[150px]"
-      />
-      <motion.div
-        animate={{
-          scale: [1, 1.1, 1],
-          rotate: [0, 180, 360],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-pink-600/10 rounded-full blur-[120px]"
+      <div
+        className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-600/15 rounded-full blur-[150px] will-change-transform"
+        style={shouldReduce ? {} : { animation: 'orbFloat1 18s ease-in-out infinite reverse' }}
       />
 
       {/* Grid overlay */}
