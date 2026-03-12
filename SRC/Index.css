@@ -111,9 +111,55 @@
   will-change: transform;
 }
 
-/* Prevent animations from blocking scroll on touch devices */
+/* ============================================
+   MOBILE PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Limit repaint area per section */
+section {
+  contain: layout style paint;
+}
+
+/* content-visibility: skip off-screen sections rendering */
+section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* On touch devices (phones/tablets):
+   - Kill backdrop-blur — it's the #1 scroll lag cause on mobile GPUs
+   - Pause orb CSS animations
+   - Shrink oversized background blurs  */
 @media (hover: none) and (pointer: coarse) {
   .will-change-transform {
     animation-play-state: paused !important;
   }
-}
+
+  /* Remove expensive backdrop-blur on all elements */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Reduce background blur orb sizes so GPU doesn't paint huge blurred areas */
+  [class*="blur-["] {
+    filter: none !important;
+  }
+
+  /* Keep small local blurs (e.g. blur-xl and below) but kill the massive ones */
+  .blur-\[180px\],
+  .blur-\[150px\],
+  .blur-\[130px\],
+  .blur-\[120px\],
+  .blur-\[110px\],
+  .blur-\[100px\],
+  .blur-\[90px\],
+  .blur-\[70px\] {
+    filter: none !important;
+  }
+
+  /* Disable group-hover scale transforms on images (lag when scrolling) */
+  img {
+    transition: none !important;
+  }
+}
