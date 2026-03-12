@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { useReducedMotion } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/UI/button';
@@ -8,7 +7,6 @@ import BookingModal from './BookingModal';
 
 export default function Hero() {
   const [bookingOpen, setBookingOpen] = useState(false);
-  const shouldReduce = useReducedMotion();
 
   const valueBullets = [
     { label: 'Branding', category: 'Branding' },
@@ -19,14 +17,14 @@ export default function Hero() {
 
   const particles = useMemo(
     () =>
-      Array.from({ length: shouldReduce ? 0 : 12 }, (_, i) => ({
+      Array.from({ length: 20 }, (_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
         top: `${Math.random() * 100}%`,
         duration: 3 + Math.random() * 2,
         delay: Math.random() * 2,
       })),
-    [shouldReduce]
+    []
   );
 
   return (
@@ -34,22 +32,71 @@ export default function Hero() {
       <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
       {/* Enhanced Animated gradient orbs with more dynamic movement */}
       <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-600/25 rounded-full blur-[150px] will-change-transform"
-          style={shouldReduce ? {} : { animation: 'orbFloat1 25s ease-in-out infinite' }}
+        <motion.div
+          animate={{
+            x: [0, 150, -50, 0],
+            y: [0, -80, 50, 0],
+            scale: [1, 1.3, 0.9, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-600/25 rounded-full blur-[150px]"
         />
-        <div
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/25 rounded-full blur-[130px] will-change-transform"
-          style={shouldReduce ? {} : { animation: 'orbFloat2 30s ease-in-out infinite' }}
+        <motion.div
+          animate={{
+            x: [0, -120, 60, 0],
+            y: [0, 100, -40, 0],
+            scale: [1, 1.4, 0.8, 1],
+            rotate: [0, -180, -360],
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/25 rounded-full blur-[130px]"
         />
-        <div
-          className="absolute top-1/2 right-1/3 w-[400px] h-[400px] bg-pink-500/20 rounded-full blur-[110px] will-change-transform"
-          style={shouldReduce ? {} : { animation: 'orbFloat1 22s ease-in-out infinite reverse' }}
+        <motion.div
+          animate={{
+            x: [0, 80, -30, 0],
+            y: [0, 120, -60, 0],
+            scale: [1, 1.2, 0.95, 1],
+            rotate: [0, 90, 180],
+          }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 right-1/3 w-[400px] h-[400px] bg-pink-500/20 rounded-full blur-[110px]"
+        />
+        <motion.div
+          animate={{
+            x: [0, 60, -40, 0],
+            y: [0, -100, 80, 0],
+            scale: [1, 1.1, 0.9, 1],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-3/4 left-1/3 w-[250px] h-[250px] bg-cyan-400/15 rounded-full blur-[90px]"
+        />
+        <motion.div
+          animate={{
+            x: [0, -70, 50, 0],
+            y: [0, 90, -50, 0],
+            scale: [1, 1.15, 0.85, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/3 left-1/2 w-[200px] h-[200px] bg-purple-400/12 rounded-full blur-[70px]"
         />
       </div>
 
-      {/* Grid pattern overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-40" />
+      {/* Enhanced Grid pattern overlay with animation */}
+      <motion.div
+        animate={{ opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 4, repeat: Infinity }}
+        className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px]"
+      />
+
+      {/* Diagonal shimmer lines */}
+      <div className="absolute inset-0 opacity-25">
+        <motion.div
+          animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 bg-[linear-gradient(45deg,transparent_48%,rgba(168,85,247,0.05)_49%,rgba(168,85,247,0.05)_51%,transparent_52%)] bg-[size:80px_80px]"
+        />
+      </div>
 
       {/* Floating particles effect */}
       {particles.map((particle) => (
