@@ -22,20 +22,19 @@ export default function AdminPortfolio() {
     const fetchProjects = async () => {
         setIsLoading(true);
         try {
-            // In a real app, you'd fetch all projects (including drafts) here for the admin panel.
-            // Currently our API route `/api/projects` only returns published.
-            // We need to fetch all if we're admin, or hit a specific admin endpoint.
-            // Since we didn't build a separate admin list endpoint, we'll fetch from Supabase directly if needed.
-            // But let's assume the backend will give us what we need or we can build an admin route.
-            // For now, let's fetch from our public endpoint as a placeholder or we can use the admin endpoint if we build one.
-            // ACTUALLY: Let's fetch all via our API. Wait, our `GET /api/projects` only gets published=true.
-            // Let's modify the frontend to fetch from /api/projects without the published filter if admin, or we need to update the backend route.
-            // For this demo, let's fetch directly using the same endpoint shape, assuming we'll fix the backend or it's fine for now.
-
-            const response = await fetch(`${appConfig.api.base}/projects`);
+            // Use the admin endpoint to fetch ALL projects including drafts
+            const token = adminAuth.getToken();
+            const response = await fetch(`${appConfig.api.base}/admin/projects`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Cache-Control': 'no-store',
+                },
+            });
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);
+            } else {
+                toast.error('Failed to load portfolio projects');
             }
         } catch (error) {
             console.error('Error fetching projects:', error);
@@ -110,11 +109,31 @@ export default function AdminPortfolio() {
                 <div className="flex-1 relative group">
                     <Search className="w-5 h-5 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" />
                     <Input
-                        placeholder="Search projects by title..."
+                        placeholder="Search projects by title or description..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-11 pr-10 h-12 rounded-full bg-white/5 border-white/10 text-white"
                     />
+                </div>
+                {/* Status filter tabs */}
+                <div className="flex gap-2">
+                    {[
+                        { key: 'all', label: `All (${projects.length})` },
+                        { key: 'published', label: `Published (${projects.filter(p => p.published).length})` },
+                        { key: 'draft', label: `Drafts (${projects.filter(p => !p.published).length})` },
+                    ].map(({ key, label }) => (
+                        <button
+                            key={key}
+                            onClick={() => setFilterStatus(key)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                                filterStatus === key
+                                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white'
+                                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
+                            }`}
+                        >
+                            {label}
+                        </button>
+                    ))}
                 </div>
             </div>
 

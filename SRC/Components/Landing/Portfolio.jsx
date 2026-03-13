@@ -6,7 +6,7 @@ import { appConfig } from '@/Lib/config';
 
 const categories = ["All", "Branding", "Digital", "Data", "Web"];
 const CACHE_KEY = 'creatalab_projects_cache';
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes — longer cache for instant repeat visits
 
 // Skeleton card for loading state
 function SkeletonCard() {
@@ -156,8 +156,8 @@ export default function Portfolio() {
           ))}
         </div>
 
-        {/* Projects Grid */}
-        <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Projects Grid — no layout prop to avoid expensive re-layouts on mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
 
             {/* Skeleton Loading */}
@@ -208,62 +208,65 @@ export default function Portfolio() {
               </motion.div>
             )}
 
-            {/* Project Cards */}
+            {/* Project Cards — mobile-first: info always visible, hover effects additive */}
             {!isLoading && filteredProjects.map((project) => (
               <motion.div
                 key={project.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.4 }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
                 onMouseEnter={() => setHoveredProject(project.id)}
                 onMouseLeave={() => setHoveredProject(null)}
                 onClick={() => setSelectedProject(project)}
                 className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]"
               >
-                {/* Image with blur-up loading */}
+                {/* Image — sizes hint helps browser download the right resolution on mobile */}
                 <img
                   src={project.image}
                   alt={project.title}
                   loading="lazy"
                   decoding="async"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   onError={e => {
-                    e.target.style.display = 'none';
+                    e.currentTarget.style.display = 'none';
                   }}
                 />
 
-                {/* Always-visible subtle gradient at bottom for readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                {/* Always-visible gradient — stronger at bottom for text legibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
-                {/* Category chip always visible */}
+                {/* Category chip — always visible */}
                 <div className="absolute top-4 left-4">
                   <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-sm text-purple-400 text-xs font-medium border border-purple-500/30">
                     {project.category}
                   </span>
                 </div>
 
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
-                {/* Hover content */}
-                <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <h3 className="text-xl font-bold text-white mb-1">{project.title}</h3>
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{project.description}</p>
-                  <div className="flex gap-3">
+                {/* Info panel — always visible so mobile users can read it */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
+                  <h3 className="text-sm sm:text-base font-bold text-white mb-1 line-clamp-1">{project.title}</h3>
+                  {/* Description only visible on hover (desktop has hover, mobile can tap to open modal) */}
+                  <p className="text-gray-400 text-xs line-clamp-2 max-h-0 overflow-hidden group-hover:max-h-12 transition-all duration-300">
+                    {project.description}
+                  </p>
+                  {/* Buttons: always shown on mobile, appear on hover on desktop */}
+                  <div className="flex gap-2 mt-2 md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300">
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedProject(project); }}
-                      className="w-10 h-10 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center hover:bg-purple-500 transition-colors shadow-[0_0_15px_rgba(168,85,247,0.5)]"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-600/80 backdrop-blur-sm text-white text-xs font-medium hover:bg-purple-500 active:scale-95 transition-all shadow-[0_0_10px_rgba(168,85,247,0.4)]"
                     >
-                      <Eye className="w-4 h-4 text-white" />
+                      <Eye className="w-3 h-3" />
+                      View
                     </button>
                     {project.link && (
                       <button
                         onClick={e => { e.stopPropagation(); window.open(project.link, '_blank'); }}
-                        className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-xs font-medium hover:bg-white/20 active:scale-95 transition-all"
                       >
-                        <ExternalLink className="w-4 h-4 text-white" />
+                        <ExternalLink className="w-3 h-3" />
+                        Open
                       </button>
                     )}
                   </div>
@@ -271,7 +274,7 @@ export default function Portfolio() {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
         {/* View All Button */}
         {!isLoading && !error && filteredProjects.length > 0 && (

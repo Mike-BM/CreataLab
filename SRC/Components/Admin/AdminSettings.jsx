@@ -1,47 +1,81 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Mail, Lock, Bell } from 'lucide-react';
+import { Save, Globe, Lock, Bell, Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react';
 import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { toast } from 'sonner';
 import { adminAuth } from '@/Lib/admin-auth';
+import { appConfig } from '@/Lib/config';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
-    siteName: 'CreataLab',
+    siteName: appConfig.company.name,
     siteUrl: 'https://creatalab.com',
-    adminEmail: 'admin@creatalab.com',
     notifications: true,
   });
 
+  // Password change
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
-  const handleSave = () => {
-    // Handle password change if user filled it in
-    if (currentPassword || newPassword || confirmPassword) {
-      if (newPassword !== confirmPassword) {
-        toast.error('New password and confirmation do not match.');
-        return;
-      }
-      const result = adminAuth.changePassword(currentPassword, newPassword);
+  const passwordStrength = (pwd) => {
+    if (!pwd) return null;
+    if (pwd.length < 8) return { label: 'Too short', color: 'bg-red-500', width: '25%' };
+    if (pwd.length < 10) return { label: 'Weak', color: 'bg-orange-500', width: '40%' };
+    if (/[A-Z]/.test(pwd) && /[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd))
+      return { label: 'Strong', color: 'bg-green-500', width: '100%' };
+    return { label: 'Fair', color: 'bg-yellow-500', width: '65%' };
+  };
+
+  const strength = passwordStrength(newPassword);
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all password fields.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('New password and confirmation do not match.');
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters.');
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      const result = await adminAuth.changePassword(currentPassword, newPassword);
       if (!result.ok) {
         if (result.reason === 'incorrect_current') {
           toast.error('Current password is incorrect.');
         } else if (result.reason === 'too_short') {
           toast.error('New password must be at least 8 characters.');
+        } else if (result.reason === 'network_error') {
+          toast.error('Network error. Make sure the server is running.');
         } else {
-          toast.error('Failed to change password.');
+          toast.error('Failed to change password. Please try again.');
         }
         return;
       }
-      toast.success('Admin password updated successfully.');
+      toast.success('Password changed successfully! Please log in again.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } else {
-      toast.success('Settings saved successfully!');
+      // Log out so they re-authenticate with the new password
+      setTimeout(() => {
+        adminAuth.logout();
+        window.location.href = '/admin/login';
+      }, 1500);
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -80,64 +114,137 @@ export default function AdminSettings() {
               className="bg-white/5 border-white/10 text-white"
             />
           </div>
+          <div className="flex justify-end pt-2">
+            <Button
+              onClick={() => toast.success('Settings saved!')}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6 flex items-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              Save
+            </Button>
+          </div>
         </div>
       </motion.div>
 
-      {/* Security Settings */}
+      {/* Change Password */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="bg-gradient-to-br from-[#111118] to-[#0a0a0f] rounded-2xl border border-white/10 p-6"
       >
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-1">
           <Lock className="w-5 h-5 text-purple-400" />
-          <h2 className="text-xl font-bold text-white">Security</h2>
+          <h2 className="text-xl font-bold text-white">Change Password</h2>
         </div>
-        <div className="space-y-4">
+        <p className="text-gray-500 text-sm mb-6 ml-8">
+          After changing your password you'll be redirected to login again.
+        </p>
+
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          {/* Current Password */}
           <div>
-            <label className="text-sm text-gray-300 mb-2 block">Admin Email</label>
-            <Input
-              type="email"
-              value={settings.adminEmail}
-              onChange={(e) => setSettings({ ...settings, adminEmail: e.target.value })}
-              className="bg-white/5 border-white/10 text-white"
-            />
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-gray-300 mb-2 block">Current Admin Password</label>
+            <label className="text-sm text-gray-300 mb-2 block">Current Password</label>
+            <div className="relative">
               <Input
-                type="password"
+                type={showCurrent ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                placeholder="Enter current password"
-                className="bg-white/5 border-white/10 text-white"
+                placeholder="Enter your current password"
+                className="bg-white/5 border-white/10 text-white pr-10"
               />
-              <p className="mt-1 text-xs text-gray-500">
-                Default password (if you haven&apos;t changed it yet): <span className="font-mono">{adminAuth.getCurrentPasswordLabel()}</span>
-              </p>
+              <button
+                type="button"
+                onClick={() => setShowCurrent(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                {showCurrent ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
-            <div>
-              <label className="text-sm text-gray-300 mb-2 block">New Admin Password</label>
+          </div>
+
+          {/* New Password */}
+          <div>
+            <label className="text-sm text-gray-300 mb-2 block">New Password</label>
+            <div className="relative">
               <Input
-                type="password"
+                type={showNew ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 8 characters"
-                className="bg-white/5 border-white/10 text-white"
+                className="bg-white/5 border-white/10 text-white pr-10"
               />
-              <label className="text-sm text-gray-300 mb-2 block mt-4">Confirm New Password</label>
+              <button
+                type="button"
+                onClick={() => setShowNew(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {/* Strength bar */}
+            {strength && (
+              <div className="mt-2 space-y-1">
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${strength.color}`}
+                    style={{ width: strength.width }}
+                  />
+                </div>
+                <p className={`text-xs ${
+                  strength.label === 'Strong' ? 'text-green-400' :
+                  strength.label === 'Fair' ? 'text-yellow-400' : 'text-red-400'
+                }`}>{strength.label}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Confirm New Password */}
+          <div>
+            <label className="text-sm text-gray-300 mb-2 block">Confirm New Password</label>
+            <div className="relative">
               <Input
-                type="password"
+                type={showConfirm ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                className="bg-white/5 border-white/10 text-white"
+                className={`bg-white/5 border-white/10 text-white pr-10 ${
+                  confirmPassword && confirmPassword !== newPassword ? 'border-red-500/50' :
+                  confirmPassword && confirmPassword === newPassword ? 'border-green-500/50' : ''
+                }`}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirm(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
+            {confirmPassword && confirmPassword === newPassword && (
+              <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" /> Passwords match
+              </p>
+            )}
+            {confirmPassword && confirmPassword !== newPassword && (
+              <p className="text-xs text-red-400 mt-1">Passwords do not match</p>
+            )}
           </div>
-        </div>
+
+          <div className="flex justify-end pt-2">
+            <Button
+              type="submit"
+              disabled={isChangingPassword}
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6 flex items-center gap-2 disabled:opacity-60"
+            >
+              {isChangingPassword ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Changing...</>
+              ) : (
+                <><Lock className="w-4 h-4" /> Change Password</>
+              )}
+            </Button>
+          </div>
+        </form>
       </motion.div>
 
       {/* Notifications */}
@@ -158,31 +265,13 @@ export default function AdminSettings() {
           </div>
           <button
             onClick={() => setSettings({ ...settings, notifications: !settings.notifications })}
-            className={`w-14 h-7 rounded-full transition-colors ${settings.notifications ? 'bg-purple-600' : 'bg-gray-600'
-              }`}
+            className={`w-14 h-7 rounded-full transition-colors ${settings.notifications ? 'bg-purple-600' : 'bg-gray-600'}`}
           >
             <div
-              className={`w-6 h-6 rounded-full bg-white transition-transform ${settings.notifications ? 'translate-x-7' : 'translate-x-1'
-                }`}
+              className={`w-6 h-6 rounded-full bg-white transition-transform ${settings.notifications ? 'translate-x-7' : 'translate-x-1'}`}
             />
           </button>
         </div>
-      </motion.div>
-
-      {/* Save Button */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="flex justify-end"
-      >
-        <Button
-          onClick={handleSave}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-8 flex items-center gap-2"
-        >
-          <Save className="w-4 h-4" />
-          Save Changes
-        </Button>
       </motion.div>
     </div>
   );

@@ -75,4 +75,29 @@ export const adminAuth = {
       return null;
     }
   },
+
+  // Change the admin password via the backend API
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const response = await fetch(`${appConfig.api.base}/auth/change-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return { ok: false, reason: data.reason || 'unknown' };
+      }
+      return { ok: true };
+    } catch (e) {
+      console.error('changePassword error:', e);
+      return { ok: false, reason: 'network_error' };
+    }
+  },
 };

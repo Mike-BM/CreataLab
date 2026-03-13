@@ -120,6 +120,47 @@ app.post('/api/auth/login', async (req, res) => {
   res.json({ token });
 });
 
+// Change admin password (requires valid JWT)
+app.post('/api/auth/change-password', requireAdmin, async (req, res) => {
+  const { currentPassword, newPassword } = req.body || {};
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Both currentPassword and newPassword are required' });
+  }
+  if (newPassword.length < 8) {
+    return res.status(400).json({ error: 'New password must be at least 8 characters', reason: 'too_short' });
+  }
+
+  // Fetch the admin by id (from JWT payload)
+  const { data: user, error } = await supabase
+    .from('admin_users')
+    .select('id, password_hash')
+    .eq('id', req.admin.id)
+    .maybeSingle();
+
+  if (error || !user) {
+    return res.status(404).json({ error: 'Admin user not found' });
+  }
+
+  const valid = bcrypt.compareSync(currentPassword, user.password_hash);
+  if (!valid) {
+    return res.status(401).json({ error: 'Current password is incorrect', reason: 'incorrect_current' });
+  }
+
+  const newHash = bcrypt.hashSync(newPassword, 10);
+  const { error: updateError } = await supabase
+    .from('admin_users')
+    .update({ password_hash: newHash })
+    .eq('id', user.id);
+
+  if (updateError) {
+    console.error('Supabase error on change-password:', updateError.message);
+    return res.status(500).json({ error: 'Failed to update password' });
+  }
+
+  res.json({ ok: true });
+});
+
 app.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body || {};
   if (!name || !email || !subject || !message) {
@@ -283,18 +324,33 @@ app.delete('/api/posts/:id', requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
-// Public projects (Portfolio)
+// Public projects (Portfolio) — short cache to reduce cold-start latency on mobile
 app.get('/api/projects', async (req, res) => {
   const { data, error } = await supabase
     .from('projects')
-    .select('*')
+    .select('id, title, category, image_url, description, link, published, created_at')
     .eq('published', true)
     .order('created_at', { ascending: false });
   if (error) {
     console.error('Supabase error on list projects:', error.message);
     return res.status(500).json({ error: 'Failed to load projects' });
   }
-  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  // Allow CDN/browser cache for 60 s, stale-while-revalidate 5 min
+  res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+  res.json(data ?? []);
+});
+
+// Admin: list ALL projects (including drafts) — requires auth token
+app.get('/api/admin/projects', requireAdmin, async (req, res) => {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) {
+    console.error('Supabase error on admin list projects:', error.message);
+    return res.status(500).json({ error: 'Failed to load projects' });
+  }
+  res.setHeader('Cache-Control', 'no-store');
   res.json(data ?? []);
 });
 
