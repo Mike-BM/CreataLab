@@ -57,6 +57,12 @@ async function ensureAdminUser() {
 
 ensureAdminUser().catch((err) => console.error('ensureAdminUser failed:', err));
 
+// Request logging middleware for debugging
+app.use((req, res, next) => {
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Middleware
 app.use(
   helmet({
@@ -65,7 +71,10 @@ app.use(
 );
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: process.env.NODE_ENV === 'production' 
+      ? (process.env.CORS_ORIGIN || 'https://creatalab.com') 
+      : [/localhost:\d+$/],
+    credentials: true
   })
 );
 app.use(express.json({ limit: '100kb' }));
@@ -94,23 +103,38 @@ const requireAdmin = (req, res, next) => {
 
 // Routes
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {};
-  if (!email || !password) {
+  const { email: rawEmail, password: rawPassword } = req.body || {};
+  
+  if (!rawEmail || !rawPassword) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
+
+  const email = rawEmail.trim().toLowerCase();
+  const password = rawPassword.trim();
+
   const { data: user, error } = await supabase
     .from('admin_users')
     .select('id, email, password_hash')
     .eq('email', email)
     .maybeSingle();
+
   if (error) {
     console.error('Supabase error on login:', error.message);
     return res.status(500).json({ error: 'Login failed' });
   }
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+  if (!user) {
+    console.log(`[AUTH] Login failed: User not found for ${email}`);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
   const valid = bcrypt.compareSync(password, user.password_hash);
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!valid) {
+    console.log(`[AUTH] Login failed: Invalid password for ${email}`);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+
+  console.log(`[AUTH] Successful login for: ${email}`);
 
   const token = jwt.sign(
     { id: user.id, email: user.email },
@@ -156,6 +180,71 @@ app.post('/api/auth/change-password', requireAdmin, async (req, res) => {
   if (updateError) {
     console.error('Supabase error on change-password:', updateError.message);
     return res.status(500).json({ error: 'Failed to update password' });
+  }
+
+  res.json({ ok: true });
+});
+
+// Update admin account (email or password)
+app.post('/api/auth/update-account', requireAdmin, async (req, res) => {
+  const { currentPassword, newEmail, newPassword } = req.body || {};
+
+  if (!currentPassword) {
+    return res.status(400).json({ error: 'Current password is required to make changes', reason: 'password_required' });
+  }
+
+  // 1. Fetch the admin to verify current password
+  const { data: user, error } = await supabase
+    .from('admin_users')
+    .select('id, password_hash')
+    .eq('id', req.admin.id)
+    .maybeSingle();
+
+  if (error || !user) {
+    return res.status(404).json({ error: 'Admin user not found' });
+  }
+
+  // 2. Verify current password
+  const valid = bcrypt.compareSync(currentPassword, user.password_hash);
+  if (!valid) {
+    return res.status(401).json({ error: 'Current password is incorrect', reason: 'incorrect_current' });
+  }
+
+  // 3. Prepare updates
+  const updates = { updated_at: new Date().toISOString() };
+
+  if (newEmail) {
+    const trimmedEmail = newEmail.trim().toLowerCase();
+    if (!/^\S+@\S+\.\S+$/.test(trimmedEmail)) {
+      return res.status(400).json({ error: 'Invalid email format', reason: 'invalid_email' });
+    }
+    updates.email = trimmedEmail;
+  }
+
+  if (newPassword) {
+    const trimmedPassword = newPassword.trim();
+    if (trimmedPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters', reason: 'too_short' });
+    }
+    updates.password_hash = bcrypt.hashSync(trimmedPassword, 10);
+  }
+
+  if (!newEmail && !newPassword) {
+    return res.status(400).json({ error: 'No changes provided' });
+  }
+
+  // 4. Perform update in Supabase
+  const { error: updateError } = await supabase
+    .from('admin_users')
+    .update(updates)
+    .eq('id', user.id);
+
+  if (updateError) {
+    if (updateError.code === '23505') {
+      return res.status(409).json({ error: 'Email already in use', reason: 'email_exists' });
+    }
+    console.error('Supabase error on update-account:', updateError.message);
+    return res.status(500).json({ error: 'Failed to update account' });
   }
 
   res.json({ ok: true });
@@ -461,6 +550,32 @@ app.delete('/api/projects/:id', requireAdmin, async (req, res) => {
     return res.status(404).json({ error: 'Not found' });
   }
   res.json({ ok: true });
+});
+
+app.get('/api/admin/stats', requireAdmin, async (req, res) => {
+  try {
+    const { count: projectsCount } = await supabase
+      .from('projects')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: messagesCount } = await supabase
+      .from('contact_messages')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: bookingsCount } = await supabase
+      .from('bookings')
+      .select('*', { count: 'exact', head: true });
+
+    res.json({
+      projects: projectsCount || 0,
+      messages: messagesCount || 0,
+      bookings: bookingsCount || 0,
+      posts: 12, // Dummy for now since we haven't seeded posts
+    });
+  } catch (error) {
+    console.error('Stats error:', error);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
 });
 
 app.get('/api/health', (req, res) => {

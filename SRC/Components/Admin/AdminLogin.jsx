@@ -8,8 +8,8 @@ import { adminAuth } from '@/Lib/admin-auth';
 import { toast } from 'sonner';
 
 export default function AdminLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(import.meta.env.DEV ? 'admin@creatalab.com' : '');
+  const [password, setPassword] = useState(import.meta.env.DEV ? 'ChangeMe123!' : '');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -18,16 +18,31 @@ export default function AdminLogin() {
     e.preventDefault();
     setIsLoading(true);
 
-    const success = await adminAuth.login(email, password);
+    try {
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedPassword = password.trim();
+      const result = await adminAuth.login(trimmedEmail, trimmedPassword);
+      console.log('Login attempt result:', result);
 
-    if (success) {
-      toast.success('Welcome back, Admin!');
-      navigate('/admin/dashboard');
-    } else {
-      toast.error('Invalid credentials. Access denied.');
-      setPassword('');
+      if (result.ok) {
+        toast.success('Welcome back, Admin!');
+        navigate('/admin/dashboard');
+      } else {
+        const messages = {
+          network_error: 'Connection failed. Is the server running?',
+          server_error: 'Server error. Please try again later.',
+          invalid_credentials: 'Invalid email or password.',
+          no_token: 'Server did not return a session token.',
+          unknown: 'An unexpected error occurred.'
+        };
+        toast.error(messages[result.reason] || messages.unknown);
+        if (result.reason === 'invalid_credentials') setPassword('');
+      }
+    } catch (err) {
+      toast.error('Authentication failed unexpectedly.');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (

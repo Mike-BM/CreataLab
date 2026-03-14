@@ -15,13 +15,14 @@ export default function AdminSettings() {
   });
 
   // Password change
+  const [newEmail, setNewEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const passwordStrength = (pwd) => {
     if (!pwd) return null;
@@ -34,48 +35,63 @@ export default function AdminSettings() {
 
   const strength = passwordStrength(newPassword);
 
-  const handleChangePassword = async (e) => {
+  const handleUpdateAccount = async (e) => {
     e.preventDefault();
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error('Please fill in all password fields.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('New password and confirmation do not match.');
-      return;
-    }
-    if (newPassword.length < 8) {
-      toast.error('New password must be at least 8 characters.');
+    if (!currentPassword) {
+      toast.error('Current password is required to make changes.');
       return;
     }
 
-    setIsChangingPassword(true);
-    try {
-      const result = await adminAuth.changePassword(currentPassword, newPassword);
-      if (!result.ok) {
-        if (result.reason === 'incorrect_current') {
-          toast.error('Current password is incorrect.');
-        } else if (result.reason === 'too_short') {
-          toast.error('New password must be at least 8 characters.');
-        } else if (result.reason === 'network_error') {
-          toast.error('Network error. Make sure the server is running.');
-        } else {
-          toast.error('Failed to change password. Please try again.');
-        }
+    if (!newEmail && !newPassword) {
+      toast.error('Please specify a new email or a new password.');
+      return;
+    }
+
+    if (newPassword) {
+      if (newPassword !== confirmPassword) {
+        toast.error('New password and confirmation do not match.');
         return;
       }
-      toast.success('Password changed successfully! Please log in again.');
+      if (newPassword.length < 8) {
+        toast.error('New password must be at least 8 characters.');
+        return;
+      }
+    }
+
+    if (newEmail && !/^\S+@\S+\.\S+$/.test(newEmail)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const result = await adminAuth.updateAccount(currentPassword, newEmail || null, newPassword || null);
+      if (!result.ok) {
+        const errorMessages = {
+          incorrect_current: 'Current password is incorrect.',
+          too_short: 'New password must be at least 8 characters.',
+          email_exists: 'This email is already in use.',
+          invalid_email: 'Please enter a valid email address.',
+          network_error: 'Network error. Make sure the server is running.',
+        };
+        toast.error(errorMessages[result.reason] || 'Failed to update account. Please try again.');
+        return;
+      }
+      
+      toast.success('Account updated successfully! Please log in again.');
+      setNewEmail('');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      // Log out so they re-authenticate with the new password
+      
+      // Log out so they re-authenticate with the new credentials
       setTimeout(() => {
         adminAuth.logout();
         window.location.href = '/admin/login';
       }, 1500);
     } finally {
-      setIsChangingPassword(false);
+      setIsUpdating(false);
     }
   };
 
@@ -135,13 +151,25 @@ export default function AdminSettings() {
       >
         <div className="flex items-center gap-3 mb-1">
           <Lock className="w-5 h-5 text-purple-400" />
-          <h2 className="text-xl font-bold text-white">Change Password</h2>
+          <h2 className="text-xl font-bold text-white">Security & Account</h2>
         </div>
         <p className="text-gray-500 text-sm mb-6 ml-8">
-          After changing your password you'll be redirected to login again.
+          Manage your login credentials. You'll need your current password to save changes.
         </p>
 
-        <form onSubmit={handleChangePassword} className="space-y-4">
+        <form onSubmit={handleUpdateAccount} className="space-y-4">
+          {/* New Email */}
+          <div>
+            <label className="text-sm text-gray-300 mb-2 block">New Email Address (Optional)</label>
+            <Input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Enter new admin email"
+              className="bg-white/5 border-white/10 text-white"
+            />
+            <p className="text-[10px] text-gray-500 mt-1 italic">Leave blank to keep your current email address</p>
+          </div>
           {/* Current Password */}
           <div>
             <label className="text-sm text-gray-300 mb-2 block">Current Password</label>
@@ -234,13 +262,13 @@ export default function AdminSettings() {
           <div className="flex justify-end pt-2">
             <Button
               type="submit"
-              disabled={isChangingPassword}
+              disabled={isUpdating}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6 flex items-center gap-2 disabled:opacity-60"
             >
-              {isChangingPassword ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Changing...</>
+              {isUpdating ? (
+                <><Loader2 className="w-4 h-4 animate-spin" /> Updating...</>
               ) : (
-                <><Lock className="w-4 h-4" /> Change Password</>
+                <><Save className="w-4 h-4" /> Save Changes</>
               )}
             </Button>
           </div>

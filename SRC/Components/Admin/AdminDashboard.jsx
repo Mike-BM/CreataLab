@@ -1,24 +1,55 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FileText, Eye, TrendingUp, Users, Clock, ArrowUpRight } from 'lucide-react';
+import { FileText, Eye, TrendingUp, Users, Clock, ArrowUpRight, Loader2, MessageSquare, Calendar, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from './UI/button';
-
-const stats = [
-  { label: 'Total Posts', value: '12', icon: FileText, color: 'from-purple-500 to-pink-500', change: '+3 this month' },
-  { label: 'Total Views', value: '2.4K', icon: Eye, color: 'from-blue-500 to-cyan-500', change: '+12% this week' },
-  { label: 'Engagement', value: '89%', icon: TrendingUp, color: 'from-green-500 to-emerald-500', change: '+5% this week' },
-  { label: 'Active Users', value: '156', icon: Users, color: 'from-orange-500 to-red-500', change: '+8 this week' },
-];
-
-const recentActivity = [
-  { type: 'post', action: 'Published', title: 'Design Trends for 2024', time: '2 hours ago' },
-  { type: 'post', action: 'Updated', title: 'Welcome to CreataLab', time: '5 hours ago' },
-  { type: 'user', action: 'New signup', title: 'john@example.com', time: '1 day ago' },
-  { type: 'analytics', action: 'Milestone', title: '1000+ page views', time: '2 days ago' },
-];
+import { appConfig } from '@/Lib/config';
+import { adminAuth } from '@/Lib/admin-auth';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({
+    projects: 0,
+    messages: 0,
+    bookings: 0,
+    posts: 0
+  });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = adminAuth.getToken();
+        const response = await fetch(`${appConfig.api.base}/admin/stats`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  const statItems = [
+    { label: 'Total Projects', value: stats.projects, icon: FileText, color: 'from-purple-500 to-pink-500', change: 'Real-time from DB', path: '/admin/portfolio' },
+    { label: 'Messages', value: stats.messages, icon: MessageSquare, color: 'from-blue-500 to-cyan-500', change: 'Customer inquiries', path: '/admin/messages' },
+    { label: 'Bookings', value: stats.bookings, icon: Calendar, color: 'from-green-500 to-emerald-500', change: 'Service requests', path: '/admin/bookings' },
+    { label: 'Active Posts', value: stats.posts, icon: TrendingUp, color: 'from-orange-500 to-red-500', change: 'Blog updates', path: '/admin/posts' },
+  ];
+
+  const recentActivity = [
+    { type: 'post', action: 'System Ready', title: 'Supabase connection active', time: 'Just now' },
+    { type: 'user', action: 'Admin Portal', title: 'Dashboard initialized', time: 'Just now' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -26,19 +57,22 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">Dashboard</h1>
-          <p className="text-gray-400">Welcome back! Here's what's happening.</p>
+          <p className="text-gray-400">Welcome back! Here's what's happening in your lab.</p>
         </div>
-        <Button
-          onClick={() => navigate('/admin/posts/new')}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6"
-        >
-          New Post
-        </Button>
+        <div className="flex gap-3">
+          {isLoading && <Loader2 className="w-5 h-5 animate-spin text-purple-400" />}
+          <Button
+            onClick={() => navigate('/admin/portfolio/new')}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6"
+          >
+            New Project
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
+        {statItems.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <motion.div
@@ -47,6 +81,7 @@ export default function AdminDashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -5 }}
+              onClick={() => navigate(stat.path)}
               className="bg-gradient-to-br from-[#111118] to-[#0a0a0f] rounded-2xl border border-white/10 p-6 hover:border-purple-500/30 transition-all cursor-pointer group"
             >
               <div className="flex items-center justify-between mb-4">
@@ -55,9 +90,11 @@ export default function AdminDashboard() {
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-purple-400 transition-colors" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-1">{stat.value}</h3>
+              <h3 className="text-2xl font-bold text-white mb-1">
+                {isLoading ? <div className="w-12 h-8 bg-white/5 animate-pulse rounded" /> : stat.value}
+              </h3>
               <p className="text-sm text-gray-400 mb-2">{stat.label}</p>
-              <p className="text-xs text-green-400">{stat.change}</p>
+              <p className="text-xs text-purple-400/70">{stat.change}</p>
             </motion.div>
           );
         })}
@@ -73,7 +110,7 @@ export default function AdminDashboard() {
         >
           <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
             <Clock className="w-5 h-5 text-purple-400" />
-            Recent Activity
+            System Updates
           </h2>
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
@@ -109,35 +146,27 @@ export default function AdminDashboard() {
           <h2 className="text-xl font-bold text-white mb-6">Quick Actions</h2>
           <div className="space-y-3">
             <Button
-              onClick={() => navigate('/admin/posts/new')}
+              onClick={() => navigate('/admin/portfolio/new')}
               className="w-full justify-start bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 text-white rounded-xl"
             >
               <FileText className="w-4 h-4 mr-2" />
-              Create New Post
+              Upload New Project
             </Button>
             <Button
-              onClick={() => navigate('/admin/posts')}
+              onClick={() => navigate('/admin/portfolio')}
               variant="outline"
               className="w-full justify-start border-white/10 hover:bg-white/5 text-gray-300 hover:text-white rounded-xl"
             >
               <Eye className="w-4 h-4 mr-2" />
-              View All Posts
-            </Button>
-            <Button
-              onClick={() => navigate('/admin/analytics')}
-              variant="outline"
-              className="w-full justify-start border-white/10 hover:bg-white/5 text-gray-300 hover:text-white rounded-xl"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              View Analytics
+              Manage Portfolio
             </Button>
             <Button
               onClick={() => navigate('/admin/settings')}
               variant="outline"
               className="w-full justify-start border-white/10 hover:bg-white/5 text-gray-300 hover:text-white rounded-xl"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              Site Settings
+              <Settings className="w-4 h-4 mr-2" />
+              Account Settings
             </Button>
           </div>
         </motion.div>
