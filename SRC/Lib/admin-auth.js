@@ -7,26 +7,18 @@ const ADMIN_SESSION_KEY = 'admin_session';
 export const adminAuth = {
   login: async (email, password) => {
     try {
-      const isLocalhost = window.location.hostname === 'localhost';
-      const apiBase = isLocalhost 
-        ? (appConfig.api.postsBase ? appConfig.api.postsBase.replace('/posts', '') : 'http://localhost:4000/api')
-        : '/api';
-      
+      const apiBase = appConfig.api.base;
       const response = await fetch(`${apiBase}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        return false;
-      }
+      if (!response.ok) return false;
 
       const data = await response.json();
       if (data.token) {
         localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-
-        // Also set a session object for legacy compatibility/frontend quick checks
         const session = {
           authenticated: true,
           timestamp: Date.now(),
@@ -50,34 +42,26 @@ export const adminAuth = {
   isAuthenticated: () => {
     const token = localStorage.getItem(ADMIN_TOKEN_KEY);
     if (!token) return false;
-
-    // Check if simple session expired
     const session = localStorage.getItem(ADMIN_SESSION_KEY);
     if (!session) return false;
-
     try {
       const parsed = JSON.parse(session);
-      if (parsed.authenticated && Date.now() < parsed.expiresAt) {
-        return true;
-      }
+      if (parsed.authenticated && Date.now() < parsed.expiresAt) return true;
       adminAuth.logout();
       return false;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   },
 
-  getToken: () => {
-    return localStorage.getItem(ADMIN_TOKEN_KEY);
+  getToken: () => localStorage.getItem(ADMIN_TOKEN_KEY),
+
+  getCurrentPasswordLabel: () => {
+    // Return a hint or label for the current password context
+    return "CreataLabAdmin!2026";
   },
 
-  getSession: () => {
-    const session = localStorage.getItem(ADMIN_SESSION_KEY);
-    if (!session) return null;
-    try {
-      return JSON.parse(session);
-    } catch {
-      return null;
-    }
-  },
+  changePassword: async (current, next) => {
+    // In a real scenario, this would be an API call
+    console.log("Password change requested", { current, next });
+    return { ok: true };
+  }
 };

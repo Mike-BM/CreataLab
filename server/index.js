@@ -57,6 +57,47 @@ async function ensureAdminUser() {
 
 ensureAdminUser().catch((err) => console.error('ensureAdminUser failed:', err));
 
+async function ensureSiteSettings() {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('Supabase credentials missing for ensureSiteSettings');
+    return;
+  }
+  
+  console.log('Synchronizing site_settings table...');
+  const { data: existing, error } = await supabase
+    .from('site_settings')
+    .select('id')
+    .eq('key', 'maintenance_mode')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Supabase error in ensureSiteSettings:', error.message);
+    if (error.code === '42P01') {
+      console.error('CRITICAL: site_settings table does not exist in Supabase.');
+    }
+    return;
+  }
+
+  if (!existing) {
+    const { error: insertError } = await supabase.from('site_settings').insert({
+      key: 'maintenance_mode',
+      value: { active: false, message: 'System optimization in progress. We will be back shortly.' }
+    });
+    
+    if (insertError) {
+      console.error('Failed to initialize maintenance_mode setting:', insertError.message);
+    } else {
+      console.log('Operational parameters initialized: site_settings.maintenance_mode');
+    }
+  } else {
+    console.log('Maintenance mode settings confirmed.');
+  }
+}
+
+ensureSiteSettings().catch((err) => console.error('ensureSiteSettings failed:', err));
+
+
+
 // Middleware
 app.use(
   helmet({
@@ -419,9 +460,61 @@ app.delete('/api/projects/:id', requireAdmin, async (req, res) => {
   res.json({ ok: true });
 });
 
+app.get('/api/settings', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('*');
+    if (error) throw error;
+    
+    const settings = (data || []).reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
+    res.json(settings);
+  } catch (err) {
+    console.error('Core parameter retrieval failure:', err.message);
+    res.status(500).json({ error: 'Failed to access core parameters' });
+  }
+});
+
+app.put('/api/settings/:key', requireAdmin, async (req, res) => {
+  try {
+    const { key } = req.params;
+    const { value } = req.body;
+    
+    const { data: existing } = await supabase
+      .from('site_settings')
+      .select('id')
+      .eq('key', key)
+      .maybeSingle();
+
+    let error;
+    if (existing) {
+      const { error: updateError } = await supabase
+        .from('site_settings')
+        .update({ value, updated_at: new Date().toISOString() })
+        .eq('key', key);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('site_settings')
+        .insert({ key, value });
+      error = insertError;
+    }
+      
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Parameter update protocol failure:', err.message);
+    res.status(500).json({ error: 'Parameter update protocol failed' });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
 
 // Export for Vercel serverless functions
 export default app;

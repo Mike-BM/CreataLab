@@ -83,6 +83,20 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#0a0a0f] text-foreground antialiased selection:bg-purple-500/30;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+  }
+  
+  .premium-gradient {
+    @apply bg-gradient-to-br from-purple-600 to-pink-600;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
   }
 }

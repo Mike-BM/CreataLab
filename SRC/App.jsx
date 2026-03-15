@@ -15,7 +15,10 @@ import AdminUsers from './Components/Admin/AdminUsers';
 import AdminSettings from './Components/Admin/AdminSettings';
 import AdminPortfolio from './Components/Admin/AdminPortfolio';
 import AdminProjectEditor from './Components/Admin/AdminProjectEditor';
+import Maintenance from './Components/Maintenance';
 import { adminAuth } from './Lib/admin-auth';
+import { appConfig } from './Lib/config';
+import { useState, useEffect } from 'react';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -33,6 +36,25 @@ LayoutWrapper.propTypes = {
 };
 
 function App() {
+  const [maintenance, setMaintenance] = useState({ active: false, message: '' });
+  const [isSyncing, setIsSyncing] = useState(true);
+
+  useEffect(() => {
+    const checkMaintenance = async () => {
+      try {
+        const response = await fetch(`${appConfig.api.base}/settings`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
+        }
+      } catch (err) {
+        console.error('Maintenance check failed:', err);
+      } finally {
+        setIsSyncing(false);
+      }
+    };
+    checkMaintenance();
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -40,18 +62,30 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={
-              <LayoutWrapper currentPageName={mainPageKey}>
-                <MainPage />
-              </LayoutWrapper>
+              isSyncing ? (
+                <div className="fixed inset-0 bg-[#050508] flex items-center justify-center">
+                  <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+                </div>
+              ) : maintenance.active ? (
+                <Maintenance message={maintenance.message} />
+              ) : (
+                <LayoutWrapper currentPageName={mainPageKey}>
+                  <MainPage />
+                </LayoutWrapper>
+              )
             } />
             {Object.entries(Pages).map(([path, Page]) => (
               <Route
                 key={path}
                 path={`/${path}`}
                 element={
-                  <LayoutWrapper currentPageName={path}>
-                    <Page />
-                  </LayoutWrapper>
+                  maintenance.active ? (
+                    <Maintenance message={maintenance.message} />
+                  ) : (
+                    <LayoutWrapper currentPageName={path}>
+                      <Page />
+                    </LayoutWrapper>
+                  )
                 }
               />
             ))}

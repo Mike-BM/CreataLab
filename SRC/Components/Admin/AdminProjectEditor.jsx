@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Save, FileText, Image, Briefcase, Tag } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Save, 
+  FileText, 
+  Image as ImageIcon, 
+  Briefcase, 
+  Tag, 
+  Link as LinkIcon,
+  Globe,
+  Settings,
+  Sparkles,
+  Rocket
+} from 'lucide-react';
 import { Button } from './UI/button';
 import { Input } from './UI/input';
 import { Textarea } from './UI/textarea';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
-import { adminAuth } from '@/lib/admin-auth';
+import { appConfig } from '@/Lib/config';
+import { adminAuth } from '@/Lib/admin-auth';
 
 export default function AdminProjectEditor({ mode = 'create' }) {
     const navigate = useNavigate();
@@ -22,7 +34,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         description: '',
         full_description: '',
         client: '',
-        tools: '', // We'll manage array via comma separated string for simplicity
+        tools: '',
         features: '',
         problem: '',
         solution: '',
@@ -35,7 +47,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         if (mode === 'edit' && id) {
             const loadProject = async () => {
                 try {
-                    const response = await fetch(`${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects/${id}`);
+                    const response = await fetch(`${appConfig.api.base}/projects/${id}`);
                     if (!response.ok) throw new Error('Failed to load project');
                     const data = await response.json();
                     setFormData({
@@ -55,7 +67,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                     });
                 } catch (error) {
                     console.error('Error loading project:', error);
-                    toast.error('Failed to load project details.');
+                    toast.error('Failed to retrieve project record');
                 } finally {
                     setIsLoading(false);
                 }
@@ -73,7 +85,6 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Convert comma separated strings back to arrays
         const payload = {
             ...formData,
             tools: formData.tools ? formData.tools.split(',').map(s => s.trim()) : [],
@@ -82,8 +93,8 @@ export default function AdminProjectEditor({ mode = 'create' }) {
 
         try {
             const endpoint = mode === 'edit' && id
-                ? `${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects/${id}`
-                : `${appConfig.api.postsBase || 'http://localhost:4000/api'}/projects`;
+                ? `${appConfig.api.base}/projects/${id}`
+                : `${appConfig.api.base}/projects`;
             const method = mode === 'edit' && id ? 'PUT' : 'POST';
 
             const token = adminAuth.getToken();
@@ -99,209 +110,231 @@ export default function AdminProjectEditor({ mode = 'create' }) {
 
             if (!response.ok) throw new Error('Failed to save project');
 
-            toast.success(`Project ${mode === 'edit' ? 'updated' : 'created'} successfully.`);
+            toast.success(`Project ${mode === 'edit' ? 'updated' : 'initialized'} successfully.`);
             navigate('/admin/portfolio');
         } catch (error) {
             console.error('Error saving project:', error);
-            toast.error('Failed to save project.');
+            toast.error('Data persistence failed');
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    if (isLoading) {
+        return (
+            <div className="h-96 glass-card rounded-[2.5rem] flex flex-col items-center justify-center gap-4">
+                <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest animate-pulse">Syncing Asset Data...</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+        <div className="space-y-10 pb-20">
+            {/* Navigation & Actions */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
                     <Button
-                        variant="outline"
-                        className="rounded-full border-white/10 text-gray-300 hover:text-white hover:bg-white/5"
+                        variant="ghost"
+                        className="w-12 h-12 glass-card rounded-xl text-gray-400 hover:text-white transition-all flex items-center justify-center p-0"
                         onClick={() => navigate('/admin/portfolio')}
                     >
-                        <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to portfolio
+                        <ArrowLeft className="w-5 h-5" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-bold text-white">
-                            {mode === 'edit' ? 'Edit Project' : 'Create New Project'}
+                        <h1 className="text-3xl font-black text-white tracking-tight uppercase">
+                            {mode === 'edit' ? 'Update' : 'Initialize'} <span className="text-gray-600">Asset</span>
                         </h1>
+                        <p className="text-gray-400 font-medium">Configure project parameters and metadata</p>
                     </div>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    <Button
+                        variant="ghost"
+                        onClick={() => setFormData(prev => ({ ...prev, published: !prev.published }))}
+                        className={`h-14 rounded-2xl px-6 font-bold text-xs uppercase tracking-widest transition-all gap-3 ${
+                            formData.published 
+                              ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                              : 'bg-white/[0.03] text-gray-400 border border-white/[0.08]'
+                        }`}
+                    >
+                        {formData.published ? <Rocket className="w-4 h-4" /> : <div className="w-4 h-4 rounded-full border border-current" />}
+                        {formData.published ? 'Deployment Active' : 'Staging Mode'}
+                    </Button>
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className="premium-gradient text-white font-bold rounded-2xl px-10 h-14 shadow-lg hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <Save className="w-5 h-5 mr-3" />
+                        {isSubmitting ? 'Syncing...' : 'Save Asset'}
+                    </Button>
                 </div>
             </div>
 
-            <form
-                onSubmit={handleSubmit}
-                className="bg-gradient-to-br from-[#111118] to-[#0a0a0f] rounded-2xl border border-white/10 p-6 space-y-6"
-            >
-                {isLoading ? (
-                    <div className="text-gray-400">Loading project...</div>
-                ) : (
-                    <>
-                        {/* Basic Info */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-blue-400" />
-                                    Title *
-                                </label>
+            {/* Form Canvas */}
+            <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
+                {/* Left Column: Core Identity */}
+                <div className="lg:col-span-2 space-y-8">
+                    <section className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8">
+                        <div className="flex items-center gap-3 pb-6 border-b border-white/[0.05]">
+                            <Sparkles className="w-5 h-5 text-purple-400" />
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">General Information</h2>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-8">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Project Title</label>
                                 <Input
                                     value={formData.title}
                                     onChange={handleChange('title')}
-                                    placeholder="e.g. TechFlow Rebrand"
+                                    placeholder="e.g. Neo-Design System"
                                     required
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
                                 />
                             </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block flex items-center gap-2">
-                                    <Tag className="w-4 h-4 text-cyan-400" />
-                                    Category
-                                </label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset Category</label>
                                 <Input
                                     value={formData.category}
                                     onChange={handleChange('category')}
-                                    placeholder="e.g. Branding, Digital, Data..."
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
+                                    placeholder="Branding, Web, Data..."
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
                                 />
                             </div>
                         </div>
 
-                        {/* Media & Links */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block flex items-center gap-2">
-                                    <Image className="w-4 h-4 text-pink-400" />
-                                    Image URL *
-                                </label>
-                                <Input
-                                    value={formData.image_url}
-                                    onChange={handleChange('image_url')}
-                                    placeholder="https://... or /posters/my-poster.jpg"
-                                    required
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Provide a full URL or a relative path to your public folder.</p>
-                            </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block flex items-center gap-2">
-                                    <Briefcase className="w-4 h-4 text-purple-400" />
-                                    Client
-                                </label>
-                                <Input
-                                    value={formData.client}
-                                    onChange={handleChange('client')}
-                                    placeholder="e.g. ShopNow Inc."
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Description */}
-                        <div>
-                            <label className="text-gray-300 text-sm mb-2 block">Short Description *</label>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Overview Description</label>
                             <Textarea
                                 value={formData.description}
                                 onChange={handleChange('description')}
-                                placeholder="A quick summary for the grid..."
+                                placeholder="Concise summary for discovery feeds..."
                                 required
-                                className="bg-white/5 border-white/10 text-white min-h-[80px] rounded-xl"
+                                className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 min-h-[100px] rounded-2xl text-white font-medium p-6"
                             />
                         </div>
-                        <div>
-                            <label className="text-gray-300 text-sm mb-2 block">Full Description</label>
+
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Deep Dive (Full Details)</label>
                             <Textarea
                                 value={formData.full_description}
                                 onChange={handleChange('full_description')}
-                                placeholder="Detailed description for the modal view..."
-                                className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-xl"
+                                placeholder="Elaborate on the project scope and execution..."
+                                className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 min-h-[180px] rounded-2xl text-white font-medium p-6"
                             />
                         </div>
+                    </section>
 
-                        {/* Lists */}
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">Tools Used (comma separated)</label>
-                                <Input
-                                    value={formData.tools}
-                                    onChange={handleChange('tools')}
-                                    placeholder="Figma, React, Tailwind..."
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">Key Features (comma separated)</label>
-                                <Input
-                                    value={formData.features}
-                                    onChange={handleChange('features')}
-                                    placeholder="Logo Design, Style Guide..."
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
-                                />
-                            </div>
+                    <section className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8 border-l-4 border-l-purple-600/50">
+                        <div className="flex items-center gap-3 pb-6 border-b border-white/[0.05]">
+                            <Briefcase className="w-5 h-5 text-blue-400" />
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Case Study Analysis</h2>
                         </div>
-
-                        {/* Case Study Details */}
-                        <div className="space-y-4 pt-4 border-t border-white/10">
-                            <h3 className="text-white font-semibold">Case Study Details</h3>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">The Problem</label>
+                        
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">The Challenge</label>
                                 <Textarea
                                     value={formData.problem}
                                     onChange={handleChange('problem')}
-                                    placeholder="What challenge did the client face?"
-                                    className="bg-white/5 border-white/10 text-white min-h-[80px] rounded-xl"
+                                    placeholder="Define the structural bottlenecks or requirements..."
+                                    className="bg-white/[0.02] border-white/5 focus:border-blue-500/40 min-h-[80px] rounded-xl text-white"
                                 />
                             </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">The Solution</label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Solution Framework</label>
                                 <Textarea
                                     value={formData.solution}
                                     onChange={handleChange('solution')}
-                                    placeholder="How did you solve it?"
-                                    className="bg-white/5 border-white/10 text-white min-h-[80px] rounded-xl"
+                                    placeholder="Architectural approach and implementation strategy..."
+                                    className="bg-white/[0.02] border-white/5 focus:border-green-500/40 min-h-[80px] rounded-xl text-white"
                                 />
                             </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">The Impact</label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Key Results & KPIs</label>
                                 <Textarea
                                     value={formData.impact}
                                     onChange={handleChange('impact')}
-                                    placeholder="What were the results?"
-                                    className="bg-white/5 border-white/10 text-white min-h-[80px] rounded-xl"
+                                    placeholder="Outcome, metrics, and final achievements..."
+                                    className="bg-white/[0.02] border-white/5 focus:border-pink-500/40 min-h-[80px] rounded-xl text-white"
                                 />
                             </div>
-                            <div>
-                                <label className="text-gray-300 text-sm mb-2 block">External Link (optional)</label>
+                        </div>
+                    </section>
+                </div>
+
+                {/* Right Column: Metadata & Assets */}
+                <div className="space-y-8">
+                    <section className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05] space-y-6">
+                        <div className="flex items-center gap-3 mb-2">
+                            <ImageIcon className="w-5 h-5 text-pink-400" />
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Media Assets</h2>
+                        </div>
+                        
+                        <div className="aspect-video rounded-2xl overflow-hidden bg-black/40 border border-white/5 mb-4 group relative">
+                            {formData.image_url ? (
+                                <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-700">
+                                    <ImageIcon className="w-12 h-12" />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset URL</label>
+                             <Input
+                                value={formData.image_url}
+                                onChange={handleChange('image_url')}
+                                placeholder="https://cdn.creatalab.com/..."
+                                required
+                                className="bg-white/[0.03] border-white/[0.08] focus:border-pink-500/50 h-12 rounded-xl text-xs"
+                             />
+                        </div>
+                    </section>
+
+                    <section className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05] space-y-6">
+                        <div className="flex items-center gap-3 mb-2">
+                            <Settings className="w-5 h-5 text-gray-400" />
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Asset Parameters</h2>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Identity (Client)</label>
                                 <Input
-                                    value={formData.link}
-                                    onChange={handleChange('link')}
-                                    placeholder="https://..."
-                                    className="bg-white/5 border-white/10 text-white h-12 rounded-xl"
+                                    value={formData.client}
+                                    onChange={handleChange('client')}
+                                    placeholder="Organization Name"
+                                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm"
                                 />
                             </div>
-                        </div>
-
-                        <div className="flex items-center justify-between gap-4 pt-4 border-t border-white/10">
-                            <label className="flex items-center gap-2 text-sm text-gray-300">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.published}
-                                    onChange={handleChange('published')}
-                                    className="w-4 h-4 rounded border-white/20"
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Tech Stack (comma sep)</label>
+                                <Input
+                                    value={formData.tools}
+                                    onChange={handleChange('tools')}
+                                    placeholder="React, Figma, Node..."
+                                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm"
                                 />
-                                Mark as published
-                            </label>
-
-                            <Button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white px-6"
-                            >
-                                <Save className="w-4 h-4" />
-                                {isSubmitting ? 'Saving...' : mode === 'edit' ? 'Save Changes' : 'Create Project'}
-                            </Button>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">External Link</label>
+                                <div className="relative">
+                                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-500" />
+                                    <Input
+                                        value={formData.link}
+                                        onChange={handleChange('link')}
+                                        placeholder="https://..."
+                                        className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl pl-10 text-xs"
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </>
-                )}
+                    </section>
+                </div>
             </form>
         </div>
     );
