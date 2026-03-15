@@ -15,6 +15,10 @@ export const appConfig = {
 
   // API endpoints (set these via environment variables in production)
   api: {
+    get base() {
+      const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+      return isLocalhost ? 'http://localhost:4000/api' : '/api';
+    },
     contact: import.meta.env.VITE_CONTACT_API_URL || '',
     bookings: import.meta.env.VITE_BOOKING_API_URL || '',
     postsBase: import.meta.env.VITE_POSTS_API_BASE || '',
