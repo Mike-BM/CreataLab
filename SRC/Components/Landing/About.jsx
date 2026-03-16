@@ -50,7 +50,7 @@ export default function About() {
             <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent"> Digital Age</span>
           </h2>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-            CreataLab is where ideas transform into reality. We're a young, innovative team 
+            creatalab is where ideas transform into reality. We're a young, innovative team 
             passionate about helping brands communicate clearly and beautifully through 
             design, data, and digital craftsmanship.
           </p>
@@ -100,7 +100,7 @@ export default function About() {
             </p>
             <div className="mt-8 flex items-center justify-center gap-4">
               <div className="w-12 h-px bg-gradient-to-r from-transparent to-purple-500" />
-              <span className="text-gray-400">CreataLab Team</span>
+              <span className="text-gray-400">creatalab Team</span>
               <div className="w-12 h-px bg-gradient-to-l from-transparent to-cyan-500" />
             </div>
           </div>

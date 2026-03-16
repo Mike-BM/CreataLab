@@ -116,8 +116,8 @@ export default function Navbar({ activeSection, onSectionChange }) {
             >
               {/* Removed animated overlay that was distorting the custom logo colors */}
               <img
-                src={appConfig.logoUrl}
-                alt={appConfig.company.name}
+                src={appConfig.branding.logoUrl}
+                alt={appConfig.branding.name}
                 className="relative h-28 md:h-36 lg:h-40 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_25px_rgba(255,255,255,0.4)] transition-all duration-300 group-hover:scale-105"
                 style={{
                   marginTop: '10px',

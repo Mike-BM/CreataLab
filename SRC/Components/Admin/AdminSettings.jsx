@@ -9,12 +9,14 @@ import { appConfig } from '@/Lib/config';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
-    siteName: 'CreataLab',
+    siteName: 'creatalab',
     siteUrl: 'https://creatalab.com',
     adminEmail: 'admin@creatalab.com',
     notifications: true,
   });
   
+  const [branding, setBranding] = useState({ name: '', logoUrl: '', tagline: '' });
+  const [socials, setSocials] = useState({ instagram: '', tiktok: '', whatsapp: '' });
   const [maintenance, setMaintenance] = useState({ active: false, message: '' });
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -29,6 +31,8 @@ export default function AdminSettings() {
         if (response.ok) {
           const data = await response.json();
           if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
+          if (data.branding) setBranding(data.branding);
+          if (data.socials) setSocials(data.socials);
         }
       } catch (err) {
         console.error('Failed to sync system parameters:', err);
@@ -47,11 +51,22 @@ export default function AdminSettings() {
       // Update maintenance mode
       await fetch(`${appConfig.api.base}/settings/maintenance_mode`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ value: maintenance })
+      });
+
+      // Update branding
+      await fetch(`${appConfig.api.base}/settings/branding`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ value: branding })
+      });
+
+      // Update socials
+      await fetch(`${appConfig.api.base}/settings/socials`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ value: socials })
       });
 
       // Handle password change if user filled it in
@@ -194,17 +209,72 @@ export default function AdminSettings() {
             <div className="space-y-3">
               <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Platform Alias</label>
               <Input
-                value={settings.siteName}
-                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                value={branding.name}
+                onChange={(e) => setBranding({ ...branding, name: e.target.value })}
                 className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Root URL</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Logo Resource URL</label>
               <Input
-                value={settings.siteUrl}
-                onChange={(e) => setSettings({ ...settings, siteUrl: e.target.value })}
+                value={branding.logoUrl}
+                onChange={(e) => setBranding({ ...branding, logoUrl: e.target.value })}
                 className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
+              />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Tagline / Mission Statement</label>
+            <Input
+              value={branding.tagline}
+              onChange={(e) => setBranding({ ...branding, tagline: e.target.value })}
+              className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
+            />
+          </div>
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Root URL</label>
+            <Input
+              value={settings.siteUrl}
+              onChange={(e) => setSettings({ ...settings, siteUrl: e.target.value })}
+              className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
+            />
+          </div>
+        </motion.section>
+
+        {/* Social Connectivity */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8"
+        >
+          <div className="flex items-center gap-3 pb-6 border-b border-white/[0.05]">
+            <ShieldCheck className="w-5 h-5 text-pink-400" />
+            <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Social Connectivity</h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Instagram</label>
+              <Input
+                value={socials.instagram}
+                onChange={(e) => setSocials({ ...socials, instagram: e.target.value })}
+                className="bg-white/[0.03] border-white/[0.08] focus:border-pink-500/50 h-14 rounded-2xl text-white font-bold"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">TikTok</label>
+              <Input
+                value={socials.tiktok}
+                onChange={(e) => setSocials({ ...socials, tiktok: e.target.value })}
+                className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
+              />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">WhatsApp</label>
+              <Input
+                value={socials.whatsapp}
+                onChange={(e) => setSocials({ ...socials, whatsapp: e.target.value })}
+                className="bg-white/[0.03] border-white/[0.08] focus:border-green-500/50 h-14 rounded-2xl text-white font-bold"
               />
             </div>
           </div>
@@ -273,36 +343,6 @@ export default function AdminSettings() {
                 />
               </div>
             </div>
-          </div>
-        </motion.section>
-
-        {/* Global Notifications */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05]"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${settings.notifications ? 'bg-purple-600/10 text-purple-400 shadow-inner shadow-purple-500/20' : 'bg-white/[0.03] text-gray-600'}`}>
-                <Bell className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-white font-black uppercase tracking-widest text-sm leading-none mb-2">Signal Transmission</h3>
-                <p className="text-xs text-gray-500 font-medium tracking-tight">Email alerts for critical system events and security audits</p>
-              </div>
-            </div>
-            
-            <button
-              onClick={() => setSettings({ ...settings, notifications: !settings.notifications })}
-              className={`relative w-16 h-8 rounded-full transition-all duration-300 ${settings.notifications ? 'bg-purple-600 shadow-[0_0_15px_rgba(168,85,247,0.4)]' : 'bg-white/[0.05]'}`}
-            >
-              <motion.div
-                animate={{ x: settings.notifications ? 32 : 4 }}
-                className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-lg"
-              />
-            </button>
           </div>
         </motion.section>
 

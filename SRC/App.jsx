@@ -17,7 +17,7 @@ import AdminPortfolio from './Components/Admin/AdminPortfolio';
 import AdminProjectEditor from './Components/Admin/AdminProjectEditor';
 import Maintenance from './Components/Maintenance';
 import { adminAuth } from './Lib/admin-auth';
-import { appConfig } from './Lib/config';
+import { appConfig, syncAppConfig } from './Lib/config';
 import { useState, useEffect } from 'react';
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -40,20 +40,22 @@ function App() {
   const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
-    const checkMaintenance = async () => {
+    const syncSystem = async () => {
       try {
         const response = await fetch(`${appConfig.api.base}/settings`);
         if (response.ok) {
           const data = await response.json();
           if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
+          // Sync global config (branding, socials)
+          syncAppConfig(data);
         }
       } catch (err) {
-        console.error('Maintenance check failed:', err);
+        console.error('System synchronization failed:', err);
       } finally {
         setIsSyncing(false);
       }
     };
-    checkMaintenance();
+    syncSystem();
   }, []);
 
   return (

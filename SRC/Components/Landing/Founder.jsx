@@ -84,7 +84,7 @@ export default function Founder() {
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             The Creative Mind Behind
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> CreataLab</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> creatalab</span>
           </h2>
         </motion.div>
 
@@ -100,7 +100,7 @@ export default function Founder() {
             <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10">
               <img
                 src="/images/founder-brian-michael.png"
-                alt="Brian Michael – Founder of CreataLab"
+                alt="Brian Michael – Founder of creatalab"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -121,7 +121,7 @@ export default function Founder() {
             <div className="space-y-4 text-gray-400 leading-relaxed">
               <p className="text-lg">
                 What started as a passion for design in 2023 has evolved into a full-service creative-tech lab. 
-                I founded CreataLab with a simple mission: help brands tell their stories beautifully and backed by data.
+                I founded creatalab with a simple mission: help brands tell their stories beautifully and backed by data.
               </p>
               <p>
                 Over the years, I've had the privilege of working with growing startups, NGOs, and Small businesses across Kenya 
@@ -130,7 +130,7 @@ export default function Founder() {
                 dashboards and web platforms, every project teaches me something new.
               </p>
               <p>
-                Today, CreataLab combines creativity, analytics, and cutting-edge technology to deliver solutions 
+                Today, creatalab combines creativity, analytics, and cutting-edge technology to deliver solutions 
                 that don't just look good—they perform. Whether it's a logo, a website, or an AI-powered workflow, 
                 we're here to make your vision come alive.
               </p>

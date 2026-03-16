@@ -57,7 +57,7 @@ export default function Maintenance({ message }) {
 
         <div className="mt-12 flex items-center justify-center gap-2">
           <Sparkles className="w-4 h-4 text-orange-500/50" />
-          <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.4em]">CREATALAB SIGNAL v4.0.2</span>
+          <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.4em]">creatalab SIGNAL v4.0.2</span>
         </div>
       </motion.div>
     </div>

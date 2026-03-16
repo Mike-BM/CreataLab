@@ -4,11 +4,15 @@
  */
 
 export const appConfig = {
-  // Logo URL - can be overridden via environment variable
-  logoUrl: import.meta.env.VITE_LOGO_URL || '/Logo.png',
+  // Brand Assets
+  branding: {
+    name: import.meta.env.VITE_COMPANY_NAME || 'creatalab',
+    logoUrl: import.meta.env.VITE_LOGO_URL || '/Logo.png',
+    tagline: import.meta.env.VITE_COMPANY_TAGLINE || 'Creative-Tech Innovation Lab',
+  },
 
   socialLinks: {
-    instagram: import.meta.env.VITE_SOCIAL_INSTAGRAM || 'https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1',
+    instagram: import.meta.env.VITE_SOCIAL_INSTAGRAM || 'https://www.instagram.com/creatalab',
     tiktok: import.meta.env.VITE_SOCIAL_TIKTOK || 'https://www.tiktok.com/@creatalab_ltd',
     whatsapp: import.meta.env.VITE_SOCIAL_WHATSAPP || 'https://wa.me/0753436729',
   },
@@ -21,14 +25,21 @@ export const appConfig = {
          window.location.hostname === '127.0.0.1');
       return isLocal ? 'http://localhost:4000/api' : '/api';
     },
-    contact: import.meta.env.VITE_CONTACT_API_URL || '',
-    bookings: import.meta.env.VITE_BOOKING_API_URL || '',
+    get contact() { return `${this.base}/contact`; },
+    get bookings() { return `${this.base}/bookings`; },
     postsBase: import.meta.env.VITE_POSTS_API_BASE || '',
   },
+};
 
-  // Company information
-  company: {
-    name: import.meta.env.VITE_COMPANY_NAME || 'CreataLab',
-    tagline: import.meta.env.VITE_COMPANY_TAGLINE || 'Creative-Tech Innovation Lab',
-  },
+/**
+ * Updates the global appConfig with settings fetched from the backend.
+ * This allows administrators to override environment variables via the Admin Portal.
+ */
+export const syncAppConfig = (settings) => {
+  if (settings.branding) {
+    appConfig.branding = { ...appConfig.branding, ...settings.branding };
+  }
+  if (settings.socials) {
+    appConfig.socialLinks = { ...appConfig.socialLinks, ...settings.socials };
+  }
 };

@@ -26,7 +26,7 @@ const features = [
 
 const testimonials = [
   {
-    quote: "CreataLab transformed our brand identity completely. The results exceeded every expectation.",
+    quote: "creatalab transformed our brand identity completely. The results exceeded every expectation.",
     author: "Christopher Kasiva.",
     role: "Founder"
   },
@@ -63,7 +63,7 @@ export default function WhyChooseUs() {
           className="text-center mb-20"
         >
           <span className="text-green-400 text-sm font-medium tracking-wider uppercase mb-4 block">
-            Why CreataLab
+            Why creatalab
           </span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
             Built Different,

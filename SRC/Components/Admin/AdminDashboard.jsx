@@ -27,17 +27,28 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    // Simulate fetching or fetch real stats
-    const timer = setTimeout(() => {
-      setStats({
-        posts: { count: 12, growth: '+3 this month' },
-        views: { count: '2.4K', growth: '+12% this week' },
-        projects: { count: 8, growth: '+2 this month' },
-        messages: { count: 4, growth: 'Pending' }
-      });
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('admin_token');
+        const response = await fetch(`${appConfig.api.base}/stats`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setStats({
+            posts: { count: data.posts || 0, growth: 'Total' },
+            views: { count: '2.4K', growth: '+12% this week' }, // Views are still simulated or from external analytics
+            projects: { count: data.projects || 0, growth: 'Live' },
+            messages: { count: (data.inquiries || 0) + (data.bookings || 0), growth: 'Total Inquiries' }
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
   }, []);
 
   const statCards = [
@@ -71,7 +82,7 @@ export default function AdminDashboard() {
                 Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Project Master</span>
               </h1>
               <p className="text-gray-400 text-lg max-w-xl font-medium leading-relaxed">
-                The CreataLab ecosystem is performing at peak efficiency. Here is your overview of the current cycle.
+                The creatalab ecosystem is performing at peak efficiency. Here is your overview of the current cycle.
               </p>
             </div>
             <div className="flex flex-wrap gap-4">

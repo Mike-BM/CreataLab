@@ -169,7 +169,7 @@ export default function AdminLogin() {
         </div>
         
         <p className="text-center mt-8 text-gray-600 font-medium text-sm">
-          &copy; {new Date().getFullYear()} CreataLab Security Service
+          &copy; {new Date().getFullYear()} creatalab Security Service
         </p>
       </motion.div>
     </div>

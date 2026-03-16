@@ -34,7 +34,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="text-3xl font-bold mb-4">
               <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400 bg-clip-text text-transparent">
-                CreataLab
+                creatalab
               </span>
             </div>
             <p className="text-gray-400 max-w-md mb-6 leading-relaxed">
@@ -96,7 +96,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center gap-4 pt-8 border-t border-white/10">
           <p className="text-gray-500 text-sm text-center">
-            © {new Date().getFullYear()} CreataLab. All rights reserved.
+            © {new Date().getFullYear()} creatalab. All rights reserved.
           </p>
 
           <motion.button

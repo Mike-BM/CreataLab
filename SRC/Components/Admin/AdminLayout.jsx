@@ -76,7 +76,7 @@ export default function AdminLayout() {
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-black tracking-tight text-white leading-none">CREATA</h1>
+                <h1 className="text-xl font-black tracking-tight text-white leading-none">creatalab</h1>
                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">Admin Portal</p>
               </div>
             </motion.div>
@@ -210,7 +210,7 @@ export default function AdminLayout() {
                   <div className="w-10 h-10 rounded-xl premium-gradient flex items-center justify-center">
                     <Shield className="w-5 h-5 text-white" />
                   </div>
-                  <span className="font-black tracking-tight text-white">CREATA</span>
+                  <span className="font-black tracking-tight text-white">creatalab</span>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="text-gray-500 hover:text-white">
                   <X className="w-6 h-6" />
