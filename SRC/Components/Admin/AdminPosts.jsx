@@ -21,11 +21,11 @@ import {
   MoreVertical,
   ArrowUpRight
 } from 'lucide-react';
-import { Button } from './UI/button';
-import { Input } from './UI/input';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 import { toast } from 'sonner';
-import { adminAuth } from '@/Lib/admin-auth';
-import { appConfig } from '@/Lib/config';
+import { adminAuth } from '@/lib/admin-auth';
+import { appConfig } from '@/lib/config';
 
 export default function AdminPosts() {
   const navigate = useNavigate();

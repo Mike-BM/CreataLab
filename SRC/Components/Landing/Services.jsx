@@ -9,7 +9,7 @@ import {
   ArrowUpRight,
   Calendar
 } from 'lucide-react';
-import { Button } from '@/UI/button';
+import { Button } from '@/ui/button';
 import BookingModal from './BookingModal';
 
 const services = [

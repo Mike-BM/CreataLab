@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Home } from 'lucide-react';
-import { Button } from '@/UI/button';
+import { Button } from '@/ui/button';
 
 export default function BackButton() {
   const navigate = useNavigate();

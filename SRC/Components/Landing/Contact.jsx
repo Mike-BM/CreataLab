@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Mail, Phone, MessageCircle, MapPin, ArrowRight, CheckCircle } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
-import { Button } from '@/UI/button';
-import { Input } from '@/UI/input';
-import { Textarea } from '@/UI/textarea';
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
+import { Textarea } from '@/ui/textarea';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
 

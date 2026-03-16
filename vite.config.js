@@ -19,9 +19,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './SRC'),
-      '@/components/ui': path.resolve(__dirname, './SRC/UI'),
-      '@/UI': path.resolve(__dirname, './SRC/UI'),
+      '@': path.resolve(__dirname, './src'),
+      '@/components/ui': path.resolve(__dirname, './src/ui'),
+      '@/UI': path.resolve(__dirname, './src/ui'),
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },

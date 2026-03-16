@@ -17,12 +17,12 @@ import {
   Eye,
   Settings
 } from 'lucide-react';
-import { Button } from './UI/button';
-import { Input } from './UI/input';
-import { Textarea } from './UI/textarea';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
 import { toast } from 'sonner';
-import { appConfig } from '@/Lib/config';
-import { adminAuth } from '@/Lib/admin-auth';
+import { appConfig } from '@/lib/config';
+import { adminAuth } from '@/lib/admin-auth';
 
 export default function AdminPostEditor({ mode = 'create' }) {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, Tag } from 'lucide-react';
-import { Button } from '@/UI/button';
+import { Button } from '@/ui/button';
 import PropTypes from 'prop-types';
 
 export default function ProjectModal({ project, isOpen, onClose }) {

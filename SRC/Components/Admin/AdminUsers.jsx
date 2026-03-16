@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Users, Mail, Calendar, Shield, MoreVertical, UserPlus, CheckCircle2, XCircle } from 'lucide-react';
-import { Button } from './UI/button';
+import { Button } from './ui/button';
 
 const mockUsers = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', joined: '2024-01-15', status: 'active' },

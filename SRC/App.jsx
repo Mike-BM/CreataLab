@@ -1,23 +1,23 @@
 import { Toaster } from "sonner"
 import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from './Lib/query-client'
-import { pagesConfig } from './Pages.config'
+import { queryClientInstance } from './lib/query-client'
+import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import PageNotFound from './Lib/PageNotFound';
-import ErrorBoundary from './Components/ErrorBoundary';
-import AdminLogin from './Components/Admin/AdminLogin';
-import AdminLayout from './Components/Admin/AdminLayout';
-import AdminDashboard from './Components/Admin/AdminDashboard';
-import AdminPosts from './Components/Admin/AdminPosts';
-import AdminPostEditor from './Components/Admin/AdminPostEditor';
-import AdminAnalytics from './Components/Admin/AdminAnalytics';
-import AdminUsers from './Components/Admin/AdminUsers';
-import AdminSettings from './Components/Admin/AdminSettings';
-import AdminPortfolio from './Components/Admin/AdminPortfolio';
-import AdminProjectEditor from './Components/Admin/AdminProjectEditor';
-import Maintenance from './Components/Maintenance';
-import { adminAuth } from './Lib/admin-auth';
-import { appConfig, syncAppConfig } from './Lib/config';
+import PageNotFound from './lib/pagenotfound';
+import ErrorBoundary from './components/errorboundary';
+import AdminLogin from './components/admin/adminlogin';
+import AdminLayout from './components/admin/adminlayout';
+import AdminDashboard from './components/admin/admindashboard';
+import AdminPosts from './components/admin/adminposts';
+import AdminPostEditor from './components/admin/adminposteditor';
+import AdminAnalytics from './components/admin/adminanalytics';
+import AdminUsers from './components/admin/adminusers';
+import AdminSettings from './components/admin/adminsettings';
+import AdminPortfolio from './components/admin/adminportfolio';
+import AdminProjectEditor from './components/admin/adminprojecteditor';
+import Maintenance from './components/maintenance';
+import { adminAuth } from './lib/admin-auth';
+import { appConfig, syncAppConfig } from './lib/config';
 import { useState, useEffect } from 'react';
 
 const { Pages, Layout, mainPage } = pagesConfig;

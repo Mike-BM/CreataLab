@@ -2,9 +2,9 @@ import { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff, Shield, ArrowRight, Loader2, Sparkles } from 'lucide-react';
-import { Button } from './UI/button';
-import { Input } from './UI/input';
-import { adminAuth } from '@/Lib/admin-auth';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
 
 const BackgroundElements = memo(() => (

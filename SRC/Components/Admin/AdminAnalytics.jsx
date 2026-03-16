@@ -16,8 +16,8 @@ import {
   Download,
   Loader2
 } from 'lucide-react';
-import { Button } from './UI/button';
-import { appConfig } from '@/Lib/config';
+import { Button } from './ui/button';
+import { appConfig } from '@/lib/config';
 
 export default function AdminAnalytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('week');

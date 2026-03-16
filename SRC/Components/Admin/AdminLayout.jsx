@@ -20,9 +20,9 @@ import {
   Clock,
   Sparkles
 } from 'lucide-react';
-import { adminAuth } from '@/Lib/admin-auth';
+import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
-import { appConfig } from '@/Lib/config';
+import { appConfig } from '@/lib/config';
 
 const adminMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
