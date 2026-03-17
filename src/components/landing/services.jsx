@@ -10,7 +10,7 @@ import {
   Calendar
 } from 'lucide-react';
 import { Button } from '@/ui/button';
-import BookingModal from './bookingmodal';
+import BookingModal from './bookingmodal.jsx';
 
 const services = [
   {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, X } from 'lucide-react';
-import BookingModal from './bookingmodal';
+import BookingModal from './bookingmodal.jsx';
 
 export default function FloatingBookingButton() {
   const [isVisible, setIsVisible] = useState(false);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Palette, BarChart3, Globe, Sparkles, ArrowRight, Calendar } from 'lucide-react';
 import { Button } from '@/ui/button';
-import BookingModal from './bookingmodal';
+import BookingModal from './bookingmodal.jsx';
 
 const timeline = [
   {
