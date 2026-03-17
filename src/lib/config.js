@@ -36,10 +36,12 @@ export const appConfig = {
  * This allows administrators to override environment variables via the Admin Portal.
  */
 export const syncAppConfig = (settings) => {
+  console.log('Applying configuration sync:', settings);
   if (settings.branding) {
     appConfig.branding = { ...appConfig.branding, ...settings.branding };
   }
   if (settings.socials) {
     appConfig.socialLinks = { ...appConfig.socialLinks, ...settings.socials };
   }
+  console.log('Configuration after sync:', appConfig);
 };

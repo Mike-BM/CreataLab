@@ -40,11 +40,12 @@ class ErrorBoundary extends Component {
               </p>
             </div>
 
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <div className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-lg text-left">
+            {this.state.error && (
+              <div className="mb-8 p-6 bg-red-500/10 border border-red-500/30 rounded-lg text-left max-h-60 overflow-auto">
                 <h2 className="text-red-400 font-semibold mb-2">Error Details:</h2>
-                <pre className="text-sm text-gray-300 overflow-auto">
+                <pre className="text-sm text-gray-300 whitespace-pre-wrap">
                   {this.state.error.toString()}
+                  {"\n"}
                   {this.state.errorInfo?.componentStack}
                 </pre>
               </div>
@@ -60,7 +61,7 @@ class ErrorBoundary extends Component {
               <Button
                 onClick={() => window.location.reload()}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10 rounded-full px-8"
+                className="border-white/40 text-white bg-white/10 hover:bg-white/20 rounded-full px-8"
               >
                 Refresh Page
               </Button>

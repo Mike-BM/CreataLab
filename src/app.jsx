@@ -40,14 +40,24 @@ function App() {
   const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
+    // Global error tracking for debugging on Vercel
+    const handleError = (e) => console.error('Global Runtime Error:', e);
+    const handleRejection = (e) => console.error('Unhandled Promise Rejection:', e);
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleRejection);
+    
+    console.log('App initialization - config:', { appConfig, pagesConfig });
+
     const syncSystem = async () => {
       try {
-        const response = await fetch(`${appConfig.api.base}/settings`);
         if (response.ok) {
           const data = await response.json();
+          console.log('System sync data received:', data);
           if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
           // Sync global config (branding, socials)
           syncAppConfig(data);
+        } else {
+          console.warn('System sync failed with status:', response.status);
         }
       } catch (err) {
         console.error('System synchronization failed:', err);
@@ -56,6 +66,11 @@ function App() {
       }
     };
     syncSystem();
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleRejection);
+    };
   }, []);
 
   return (
