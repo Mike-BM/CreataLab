@@ -519,6 +519,16 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('admin_users').select('count', { count: 'exact', head: true });
+    if (error) throw error;
+    res.json({ status: 'connected', count: data });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message, env: { hasUrl: !!process.env.SUPABASE_URL, hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY } });
+  }
+});
+
 // Engagement Endpoints
 app.post('/api/contact', async (req, res) => {
   try {
