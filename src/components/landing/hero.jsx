@@ -148,7 +148,7 @@ export default function Hero() {
               <Sparkles className="w-4 h-4 text-purple-300" />
             </motion.div>
             <span className="text-sm font-medium text-gray-200">
-              {appConfig.company.tagline}
+              {appConfig.branding.tagline}
             </span>
           </motion.div>
 
