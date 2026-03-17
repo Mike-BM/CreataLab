@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./SRC/*"]
+      "@/*": ["./src/*"]
     },
     "jsx": "react-jsx",
     "module": "esnext",
