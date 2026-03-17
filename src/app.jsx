@@ -50,6 +50,7 @@ function App() {
 
     const syncSystem = async () => {
       try {
+        const response = await fetch(`${appConfig.api.base}/settings`);
         if (response.ok) {
           const data = await response.json();
           console.log('System sync data received:', data);
