@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import BackButton from '@/components/BackButton';
+import BackButton from '@/components/backbutton';
 
 export default function Layout({ children }) {
   return (
