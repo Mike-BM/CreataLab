@@ -30,27 +30,34 @@ export const supabase = createClient(SUPABASE_URL ?? '', SUPABASE_SERVICE_ROLE_K
 async function ensureAdminUser() {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return;
 
-  const { data: existing, error } = await supabase
-    .from('admin_users')
-    .select('id')
-    .eq('email', ADMIN_EMAIL)
-    .maybeSingle();
+  const admins = [
+    { email: 'admin@creatalab.com', password: process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026' },
+    { email: 'brianmuema928@gmail.com', password: process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026' }
+  ];
 
-  if (error) {
-    console.error('Error checking admin_users in Supabase:', error.message);
-    return;
-  }
+  for (const admin of admins) {
+    const { data: existing, error } = await supabase
+      .from('admin_users')
+      .select('id')
+      .eq('email', admin.email)
+      .maybeSingle();
 
-  if (!existing) {
-    const passwordHash = bcrypt.hashSync(ADMIN_DEFAULT_PASSWORD, 10);
-    const { error: insertError } = await supabase.from('admin_users').insert({
-      email: ADMIN_EMAIL,
-      password_hash: passwordHash,
-    });
-    if (insertError) {
-      console.error('Failed to create default admin user in Supabase:', insertError.message);
-    } else {
-      console.log(`Created default admin user ${ADMIN_EMAIL} in Supabase. Change this password in production.`);
+    if (error) {
+      console.error(`Error checking ${admin.email}:`, error.message);
+      continue;
+    }
+
+    if (!existing) {
+      const passwordHash = bcrypt.hashSync(admin.password, 10);
+      const { error: insertError } = await supabase.from('admin_users').insert({
+        email: admin.email,
+        password_hash: passwordHash,
+      });
+      if (insertError) {
+        console.error(`Failed to create user ${admin.email}:`, insertError.message);
+      } else {
+        console.log(`Initialized admin account: ${admin.email}`);
+      }
     }
   }
 }
@@ -151,14 +158,15 @@ app.post('/api/auth/login', async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
+  console.log(`Processing login request for: [${email}]`);
   const { data: user, error } = await supabase
     .from('admin_users')
     .select('id, email, password_hash')
     .eq('email', email)
     .maybeSingle();
   if (error) {
-    console.error('Supabase error on login:', error.message);
-    return res.status(500).json({ error: 'Login failed' });
+    console.error(`Supabase login error for ${email}:`, error.message);
+    return res.status(500).json({ error: `Connection error: ${error.message}` });
   }
   if (!user) {
     console.log(`Login attempt failed: User not found [${email}]`);
