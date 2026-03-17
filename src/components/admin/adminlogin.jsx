@@ -35,11 +35,11 @@ export default function AdminLogin() {
     try {
       const result = await adminAuth.login(email.trim().toLowerCase(), password);
       
-      if (result) {
+      if (result.success) {
         toast.success('Access Granted. Welcome back, Admin.', { id: toastId });
         navigate('/admin/dashboard');
       } else {
-        toast.error('Invalid credentials. Access denied.', { id: toastId });
+        toast.error(result.error || 'Invalid credentials. Access denied.', { id: toastId });
       }
     } catch (err) {
       toast.error('Connection failed. Please check your environment.', { id: toastId });

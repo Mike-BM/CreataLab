@@ -160,10 +160,16 @@ app.post('/api/auth/login', async (req, res) => {
     console.error('Supabase error on login:', error.message);
     return res.status(500).json({ error: 'Login failed' });
   }
-  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!user) {
+    console.log(`Login attempt failed: User not found [${email}]`);
+    return res.status(401).json({ error: 'User not found' });
+  }
 
   const valid = bcrypt.compareSync(password, user.password_hash);
-  if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+  if (!valid) {
+    console.log(`Login attempt failed: Password mismatch for [${email}]`);
+    return res.status(401).json({ error: 'Incorrect password' });
+  }
 
   const token = jwt.sign(
     { id: user.id, email: user.email },

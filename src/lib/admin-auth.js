@@ -14,7 +14,10 @@ export const adminAuth = {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) return false;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return { success: false, error: errorData.error || 'Server error' };
+      }
 
       const data = await response.json();
       if (data.token) {
@@ -25,12 +28,12 @@ export const adminAuth = {
           expiresAt: Date.now() + 24 * 60 * 60 * 1000,
         };
         localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
-        return true;
+        return { success: true };
       }
-      return false;
+      return { success: false, error: 'Token missing' };
     } catch (e) {
       console.error("Login failed:", e);
-      return false;
+      return { success: false, error: 'Connection failure' };
     }
   },
 
