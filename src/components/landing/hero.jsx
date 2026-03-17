@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Calendar } from 'lucide-react';
 import { Button } from '@/ui/button';
 import { appConfig } from '@/lib/config';
-import BookingModal from './BookingModal';
+import BookingModal from './bookingmodal';
 
 export default function Hero() {
   const [bookingOpen, setBookingOpen] = useState(false);

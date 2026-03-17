@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye } from 'lucide-react';
-import ProjectModal from './ProjectModal';
+import ProjectModal from './projectmodal';
 
 const categories = ["All", "Branding", "Digital", "Data", "Web"];
 
