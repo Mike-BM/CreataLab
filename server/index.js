@@ -28,7 +28,13 @@ export const supabase = createClient(SUPABASE_URL ?? '', SUPABASE_SERVICE_ROLE_K
 });
 
 async function ensureAdminUser() {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return;
+  console.log('[INIT] ensureAdminUser starting...');
+  console.log('[INIT] Env check — SUPABASE_URL:', !!SUPABASE_URL, '| KEY:', !!SUPABASE_SERVICE_ROLE_KEY);
+
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('[INIT] ❌ Supabase credentials missing — admin user seeding skipped. Set env vars in Vercel dashboard!');
+    return;
+  }
 
   const admins = [
     { email: 'admin@creatalab.com', password: process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026' },
@@ -36,28 +42,32 @@ async function ensureAdminUser() {
   ];
 
   for (const admin of admins) {
+    const normalizedEmail = admin.email.trim().toLowerCase();
     const { data: existing, error } = await supabase
       .from('admin_users')
       .select('id')
-      .eq('email', admin.email)
+      .ilike('email', normalizedEmail)
       .maybeSingle();
 
     if (error) {
-      console.error(`Error checking ${admin.email}:`, error.message);
+      console.error(`[INIT] ❌ Error checking ${normalizedEmail}:`, error.message, error.code);
       continue;
     }
 
     if (!existing) {
+      console.log(`[INIT] Creating missing admin: ${normalizedEmail}`);
       const passwordHash = bcrypt.hashSync(admin.password, 10);
       const { error: insertError } = await supabase.from('admin_users').insert({
-        email: admin.email,
+        email: normalizedEmail,
         password_hash: passwordHash,
       });
       if (insertError) {
-        console.error(`Failed to create user ${admin.email}:`, insertError.message);
+        console.error(`[INIT] ❌ Failed to create user ${normalizedEmail}:`, insertError.message);
       } else {
-        console.log(`Initialized admin account: ${admin.email}`);
+        console.log(`[INIT] ✅ Initialized admin account: ${normalizedEmail}`);
       }
+    } else {
+      console.log(`[INIT] ✅ Admin account exists: ${normalizedEmail}`);
     }
   }
 }
@@ -152,81 +162,85 @@ const requireAdmin = (req, res, next) => {
   }
 };
 
+// ─── Debug Endpoint (protected by secret) ───────────────────────────────────
+app.get('/api/debug/auth', async (req, res) => {
+  const DEBUG_SECRET = 'creatalab-debug-2026';
+  if (req.query.secret !== DEBUG_SECRET) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const envStatus = {
+    SUPABASE_URL: !!process.env.SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    JWT_SECRET: !!process.env.JWT_SECRET,
+    ADMIN_DEFAULT_PASSWORD: !!process.env.ADMIN_DEFAULT_PASSWORD,
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+  };
+
+  let adminUsers = [];
+  let dbError = null;
+
+  try {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('id, email, created_at');
+    if (error) throw error;
+    adminUsers = (data || []).map(u => ({ id: u.id, email: u.email, created_at: u.created_at }));
+  } catch (err) {
+    dbError = err.message;
+  }
+
+  res.json({
+    env: envStatus,
+    db: { error: dbError, adminUserCount: adminUsers.length, adminUsers },
+  });
+});
+
 // Routes
 app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {};
-  if (!email || !password) {
+  const { email: rawEmail, password } = req.body || {};
+  if (!rawEmail || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
-  console.log(`Processing login request for: [${email}]`);
+
+  const email = rawEmail.trim().toLowerCase();
+  console.log(`[LOGIN] Processing request for: [${email}]`);
+  console.log(`[LOGIN] Env: SUPABASE_URL=${!!process.env.SUPABASE_URL} KEY=${!!process.env.SUPABASE_SERVICE_ROLE_KEY}`);
+
   const { data: user, error } = await supabase
     .from('admin_users')
     .select('id, email, password_hash')
-    .eq('email', email)
+    .ilike('email', email)
     .maybeSingle();
+
   if (error) {
-    console.error(`Supabase login error for ${email}:`, error.message);
-    return res.status(500).json({ error: `Connection error: ${error.message}` });
+    console.error(`[LOGIN] ❌ Supabase query error for [${email}]:`, error.message, '| code:', error.code);
+    return res.status(500).json({ error: `Database connection failure: ${error.message}` });
   }
+
   if (!user) {
-    console.log(`Login attempt failed: User not found [${email}]`);
+    console.warn(`[LOGIN] ❌ User not found in admin_users table: [${email}]`);
+    // Count total admins to help diagnose empty table
+    const { count } = await supabase.from('admin_users').select('*', { count: 'exact', head: true });
+    console.warn(`[LOGIN] Total admin_users rows in DB: ${count}`);
     return res.status(401).json({ error: 'User not found' });
   }
 
+  console.log(`[LOGIN] User found: [${user.email}] id=${user.id} | hash_present=${!!user.password_hash}`);
+
   const valid = bcrypt.compareSync(password, user.password_hash);
   if (!valid) {
-    console.log(`Login attempt failed: Password mismatch for [${email}]`);
+    console.warn(`[LOGIN] ❌ Password mismatch for [${email}]`);
     return res.status(401).json({ error: 'Incorrect password' });
   }
 
+  console.log(`[LOGIN] ✅ Authentication successful: [${email}]`);
   const token = jwt.sign(
     { id: user.id, email: user.email },
     JWT_SECRET,
     { expiresIn: '24h' }
   );
   res.json({ token });
-});
-
-app.post('/api/contact', async (req, res) => {
-  const { name, email, subject, message } = req.body || {};
-  if (!name || !email || !subject || !message) {
-    return res.status(400).json({ error: 'All fields are required' });
-  }
-  const now = new Date().toISOString();
-  const { error } = await supabase.from('contact_messages').insert({
-    name: name.trim(),
-    email: email.trim(),
-    subject: subject.trim(),
-    message: message.trim(),
-    created_at: now,
-  });
-  if (error) {
-    console.error('Supabase error on contact:', error.message);
-    return res.status(500).json({ error: 'Failed to save message' });
-  }
-  res.status(201).json({ ok: true });
-});
-
-app.post('/api/bookings', async (req, res) => {
-  const { name, email, phone, service, message, preferredDate } = req.body || {};
-  if (!name || !email || !service || !message) {
-    return res.status(400).json({ error: 'Missing required booking fields' });
-  }
-  const now = new Date().toISOString();
-  const { error } = await supabase.from('bookings').insert({
-    name: name.trim(),
-    email: email.trim(),
-    phone: (phone || '').trim(),
-    service,
-    message: message.trim(),
-    preferred_date: preferredDate || null,
-    created_at: now,
-  });
-  if (error) {
-    console.error('Supabase error on bookings:', error.message);
-    return res.status(500).json({ error: 'Failed to submit booking' });
-  }
-  res.status(201).json({ ok: true });
 });
 
 // Public posts
@@ -537,13 +551,13 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// Engagement Endpoints
+// Ingestion Endpoints
 app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
     const { error } = await supabase
-      .from('contact_inquiries')
-      .insert({ name, email, subject, message, status: 'unread', created_at: new Date().toISOString() });
+      .from('contact_messages')
+      .insert({ name, email, subject, message, created_at: new Date().toISOString() });
     
     if (error) throw error;
     res.json({ ok: true });
@@ -557,8 +571,8 @@ app.post('/api/bookings', async (req, res) => {
   try {
     const { name, email, phone, service, message, preferredDate } = req.body;
     const { error } = await supabase
-      .from('booking_requests')
-      .insert({ name, email, phone, service, message, preferred_date: preferredDate, status: 'pending', created_at: new Date().toISOString() });
+      .from('bookings')
+      .insert({ name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() });
     
     if (error) throw error;
     res.json({ ok: true });
@@ -573,13 +587,46 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
     const [{ count: projects }, { count: posts }, { count: inquiries }, { count: bookings }] = await Promise.all([
       supabase.from('projects').select('*', { count: 'exact', head: true }),
       supabase.from('posts').select('*', { count: 'exact', head: true }),
-      supabase.from('contact_inquiries').select('*', { count: 'exact', head: true }),
-      supabase.from('booking_requests').select('*', { count: 'exact', head: true }),
+      supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
+      supabase.from('bookings').select('*', { count: 'exact', head: true }),
     ]);
 
     res.json({ projects, posts, inquiries, bookings });
   } catch (err) {
     res.status(500).json({ error: 'Failed to aggregate metrics' });
+  }
+});
+
+// User Management Endpoints
+app.get('/api/users', requireAdmin, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('id, email, created_at')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('User retrieval protocol failure:', err.message);
+    res.status(500).json({ error: 'Failed to load administrative accounts' });
+  }
+});
+
+app.delete('/api/users/:id', requireAdmin, async (req, res) => {
+  try {
+    // Prevent deleting self if needed, but for now just allow deletion
+    const { id } = req.params;
+    const { error } = await supabase
+      .from('admin_users')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Account termination protocol failure:', err.message);
+    res.status(500).json({ error: 'Failed to terminate administrative account' });
   }
 });
 
