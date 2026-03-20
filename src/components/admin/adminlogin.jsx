@@ -5,6 +5,7 @@ import { Lock, Eye, EyeOff, Shield, ArrowRight, Loader2, Sparkles } from 'lucide
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { adminAuth } from '@/lib/admin-auth';
+import { appConfig } from '@/lib/config';
 import { toast } from 'sonner';
 
 const BackgroundElements = memo(() => (
@@ -33,16 +34,27 @@ export default function AdminLogin() {
     const toastId = toast.loading('Establishing secure connection...');
 
     try {
+      console.log(`[AUTH DEBUG] Attempting login for ${email} via ${appConfig.api.base}`);
       const result = await adminAuth.login(email.trim().toLowerCase(), password);
       
       if (result.success) {
         toast.success('Access Granted. Welcome back, Admin.', { id: toastId });
-        navigate('/admin/dashboard');
+        // Force a hard redirect to ensure localStorage is picked up and routing is clean
+        setTimeout(() => {
+          window.location.href = '/admin/dashboard';
+        }, 800);
       } else {
-        toast.error(result.error || 'Invalid credentials. Access denied.', { id: toastId });
+        // Detailed error reporting
+        const errorMsg = result.details ? `${result.error}: ${result.details}` : result.error;
+        console.error(`[AUTH DEBUG] Login application failure:`, result);
+        toast.error(errorMsg || 'Invalid credentials. Access denied.', { 
+          id: toastId,
+          duration: 5000 
+        });
       }
     } catch (err) {
-      toast.error('Connection failed. Please check your environment.', { id: toastId });
+      console.error(`[AUTH DEBUG] Connection/Network Error:`, err);
+      toast.error('Connection failed. Please check your network and environment.', { id: toastId });
     } finally {
       setIsLoading(false);
     }

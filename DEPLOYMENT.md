@@ -1,8 +1,34 @@
-# CreataLab - Website Deployment Guide
+## Deployment Architecture
 
-## Building for Production
+This project is a hybrid application featuring a **React (Vite) Frontend** and an **Express.js (Node.js) Backend**.
 
-Your app is already configured to build as a static website. Here's how to deploy it:
+### Recommended Hosting: Vercel (Hybrid)
+
+Vercel is the recommended platform as it handles both the static frontend and the serverless backend functions automatically.
+
+#### 1. Deployment Steps on Vercel
+1. Go to [vercel.com](https://vercel.com) and import your Git repository.
+2. The `vercel.json` already handles the routing.
+3. Configure the **Environment Variables** (see below).
+4. Run the build.
+
+#### 2. Required Environment Variables
+For the Admin Portal and Database connection to work on Vercel, you **MUST** set these in your Vercel Project Settings:
+
+| Variable | Source / Description |
+| :--- | :--- |
+| `SUPABASE_URL` | From your Supabase Project Settings |
+| `SUPABASE_SERVICE_ROLE_KEY` | From your Supabase Project Settings (API Section) |
+| `JWT_SECRET` | A secure random string for admin sessions |
+| `ADMIN_EMAIL` | The email you'll use to log in |
+| `ADMIN_DEFAULT_PASSWORD` | Initial password for the admin account |
+
+---
+
+## Technical Details
+
+### Building for Production
+
 
 ### 1. Build the Production Version
 
@@ -24,16 +50,16 @@ This serves the production build at `http://localhost:4173`
 
 The `dist` folder contains everything needed for static hosting. You can deploy it to:
 
-#### **Netlify** (Recommended - Free)
-1. Go to [netlify.com](https://netlify.com)
-2. Drag and drop the `dist` folder to deploy
-3. Or connect your Git repository and set build command: `npm run build` and publish directory: `dist`
+#### **Netlify**
+1. Build: `npm run build`
+2. Deploy the `dist` folder.
+*Note: You must also host the backend (server folder) separately if using Netlify, or use Netlify Functions.*
 
-#### **Vercel** (Free)
-1. Go to [vercel.com](https://vercel.com)
-2. Import your Git repository
-3. Set build command: `npm run build`
-4. Set output directory: `dist`
+#### **Vercel**
+1. Import repository.
+2. Automatic detection will handle `npm run build`.
+3. Set environment variables.
+
 
 #### **GitHub Pages**
 1. Build: `npm run build`
@@ -88,7 +114,7 @@ VITE_LOGO_URL=/logo.png
 
 ## Notes
 
-- The app is a Single Page Application (SPA) using React Router
-- All routes are handled client-side
-- The build output is optimized and minified for production
-- No backend server required - it's a static website!
+- The app uses **React Router** for frontend navigation.
+- The Admin Portal depends on a **Node.js backend** (managed as serverless functions on Vercel via `vercel.json`).
+- If you see "User not found" errors on login, check your Supabase environment variables in the host dashboard.
+

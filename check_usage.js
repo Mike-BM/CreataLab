@@ -7,7 +7,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 async function checkCounts() {
-    const tables = ['contact_messages', 'bookings', 'contact_inquiries', 'booking_requests'];
+    const tables = ['admin_users', 'site_settings', 'contact_messages', 'bookings', 'posts', 'projects'];
     
     console.log('--- Table Usage check ---');
     for (const table of tables) {

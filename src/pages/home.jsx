@@ -9,15 +9,17 @@ import WhyChooseUs from '@/components/landing/whychooseus';
 import Founder from '@/components/landing/founder';
 import Contact from '@/components/landing/contact';
 import Footer from '@/components/landing/footer';
+import Pricing from '@/components/landing/pricing';
 import FloatingBookingButton from '@/components/landing/floatingbookingbutton';
 import { Button } from '@/ui/button';
 
-const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'why-us', 'founder'];
+const SECTION_ORDER = ['hero', 'about', 'services', 'pricing', 'portfolio', 'why-us', 'founder'];
 
 const SECTION_COMPONENTS = {
   hero: Hero,
   about: About,
   services: Services,
+  pricing: Pricing,
   portfolio: Portfolio,
   'why-us': WhyChooseUs,
   founder: Founder,

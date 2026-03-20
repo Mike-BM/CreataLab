@@ -9,7 +9,6 @@ import { appConfig } from '@/lib/config';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
-    siteName: 'creatalab',
     siteUrl: 'https://creatalab.com',
     adminEmail: 'admin@creatalab.com',
     notifications: true,
@@ -18,6 +17,7 @@ export default function AdminSettings() {
   const [branding, setBranding] = useState({ name: '', logoUrl: '', tagline: '' });
   const [socials, setSocials] = useState({ instagram: '', tiktok: '', whatsapp: '' });
   const [maintenance, setMaintenance] = useState({ active: false, message: '' });
+  const [pricing, setPricing] = useState({ categories: [] });
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -33,6 +33,8 @@ export default function AdminSettings() {
           if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
           if (data.branding) setBranding(data.branding);
           if (data.socials) setSocials(data.socials);
+          if (data.general_config) setSettings(data.general_config);
+          if (data.pricing) setPricing(data.pricing);
         }
       } catch (err) {
         console.error('Failed to sync system parameters:', err);
@@ -48,45 +50,62 @@ export default function AdminSettings() {
     try {
       const token = adminAuth.getToken();
       
-      // Update maintenance mode
-      await fetch(`${appConfig.api.base}/settings/maintenance_mode`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ value: maintenance })
-      });
+      const reqs = [
+        fetch(`${appConfig.api.base}/settings/maintenance_mode`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: maintenance })
+        }),
+        fetch(`${appConfig.api.base}/settings/branding`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: branding })
+        }),
+        fetch(`${appConfig.api.base}/settings/socials`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: socials })
+        }),
+        fetch(`${appConfig.api.base}/settings/general_config`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: settings })
+        }),
+        fetch(`${appConfig.api.base}/settings/pricing`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ value: pricing })
+        })
+      ];
 
-      // Update branding
-      await fetch(`${appConfig.api.base}/settings/branding`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ value: branding })
-      });
-
-      // Update socials
-      await fetch(`${appConfig.api.base}/settings/socials`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ value: socials })
-      });
+      await Promise.all(reqs);
 
       // Handle password change if user filled it in
       if (currentPassword || newPassword || confirmPassword) {
+        if (!currentPassword || !newPassword) {
+          toast.error('Identity required: Current and New keys must be provided.', { id: toastId });
+          setIsSaving(false);
+          return;
+        }
         if (newPassword !== confirmPassword) {
           toast.error('Cryptographic mismatch: Passwords do not align.', { id: toastId });
           setIsSaving(false);
           return;
         }
-        const result = await adminAuth.changePassword(currentPassword, newPassword);
-        if (!result.ok) {
-          const errorMsg = result.reason === 'incorrect_current' 
-            ? 'Authentication failed: Current key is invalid.' 
-            : result.reason === 'too_short' 
-            ? 'Security violation: Key length insufficient.' 
-            : 'Configuration breach: Password update failed.';
-          toast.error(errorMsg, { id: toastId });
+        
+        const response = await fetch(`${appConfig.api.base}/auth/change-password`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          toast.error(errorData.error || 'Authentication violation: Password update failed.', { id: toastId });
           setIsSaving(false);
           return;
         }
+
         toast.success('Security protocols updated: Admin key synchronized.', { id: toastId });
         setCurrentPassword('');
         setNewPassword('');
@@ -245,7 +264,7 @@ export default function AdminSettings() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8"
+          className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8 border-l-4 border-l-pink-500/50"
         >
           <div className="flex items-center gap-3 pb-6 border-b border-white/[0.05]">
             <ShieldCheck className="w-5 h-5 text-pink-400" />
@@ -270,13 +289,93 @@ export default function AdminSettings() {
               />
             </div>
             <div className="space-y-3">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">WhatsApp</label>
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">WhatsApp (Phone Number)</label>
               <Input
                 value={socials.whatsapp}
                 onChange={(e) => setSocials({ ...socials, whatsapp: e.target.value })}
+                placeholder="e.g. 254753436729"
                 className="bg-white/[0.03] border-white/[0.08] focus:border-green-500/50 h-14 rounded-2xl text-white font-bold"
               />
             </div>
+          </div>
+          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-4">
+            Note: WhatsApp uses your phone number and automatically attaches your welcome greeting.
+          </p>
+        </motion.section>
+
+        {/* Pricing Matrix */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8 border-l-4 border-l-cyan-500/50"
+        >
+          <div className="flex items-center justify-between pb-6 border-b border-white/[0.05]">
+            <div className="flex items-center gap-3">
+              <BarChart3 className="w-5 h-5 text-cyan-400" />
+              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Service Packages & Pricing</h2>
+            </div>
+          </div>
+          
+          <div className="space-y-10">
+            {pricing.categories.map((category, catIdx) => (
+              <div key={catIdx} className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <Input
+                    value={category.title}
+                    onChange={(e) => {
+                      const newPricing = { ...pricing };
+                      newPricing.categories[catIdx].title = e.target.value;
+                      setPricing(newPricing);
+                    }}
+                    className="bg-white/[0.03] border-white/[0.08] focus:border-cyan-500/50 h-10 w-64 rounded-xl text-white font-black uppercase text-xs tracking-widest"
+                  />
+                  <div className="h-px flex-1 bg-white/[0.05]" />
+                </div>
+
+                <div className="grid gap-4">
+                  {category.items.map((item, itemIdx) => (
+                    <div key={itemIdx} className="grid md:grid-cols-3 gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-600 uppercase">Service Name</label>
+                        <Input
+                          value={item.name}
+                          onChange={(e) => {
+                            const newPricing = { ...pricing };
+                            newPricing.categories[catIdx].items[itemIdx].name = e.target.value;
+                            setPricing(newPricing);
+                          }}
+                          className="bg-transparent border-none p-0 h-6 h-auto text-sm font-bold text-white focus:ring-0"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-600 uppercase">Rate/Price</label>
+                        <Input
+                          value={item.price}
+                          onChange={(e) => {
+                            const newPricing = { ...pricing };
+                            newPricing.categories[catIdx].items[itemIdx].price = e.target.value;
+                            setPricing(newPricing);
+                          }}
+                          className="bg-transparent border-none p-0 h-6 h-auto text-sm font-black text-cyan-400 focus:ring-0"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[9px] font-black text-gray-600 uppercase">Details/Meta</label>
+                        <Input
+                          value={item.details}
+                          onChange={(e) => {
+                            const newPricing = { ...pricing };
+                            newPricing.categories[catIdx].items[itemIdx].details = e.target.value;
+                            setPricing(newPricing);
+                          }}
+                          className="bg-transparent border-none p-0 h-6 h-auto text-xs text-gray-500 focus:ring-0"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </motion.section>
 

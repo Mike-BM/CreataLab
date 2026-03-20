@@ -11,6 +11,7 @@ import {
   Activity, 
   Zap, 
   Target,
+  Mail,
   ChevronDown,
   Filter,
   Download,
@@ -31,16 +32,20 @@ export default function AdminAnalytics() {
   const fetchAnalytics = async () => {
     setLoading(true);
     try {
-      // In a real scenario, we'd hit /api/admin/stats
-      // For now, simulating a high-end data response
-      await new Promise(r => setTimeout(r, 1200));
+      const token = adminAuth.getToken();
+      const response = await fetch(`${appConfig.api.base}/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (!response.ok) throw new Error('Insight retrieval failed');
+      const data = await response.json();
       
       setStats({
         overview: [
-          { label: 'Total Views', value: '12,456', change: '+12.5%', trend: 'up', icon: Eye, color: 'from-blue-500 to-cyan-500', progress: 75 },
-          { label: 'Session Time', value: '4:12', change: '+8.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68 },
-          { label: 'Conversion', value: '3.2%', change: '+5.1%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82 },
-          { label: 'Bounce Rate', value: '24%', change: '-2.3%', trend: 'down', icon: Activity, color: 'from-orange-500 to-red-500', progress: 24 },
+          { label: 'Contact Proposals', value: data.inquiries.toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75 },
+          { label: 'Service Requests', value: data.bookings.toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68 },
+          { label: 'Active Portfolios', value: data.projects.toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82 },
+          { label: 'Blog Insights', value: data.posts.toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45 },
         ],
         topContent: [
           { title: 'The Future of Creative Tech', views: 1456, growth: 89, category: 'Strategy' },
@@ -56,6 +61,7 @@ export default function AdminAnalytics() {
       });
     } catch (err) {
       console.error('Failed to sync analytics:', err);
+      toast.error('Insight synchronization failed');
     } finally {
       setLoading(false);
     }

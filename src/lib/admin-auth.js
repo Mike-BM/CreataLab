@@ -16,7 +16,11 @@ export const adminAuth = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        return { success: false, error: errorData.error || 'Server error' };
+        return { 
+          success: false, 
+          error: errorData.error || 'Server error', 
+          details: errorData.details || '' 
+        };
       }
 
       const data = await response.json();

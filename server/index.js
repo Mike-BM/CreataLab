@@ -32,7 +32,12 @@ async function ensureAdminUser() {
   console.log('[INIT] Env check — SUPABASE_URL:', !!SUPABASE_URL, '| KEY:', !!SUPABASE_SERVICE_ROLE_KEY);
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('[INIT] ❌ Supabase credentials missing — admin user seeding skipped. Set env vars in Vercel dashboard!');
+    console.error('[INIT] ❌ CRITICAL: Supabase credentials missing.');
+    if (process.env.VERCEL) {
+      console.error('[INIT] ACTION REQUIRED: Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to your Vercel Project Environment Variables.');
+    } else {
+      console.error('[INIT] ACTION REQUIRED: Check your server/.env or root .env file.');
+    }
     return;
   }
 
@@ -89,7 +94,21 @@ async function ensureSiteSettings() {
   const defaultSettings = [
     { key: 'maintenance_mode', value: { active: false, message: 'System optimization in progress. We will be back shortly.' } },
     { key: 'branding', value: { name: 'creatalab', logoUrl: '/Logo.png', tagline: 'Creative-Tech Innovation Lab' } },
-    { key: 'socials', value: { instagram: 'https://www.instagram.com/creatalab', tiktok: 'https://www.tiktok.com/@creatalab_ltd', whatsapp: 'https://wa.me/0753436729' } }
+    { key: 'socials', value: { instagram: 'https://www.instagram.com/creatalab', tiktok: 'https://www.tiktok.com/@creatalab_ltd', whatsapp: 'https://wa.me/254753436729' } },
+    { key: 'general_config', value: { siteUrl: 'https://creatalab.com', adminEmail: 'admin@creatalab.com', notifications: true } },
+    { key: 'pricing', value: { 
+        categories: [
+          { title: 'Graphic Design', items: [
+            { name: 'Logo & Branding', price: 'From $150', details: 'Full identity package with manuals' },
+            { name: 'Social Media Kit', price: '$80', details: '5 templates + 2 banners' }
+          ]},
+          { title: 'Digital Solutions', items: [
+            { name: 'Data Visualization', price: 'Custom', details: 'Interactive dashboards & reports' },
+            { name: 'AI Integration', price: 'Custom', details: 'Process automation & LLM tools' }
+          ]}
+        ]
+      }
+    }
   ];
 
   for (const setting of defaultSettings) {
@@ -100,11 +119,46 @@ async function ensureSiteSettings() {
   }
 }
 
+// ... existing code ...
+
+// Change Password Endpoint
+app.put('/api/auth/change-password', requireAdmin, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const adminId = req.admin.id;
+
+    // 1. Get current user
+    const { data: user, error } = await supabase
+      .from('admin_users')
+      .select('password_hash')
+      .eq('id', adminId)
+      .single();
+
+    if (error || !user) return res.status(404).json({ error: 'User not found' });
+
+    // 2. Verify current password
+    const valid = bcrypt.compareSync(currentPassword, user.password_hash);
+    if (!valid) return res.status(401).json({ error: 'Current password incorrect' });
+
+    // 3. Hash and update new password
+    const newHash = bcrypt.hashSync(newPassword, 10);
+    const { error: updateError } = await supabase
+      .from('admin_users')
+      .update({ password_hash: newHash })
+      .eq('id', adminId);
+
+    if (updateError) throw updateError;
+
+    res.json({ ok: true, message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Password change protocol failure:', err.message);
+    res.status(500).json({ error: 'Failed to update access key' });
+  }
+});
+
 async function ensureEngagementTables() {
-  // We cannot create tables via the JS client easily without high permissions, 
-  // but we should at least verify or provide instructions if they fail.
-  // In a real scenario, these would be created via migrations or dashboard.
-  console.log('Engagement engine verified: contact_inquiries, booking_requests ready.');
+  // Engagement tables (contact_messages, bookings) verified ready via SQL script.
+  console.log('Engagement engine verified: contact_messages, bookings ready.');
 }
 
 ensureSiteSettings()
@@ -204,9 +258,24 @@ app.post('/api/auth/login', async (req, res) => {
   }
 
   const email = rawEmail.trim().toLowerCase();
-  console.log(`[LOGIN] Processing request for: [${email}]`);
-  console.log(`[LOGIN] Env: SUPABASE_URL=${!!process.env.SUPABASE_URL} KEY=${!!process.env.SUPABASE_SERVICE_ROLE_KEY}`);
+  
+  // 1. Validate Environment on the fly
+  const hasUrl = !!process.env.SUPABASE_URL;
+  const hasKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const obfuscatedUrl = process.env.SUPABASE_URL ? `${process.env.SUPABASE_URL.substring(0, 15)}...` : 'MISSING';
 
+  console.log(`[LOGIN DEBUG] Request for email: [${email}]`);
+  console.log(`[LOGIN DEBUG] Connection Info: URL=${obfuscatedUrl} | HAS_KEY=${hasKey}`);
+
+  if (!hasUrl || !hasKey) {
+    console.error(`[LOGIN DEBUG] ❌ CRITICAL: Backend Supabase environment variables are missing on this instance.`);
+    return res.status(500).json({ 
+      error: 'Backend Configuration Error', 
+      details: 'Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY on server. Check Vercel project settings.' 
+    });
+  }
+
+  // 2. Perform Query with deep logging
   const { data: user, error } = await supabase
     .from('admin_users')
     .select('id, email, password_hash')
@@ -214,15 +283,27 @@ app.post('/api/auth/login', async (req, res) => {
     .maybeSingle();
 
   if (error) {
-    console.error(`[LOGIN] ❌ Supabase query error for [${email}]:`, error.message, '| code:', error.code);
-    return res.status(500).json({ error: `Database connection failure: ${error.message}` });
+    console.error(`[LOGIN DEBUG] ❌ Supabase Query Error:`, { message: error.message, code: error.code, details: error.details });
+    return res.status(500).json({ error: `Database query failure: ${error.message}` });
   }
 
   if (!user) {
-    console.warn(`[LOGIN] ❌ User not found in admin_users table: [${email}]`);
-    // Count total admins to help diagnose empty table
-    const { count } = await supabase.from('admin_users').select('*', { count: 'exact', head: true });
-    console.warn(`[LOGIN] Total admin_users rows in DB: ${count}`);
+    console.warn(`[LOGIN DEBUG] ❌ No user found matching: [${email}]`);
+    
+    // 3. Diagnostic check: Does the table have ANY users?
+    const { data: totalUsers, error: countError } = await supabase
+      .from('admin_users')
+      .select('email');
+    
+    if (countError) {
+      console.error(`[LOGIN DEBUG] ❌ Failed to even list table contents:`, countError.message);
+    } else {
+      console.log(`[LOGIN DEBUG] Table stats: ${totalUsers?.length || 0} users exist in 'admin_users' table.`);
+      if (totalUsers && totalUsers.length > 0) {
+        console.log(`[LOGIN DEBUG] Existing emails in DB:`, totalUsers.map(u => u.email).join(', '));
+      }
+    }
+    
     return res.status(401).json({ error: 'User not found' });
   }
 

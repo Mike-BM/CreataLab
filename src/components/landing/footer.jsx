@@ -22,7 +22,7 @@ export default function Footer() {
     social: [
       { icon: FaTiktok, href: "https://www.tiktok.com/@creatalab_ltd", label: "TikTok" },
       { icon: FaInstagram, href: "https://www.instagram.com/creatalab?igsh=NjM5cG9yajJhdzE1", label: "Instagram" },
-      { icon: FaWhatsapp, href: "https://wa.me/0753436729", label: "WhatsApp" },
+      { icon: FaWhatsapp, href: "https://wa.me/254753436729?text=Hello%20Welcome%20to%20CreataLab%20Where%20Creativity%20Meets%20Data!%20We%20craft%20Graphic%20Design,%20Branding,%20Data%20Analysis,%20AI,%20and%20Web%20Development%20solutions%20that%20elevate%20your%20ideas.%20Let%E2%80%99s%20create%20something%20extraordinary%20%E2%80%93%20how%20can%20we%20help%20you%20today%3F", label: "WhatsApp" },
     ]
   };
 

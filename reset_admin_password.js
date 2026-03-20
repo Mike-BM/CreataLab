@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const DEFAULT_PASS = 'ChangeMe123!';
+const DEFAULT_PASS = 'CreataLabAdmin!2026';
 const TARGET_EMAIL = 'brianmuema928@gmail.com';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
