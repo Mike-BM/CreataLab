@@ -50,7 +50,7 @@ export default function AdminPortfolio() {
         }
     };
 
-    const categories = ['All', ...new Set(projects.map(p => p.category))];
+    const categories = ['All', ...new Set(projects.map(p => p.category).filter(Boolean))];
 
     const filteredProjects = projects.filter((project) => {
         const matchesSearch =
@@ -211,7 +211,7 @@ export default function AdminPortfolio() {
                                             </div>
                                             <Button 
                                                 variant="ghost"
-                                                onClick={() => window.open(`/project/${project.id}`, '_blank')}
+                                                onClick={() => project.link ? window.open(project.link, '_blank') : toast.error('No deployment link specified')}
                                                 className="text-[10px] font-black text-purple-400 uppercase tracking-widest hover:text-white transition-colors"
                                             >
                                                 View Live <ExternalLink className="w-3 h-3 ml-2" />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Mail, Lock, Bell, Settings, Shield, ShieldCheck, Cpu } from 'lucide-react';
+import { Save, Globe, Mail, Lock, Bell, Settings, Shield, ShieldCheck, Cpu, BarChart3 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
@@ -317,7 +317,7 @@ export default function AdminSettings() {
           </div>
           
           <div className="space-y-10">
-            {pricing.categories.map((category, catIdx) => (
+            {(pricing?.categories || []).map((category, catIdx) => (
               <div key={catIdx} className="space-y-6">
                 <div className="flex items-center gap-4">
                   <Input

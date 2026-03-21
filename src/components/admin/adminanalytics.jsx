@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { appConfig } from '@/lib/config';
+import { adminAuth } from '@/lib/admin-auth';
+import { toast } from 'sonner';
 
 export default function AdminAnalytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('week');
@@ -42,10 +44,10 @@ export default function AdminAnalytics() {
       
       setStats({
         overview: [
-          { label: 'Contact Proposals', value: data.inquiries.toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75 },
-          { label: 'Service Requests', value: data.bookings.toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68 },
-          { label: 'Active Portfolios', value: data.projects.toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82 },
-          { label: 'Blog Insights', value: data.posts.toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45 },
+          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75 },
+          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68 },
+          { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82 },
+          { label: 'Blog Insights', value: (data.posts || 0).toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45 },
         ],
         topContent: [
           { title: 'The Future of Creative Tech', views: 1456, growth: 89, category: 'Strategy' },
@@ -62,6 +64,7 @@ export default function AdminAnalytics() {
     } catch (err) {
       console.error('Failed to sync analytics:', err);
       toast.error('Insight synchronization failed');
+      setStats({ overview: [], topContent: [], geographic: [] }); // Prevent crash on map
     } finally {
       setLoading(false);
     }
@@ -110,7 +113,7 @@ export default function AdminAnalytics() {
         <>
           {/* Overview Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.overview.map((stat, i) => (
+            {(stats?.overview || []).map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
@@ -152,7 +155,7 @@ export default function AdminAnalytics() {
                 Performance Matrix
               </h2>
               <div className="glass-card rounded-[2.5rem] p-4 border border-white/[0.05] divide-y divide-white/[0.03]">
-                {stats.topContent.map((content, i) => (
+                {(stats?.topContent || []).map((content, i) => (
                   <div key={i} className="p-6 flex items-center justify-between group hover:bg-white/[0.02] transition-all cursor-pointer first:rounded-t-[2rem] last:rounded-b-[2rem]">
                     <div className="flex items-center gap-6">
                       <div className="text-xl font-black text-gray-700 group-hover:text-purple-500 transition-colors">0{i+1}</div>
@@ -178,7 +181,7 @@ export default function AdminAnalytics() {
               </h2>
               <div className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05]">
                 <div className="space-y-8">
-                  {stats.geographic.map((geo, i) => (
+                  {(stats?.geographic || []).map((geo, i) => (
                     <div key={i} className="space-y-3">
                       <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest">
                         <span className="text-white">{geo.country}</span>

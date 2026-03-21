@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { appConfig } from '@/lib/config';
+import { adminAuth } from '@/lib/admin-auth';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const token = localStorage.getItem('admin_token');
+        const token = adminAuth.getToken();
         const response = await fetch(`${appConfig.api.base}/stats`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });

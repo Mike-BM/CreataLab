@@ -38,11 +38,11 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               </button>
 
               {/* Image */}
-              <div className="relative min-h-[300px] max-h-[60vh] w-full bg-black/40 flex items-center justify-center overflow-hidden rounded-t-3xl border-b border-white/5">
+              <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-full object-contain p-4"
+                  className="w-full h-auto block"
                 />
               </div>
 

@@ -97,9 +97,21 @@ app.get('/api/posts', async (req, res) => {
   res.json(data || []);
 });
 
+app.get('/api/posts/:id', async (req, res) => {
+  const { data } = await supabase.from('posts').select('*').eq('id', req.params.id).single();
+  if (!data) return res.status(404).json({ error: 'Post not found' });
+  res.json(data);
+});
+
 app.get('/api/projects', async (req, res) => {
   const { data } = await supabase.from('projects').select('*').eq('published', true).order('created_at', { ascending: false });
   res.json(data || []);
+});
+
+app.get('/api/projects/:id', async (req, res) => {
+  const { data } = await supabase.from('projects').select('*').eq('id', req.params.id).single();
+  if (!data) return res.status(404).json({ error: 'Project not found' });
+  res.json(data);
 });
 
 app.get('/api/settings', async (req, res) => {
@@ -139,6 +151,21 @@ app.post('/api/contact', async (req, res) => {
 app.post('/api/bookings', async (req, res) => {
   const { name, email, phone, service, message, preferredDate } = req.body;
   await supabase.from('bookings').insert({ name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() });
+  res.json({ ok: true });
+});
+
+// Admin Users Management
+app.get('/api/users', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('admin_users').select('id, email, created_at');
+  res.json(data || []);
+});
+
+app.delete('/api/users/:id', requireAdmin, async (req, res) => {
+  // Prevent admin from deleting themselves if they are the only ones (optional but good)
+  const { count } = await supabase.from('admin_users').select('*', { count: 'exact', head: true });
+  if (count <= 1) return res.status(400).json({ error: 'Cannot remove the last administrative account' });
+  
+  await supabase.from('admin_users').delete().eq('id', req.params.id);
   res.json({ ok: true });
 });
 
