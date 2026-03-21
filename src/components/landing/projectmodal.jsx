@@ -38,12 +38,12 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               </button>
 
               {/* Image Container */}
-              <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5 p-2">
+              <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5 p-4">
                 <img
                   src={project.image}
                   alt={project.title}
                   className="max-w-full h-auto block shadow-lg rounded-xl"
-                  style={{ maxHeight: '85vh' }}
+                  style={{ maxHeight: '500px', width: 'auto' }}
                 />
               </div>
 
