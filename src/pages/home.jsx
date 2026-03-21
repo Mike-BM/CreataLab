@@ -13,14 +13,14 @@ import Pricing from '@/components/landing/pricing';
 import FloatingBookingButton from '@/components/landing/floatingbookingbutton';
 import { Button } from '@/ui/button';
 
-const SECTION_ORDER = ['hero', 'about', 'services', 'pricing', 'portfolio', 'why-us', 'founder'];
+const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'pricing', 'why-us', 'founder'];
 
 const SECTION_COMPONENTS = {
   hero: Hero,
   about: About,
   services: Services,
-  pricing: Pricing,
   portfolio: Portfolio,
+  pricing: Pricing,
   'why-us': WhyChooseUs,
   founder: Founder,
 };

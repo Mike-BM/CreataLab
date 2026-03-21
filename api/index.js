@@ -45,7 +45,18 @@ async function initializeSystem() {
     { key: 'maintenance_mode', value: { active: false, message: 'System optimization in progress.' } },
     { key: 'branding', value: { name: 'creatalab', logoUrl: '/Logo.png', tagline: 'Creative-Tech Innovation Lab' } },
     { key: 'socials', value: { instagram: 'https://instagram.com/creatalab', whatsapp: '254753436729' } },
-    { key: 'pricing', value: { categories: [] } }
+    { key: 'pricing', value: { categories: [
+      { title: 'Brand & Creative', items: [
+        { name: 'Identity Essentials', price: 'KSH 45,000', details: 'Logo, Palette, Fonts' },
+        { name: 'Core Brand Design', price: 'KSH 85,000', details: 'Full Identity + Basic Assets' },
+        { name: 'Premium Brand Experience', price: 'Contact', details: 'Digital-First Brand Ecosystem' }
+      ]},
+      { title: 'Digital & Web', items: [
+        { name: 'Professional Site', price: 'KSH 65,000', details: 'Custom Design, SEO, Mobile Ready' },
+        { name: 'E-Commerce Solution', price: 'KSH 150,000', details: 'Payments, Inventory, CRM' },
+        { name: 'Complex Application', price: 'Contact', details: 'Full-Stack Dashboards' }
+      ]}
+    ] } }
   ];
   for (const s of defaultSettings) {
     if (!existingKeys.includes(s.key)) await supabase.from('site_settings').insert(s);
