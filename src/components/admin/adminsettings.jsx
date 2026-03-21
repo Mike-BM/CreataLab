@@ -318,7 +318,7 @@ export default function AdminSettings() {
           
           <div className="space-y-10">
             {(pricing?.categories || []).map((category, catIdx) => (
-              <div key={catIdx} className="space-y-6">
+              <div key={catIdx} className="space-y-6 relative group/cat p-6 rounded-3xl border border-white/[0.03] bg-white/[0.01]">
                 <div className="flex items-center gap-4">
                   <Input
                     value={category.title}
@@ -330,11 +330,23 @@ export default function AdminSettings() {
                     className="bg-white/[0.03] border-white/[0.08] focus:border-cyan-500/50 h-10 w-64 rounded-xl text-white font-black uppercase text-xs tracking-widest"
                   />
                   <div className="h-px flex-1 bg-white/[0.05]" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                        const newPricing = { ...pricing };
+                        newPricing.categories.splice(catIdx, 1);
+                        setPricing(newPricing);
+                    }}
+                    className="text-red-500 hover:bg-red-500/10 text-[10px] font-bold uppercase"
+                  >
+                    Remove Group
+                  </Button>
                 </div>
 
                 <div className="grid gap-4">
                   {category.items.map((item, itemIdx) => (
-                    <div key={itemIdx} className="grid md:grid-cols-3 gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05]">
+                    <div key={itemIdx} className="grid md:grid-cols-4 gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] relative group/item">
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-gray-600 uppercase">Service Name</label>
                         <Input
@@ -344,7 +356,7 @@ export default function AdminSettings() {
                             newPricing.categories[catIdx].items[itemIdx].name = e.target.value;
                             setPricing(newPricing);
                           }}
-                          className="bg-transparent border-none p-0 h-6 h-auto text-sm font-bold text-white focus:ring-0"
+                          className="bg-transparent border-none p-0 h-auto text-sm font-bold text-white focus:ring-0"
                         />
                       </div>
                       <div className="space-y-1">
@@ -356,7 +368,7 @@ export default function AdminSettings() {
                             newPricing.categories[catIdx].items[itemIdx].price = e.target.value;
                             setPricing(newPricing);
                           }}
-                          className="bg-transparent border-none p-0 h-6 h-auto text-sm font-black text-cyan-400 focus:ring-0"
+                          className="bg-transparent border-none p-0 h-auto text-sm font-black text-cyan-400 focus:ring-0"
                         />
                       </div>
                       <div className="space-y-1">
@@ -368,14 +380,51 @@ export default function AdminSettings() {
                             newPricing.categories[catIdx].items[itemIdx].details = e.target.value;
                             setPricing(newPricing);
                           }}
-                          className="bg-transparent border-none p-0 h-6 h-auto text-xs text-gray-500 focus:ring-0"
+                          className="bg-transparent border-none p-0 h-auto text-xs text-gray-500 focus:ring-0"
                         />
+                      </div>
+                      <div className="flex items-center justify-end">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => {
+                              const newPricing = { ...pricing };
+                              newPricing.categories[catIdx].items.splice(itemIdx, 1);
+                              setPricing(newPricing);
+                          }}
+                          className="text-gray-600 hover:text-red-400 h-8 w-8 p-0"
+                        >
+                          ✕
+                        </Button>
                       </div>
                     </div>
                   ))}
+                  
+                  <button 
+                    onClick={() => {
+                        const newPricing = { ...pricing };
+                        newPricing.categories[catIdx].items.push({ name: 'New Service', price: 'KSH 0', details: 'Description' });
+                        setPricing(newPricing);
+                    }}
+                    className="w-full py-3 rounded-xl border border-dashed border-white/10 text-gray-600 hover:text-cyan-400 hover:border-cyan-400/30 transition-all text-[10px] font-black uppercase tracking-widest"
+                  >
+                    + Add Package to Group
+                  </button>
                 </div>
               </div>
             ))}
+
+            <Button 
+              onClick={() => {
+                  setPricing({ 
+                    ...pricing, 
+                    categories: [...pricing.categories, { title: 'NEW CATEGORY', items: [{ name: 'Service', price: 'Contact', details: 'Details' }] }] 
+                  });
+              }}
+              className="w-full h-14 rounded-2xl border border-dashed border-white/10 text-gray-400 hover:text-white hover:border-white/30 transition-all uppercase tracking-widest text-xs font-black"
+            >
+              + Initialize New Pricing Category
+            </Button>
           </div>
         </motion.section>
 
