@@ -118,7 +118,7 @@ export default function Portfolio() {
                   onMouseEnter={() => setHoveredProject(project.id)}
                   onMouseLeave={() => setHoveredProject(null)}
                   onClick={() => setSelectedProject(project)}
-                  className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300"
+                  className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300"
                 >
                   {/* Image */}
                   <img

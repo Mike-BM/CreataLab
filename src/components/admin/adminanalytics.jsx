@@ -133,7 +133,7 @@ export default function AdminAnalytics() {
                 </div>
 
                 <h3 className="text-3xl font-black text-white mb-1 tracking-tighter">{stat.value}</h3>
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">{stat.label}</p>
+                <p className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">{stat.label}</p>
                 
                 <div className="mt-6 h-1.5 rounded-full bg-white/[0.03] overflow-hidden">
                   <motion.div 

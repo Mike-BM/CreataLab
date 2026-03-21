@@ -26,7 +26,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-[#111118] rounded-3xl border border-white/10 pointer-events-auto"
+              className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-[#111118] rounded-3xl border border-white/10 pointer-events-auto shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -37,12 +37,13 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 <X className="w-5 h-5" />
               </button>
 
-              {/* Image */}
-              <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5">
+              {/* Image Container */}
+              <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5 p-2">
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="w-full h-auto block"
+                  className="max-w-full h-auto block shadow-lg rounded-xl"
+                  style={{ maxHeight: '85vh' }}
                 />
               </div>
 
