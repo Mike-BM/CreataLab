@@ -39,6 +39,7 @@ export default function AdminPostEditor({ mode = 'create' }) {
     category: 'Innovation',
     date: new Date().toISOString().slice(0, 10),
     published: false,
+    link: '',
   });
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function AdminPostEditor({ mode = 'create' }) {
             category: data.category ?? 'Innovation',
             date: data.date ? data.date.slice(0, 10) : new Date().toISOString().slice(0, 10),
             published: Boolean(data.published),
+            link: data.link ?? '',
           });
         } catch (error) {
           console.error('Error loading post:', error);
@@ -259,6 +261,18 @@ export default function AdminPostEditor({ mode = 'create' }) {
                     value={formData.date}
                     onChange={handleChange('date')}
                     className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm font-bold dark-calendar"
+                   />
+                </div>
+
+                <div className="space-y-2">
+                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                     <Eye className="w-3 h-3" /> External Reference (URL)
+                   </label>
+                   <Input
+                    value={formData.link || ''}
+                    onChange={handleChange('link')}
+                    placeholder="https://visit-website.com"
+                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-xs"
                    />
                 </div>
              </div>

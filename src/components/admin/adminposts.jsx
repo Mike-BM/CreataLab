@@ -19,7 +19,8 @@ import {
   MessageSquare,
   ChevronRight,
   MoreVertical,
-  ArrowUpRight
+  ArrowUpRight,
+  Globe
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -123,9 +124,9 @@ export default function AdminPosts() {
             <div className="w-10 h-10 rounded-xl premium-gradient flex items-center justify-center text-white shadow-lg">
               <FileText className="w-5 h-5" />
             </div>
-            <h1 className="text-3xl font-black text-white tracking-tight">CONTENT <span className="text-gray-600">HUB</span></h1>
+            <h1 className="text-3xl font-black text-white tracking-tight uppercase">Insights & <span className="text-gray-600">Websites</span></h1>
           </div>
-          <p className="text-gray-400 font-medium">Publishing insights and community updates</p>
+          <p className="text-gray-400 font-medium">Publishing community updates and direct website links</p>
         </div>
         <Button
           onClick={() => navigate('/admin/posts/new')}
@@ -259,10 +260,13 @@ export default function AdminPosts() {
                    <Button 
                     variant="ghost" 
                     size="icon" 
-                    onClick={() => window.open(`/blog/${post.slug}`, '_blank')}
+                    onClick={() => {
+                        const destination = post.link || `/blog/${post.slug}`;
+                        window.open(destination, '_blank');
+                    }}
                     className="w-12 h-12 rounded-2xl bg-white/[0.03] text-gray-400 hover:text-purple-400 hover:bg-white/10"
                    >
-                     <ArrowUpRight className="w-5 h-5" />
+                     {post.link ? <Globe className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                    </Button>
                 </div>
               </motion.div>

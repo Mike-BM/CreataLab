@@ -62,27 +62,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                   {project.title}
                 </h2>
 
-                {/* Problem → Solution → Impact */}
-                <div className="grid md:grid-cols-3 gap-6 mb-10">
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <h3 className="text-sm font-semibold text-purple-300 mb-2 uppercase tracking-wide">Problem</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      {project.problem || "We first clarify the specific brand, data, or product challenge so every design decision is tied to a real business goal."}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <h3 className="text-sm font-semibold text-cyan-300 mb-2 uppercase tracking-wide">Solution</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      {project.solution || "We design and build a tailored solution—whether it’s a dashboard, web platform, or visual identity—that fits the client’s context and team."}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
-                    <h3 className="text-sm font-semibold text-emerald-300 mb-2 uppercase tracking-wide">Impact</h3>
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                      {project.impact || "Together we measure what changed: time saved, engagement gained, or clarity created for stakeholders and users."}
-                    </p>
-                  </div>
-                </div>
+
 
                 <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-8">
                   {project.fullDescription || project.description}

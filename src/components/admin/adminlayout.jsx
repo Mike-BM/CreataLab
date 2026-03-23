@@ -26,7 +26,7 @@ import { appConfig } from '@/lib/config';
 
 const adminMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
-  { icon: FileText, label: 'Blog Posts', path: '/admin/posts' },
+  { icon: FileText, label: 'Insights & Sites', path: '/admin/posts' },
   { icon: FolderOpen, label: 'Portfolio', path: '/admin/portfolio' },
   { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
   { icon: Users, label: 'Users', path: '/admin/users' },
