@@ -153,16 +153,93 @@ app.get('/api/stats', requireAdmin, async (req, res) => {
   res.json({ projects: projects.count, posts: posts.count, inquiries: inquiries.count, bookings: bookings.count });
 });
 
+// Utility to send emails via Resend API (no external dependency needed)
+async function sendNotificationEmail(subject, html) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const adminEmail = process.env.ADMIN_EMAIL || 'brianmuema928@gmail.com';
+  
+  if (!apiKey) {
+    console.log('Skipping email notification: RESEND_API_KEY missing');
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        from: 'CreataLab <onboarding@resend.dev>',
+        to: adminEmail,
+        subject: `[CreataLab] ${subject}`,
+        html: html
+      })
+    });
+    if (!res.ok) {
+      const error = await res.text();
+      console.error('Resend API error:', error);
+    } else {
+      console.log('Notification email sent successfully');
+    }
+  } catch (err) {
+    console.error('Failed to send notification email:', err);
+  }
+}
+
 app.post('/api/contact', async (req, res) => {
   const { name, email, subject, message } = req.body;
-  await supabase.from('contact_messages').insert({ name, email, subject, message, created_at: new Date().toISOString() });
+  const { data, error } = await supabase.from('contact_messages').insert({ 
+    name, email, subject, message, created_at: new Date().toISOString() 
+  });
+  
+  // Fire and forget email notification
+  sendNotificationEmail(
+    `New Contact Message: ${subject}`,
+    `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #6d28d9;">New Message Received</h2>
+      <p><strong>From:</strong> ${name} (&lt;${email}&gt;)</p>
+      <p><strong>Subject:</strong> ${subject}</p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="white-space: pre-wrap;">${message}</p>
+    </div>`
+  ).catch(console.error);
+
   res.json({ ok: true });
+});
+
+app.get('/api/contact', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('contact_messages').select('*').order('created_at', { ascending: false });
+  res.json(data || []);
 });
 
 app.post('/api/bookings', async (req, res) => {
   const { name, email, phone, service, message, preferredDate } = req.body;
-  await supabase.from('bookings').insert({ name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() });
+  const { data, error } = await supabase.from('bookings').insert({ 
+    name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() 
+  });
+  
+  // Fire and forget email notification
+  sendNotificationEmail(
+    `New Booking Request: ${service}`,
+    `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #ec4899;">New Booking Request</h2>
+      <p><strong>From:</strong> ${name} (&lt;${email}&gt;)</p>
+      <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+      <p><strong>Service:</strong> ${service}</p>
+      <p><strong>Preferred Date:</strong> ${preferredDate || 'Not specified'}</p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="white-space: pre-wrap;"><strong>Details:</strong><br/>${message}</p>
+    </div>`
+  ).catch(console.error);
+
   res.json({ ok: true });
+});
+
+app.get('/api/bookings', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+  res.json(data || []);
 });
 
 // Admin Users Management

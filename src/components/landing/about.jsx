@@ -90,7 +90,7 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="mt-20 relative"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-cyan-600/20 rounded-3xl blur-xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-cyan-600/10 md:from-purple-600/20 md:via-pink-600/20 md:to-cyan-600/20 rounded-3xl blur-lg md:blur-xl" />
           <div className="relative p-10 md:p-16 rounded-3xl border border-white/10 bg-[#111118]/80 backdrop-blur-sm text-center">
             <p className="text-2xl md:text-3xl text-white font-light leading-relaxed">
               "We believe every idea deserves a 

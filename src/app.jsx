@@ -15,6 +15,7 @@ import AdminUsers from './components/admin/adminusers';
 import AdminSettings from './components/admin/adminsettings';
 import AdminPortfolio from './components/admin/adminportfolio';
 import AdminProjectEditor from './components/admin/adminprojecteditor';
+import AdminInquiries from './components/admin/admininquiries'; // Added
 import Maintenance from './components/maintenance';
 import { adminAuth } from './lib/admin-auth';
 import { appConfig, syncAppConfig } from './lib/config';
@@ -119,6 +120,7 @@ function App() {
             <Route path="/admin" element={<ProtectedAdminRoute />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="inquiries" element={<AdminInquiries />} />
               <Route path="posts" element={<AdminPosts />} />
               <Route path="posts/new" element={<AdminPostEditor mode="create" />} />
               <Route path="posts/edit/:id" element={<AdminPostEditor mode="edit" />} />

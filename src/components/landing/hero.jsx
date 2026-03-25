@@ -32,6 +32,7 @@ export default function Hero() {
       <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
       {/* Enhanced Animated gradient orbs with more dynamic movement */}
       <div className="absolute inset-0 overflow-hidden">
+        {/* Only show largest orbs on desktop to save mobile performance */}
         <motion.div
           animate={{
             x: [0, 150, -50, 0],
@@ -40,7 +41,7 @@ export default function Hero() {
             rotate: [0, 180, 360],
           }}
           transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-purple-600/25 rounded-full blur-[150px]"
+          className="absolute top-1/4 left-1/4 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-purple-600/25 rounded-full blur-[80px] md:blur-[150px]"
         />
         <motion.div
           animate={{
@@ -50,8 +51,10 @@ export default function Hero() {
             rotate: [0, -180, -360],
           }}
           transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/25 rounded-full blur-[130px]"
+          className="absolute bottom-1/4 right-1/4 w-[250px] h-[250px] md:w-[500px] md:h-[500px] bg-cyan-500/25 rounded-full blur-[70px] md:blur-[130px]"
         />
+        
+        {/* These smaller orbs provide enough visual interest on mobile without killing FPS */}
         <motion.div
           animate={{
             x: [0, 80, -30, 0],
@@ -60,9 +63,10 @@ export default function Hero() {
             rotate: [0, 90, 180],
           }}
           transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/2 right-1/3 w-[400px] h-[400px] bg-pink-500/20 rounded-full blur-[110px]"
+          className="absolute top-1/2 right-1/3 w-[200px] h-[200px] md:w-[400px] md:h-[400px] bg-pink-500/20 rounded-full blur-[60px] md:blur-[110px]"
         />
-        {/* Additional smaller orbs for depth */}
+        
+        {/* Hide extra-deep elements on mobile */}
         <motion.div
           animate={{
             x: [0, 60, -40, 0],
@@ -70,7 +74,7 @@ export default function Hero() {
             scale: [1, 1.1, 0.9, 1],
           }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-3/4 left-1/3 w-[250px] h-[250px] bg-cyan-400/15 rounded-full blur-[90px]"
+          className="absolute top-3/4 left-1/3 w-[150px] h-[150px] md:w-[250px] md:h-[250px] bg-cyan-400/15 rounded-full blur-[50px] md:blur-[90px] hidden md:block"
         />
         <motion.div
           animate={{
@@ -79,7 +83,7 @@ export default function Hero() {
             scale: [1, 1.15, 0.85, 1],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-1/3 left-1/2 w-[200px] h-[200px] bg-purple-400/12 rounded-full blur-[70px]"
+          className="absolute bottom-1/3 left-1/2 w-[120px] h-[120px] md:w-[200px] md:h-[200px] bg-purple-400/12 rounded-full blur-[40px] md:blur-[70px] hidden md:block"
         />
       </div>
 

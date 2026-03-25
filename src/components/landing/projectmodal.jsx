@@ -42,6 +42,8 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 <img
                   src={project.image}
                   alt={project.title}
+                  loading="lazy"
+                  decoding="async"
                   className="max-w-full h-auto block shadow-lg rounded-xl"
                   style={{ maxHeight: '500px', width: 'auto' }}
                 />

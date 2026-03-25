@@ -36,9 +36,6 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         client: '',
         tools: '',
         features: '',
-        problem: '',
-        solution: '',
-        impact: '',
         link: '',
         published: false,
     });
@@ -59,9 +56,6 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                         client: data.client ?? '',
                         tools: data.tools ? data.tools.join(', ') : '',
                         features: data.features ? data.features.join(', ') : '',
-                        problem: data.problem ?? '',
-                        solution: data.solution ?? '',
-                        impact: data.impact ?? '',
                         link: data.link ?? '',
                         published: Boolean(data.published),
                     });
@@ -227,42 +221,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                         </div>
                     </section>
 
-                    <section className="glass-card rounded-[2.5rem] p-8 md:p-10 border border-white/[0.05] space-y-8 border-l-4 border-l-purple-600/50">
-                        <div className="flex items-center gap-3 pb-6 border-b border-white/[0.05]">
-                            <Briefcase className="w-5 h-5 text-blue-400" />
-                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Case Study Analysis</h2>
-                        </div>
-                        
-                        <div className="space-y-6">
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">The Challenge</label>
-                                <Textarea
-                                    value={formData.problem}
-                                    onChange={handleChange('problem')}
-                                    placeholder="Define the structural bottlenecks or requirements..."
-                                    className="bg-white/[0.02] border-white/5 focus:border-blue-500/40 min-h-[80px] rounded-xl text-white"
-                                />
-                            </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Solution Framework</label>
-                                <Textarea
-                                    value={formData.solution}
-                                    onChange={handleChange('solution')}
-                                    placeholder="Architectural approach and implementation strategy..."
-                                    className="bg-white/[0.02] border-white/5 focus:border-green-500/40 min-h-[80px] rounded-xl text-white"
-                                />
-                            </div>
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Key Results & KPIs</label>
-                                <Textarea
-                                    value={formData.impact}
-                                    onChange={handleChange('impact')}
-                                    placeholder="Outcome, metrics, and final achievements..."
-                                    className="bg-white/[0.02] border-white/5 focus:border-pink-500/40 min-h-[80px] rounded-xl text-white"
-                                />
-                            </div>
-                        </div>
-                    </section>
+
                 </div>
 
                 {/* Right Column: Metadata & Assets */}

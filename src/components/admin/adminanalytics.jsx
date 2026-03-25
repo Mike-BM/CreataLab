@@ -18,11 +18,13 @@ import {
   Loader2
 } from 'lucide-react';
 import { Button } from './ui/button';
+import { useNavigate } from 'react-router-dom';
 import { appConfig } from '@/lib/config';
 import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
 
 export default function AdminAnalytics() {
+  const navigate = useNavigate(); // Added
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -44,10 +46,10 @@ export default function AdminAnalytics() {
       
       setStats({
         overview: [
-          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75 },
-          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68 },
-          { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82 },
-          { label: 'Blog Insights', value: (data.posts || 0).toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45 },
+          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75, path: '/admin/inquiries' },
+          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68, path: '/admin/inquiries' },
+          { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82, path: '/admin/portfolio' },
+          { label: 'Blog Insights', value: (data.posts || 0).toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45, path: '/admin/posts' },
         ],
         topContent: [
           { title: 'The Future of Creative Tech', views: 1456, growth: 89, category: 'Strategy' },
@@ -119,7 +121,8 @@ export default function AdminAnalytics() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card rounded-[2rem] p-8 border border-white/[0.05] relative group"
+                onClick={() => navigate(stat.path)}
+                className="glass-card rounded-[2rem] p-8 border border-white/[0.05] relative group cursor-pointer hover:border-white/20 transition-all"
               >
                 <div className={`absolute top-0 right-0 p-6 ${stat.trend === 'up' ? 'text-green-400' : 'text-orange-400'}`}>
                    <div className="flex items-center gap-1 font-black text-xs">
@@ -128,7 +131,7 @@ export default function AdminAnalytics() {
                    </div>
                 </div>
 
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-6 shadow-lg`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}>
                    <stat.icon className="w-6 h-6 text-white" />
                 </div>
 

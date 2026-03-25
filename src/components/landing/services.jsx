@@ -68,8 +68,8 @@ export default function Services() {
     <section id="services" className="py-32 bg-[#111118] relative overflow-hidden">
       <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} />
       {/* Background elements */}
-      <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-[150px] -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-600/5 rounded-full blur-[100px]" />
+      <div className="absolute top-1/2 left-0 w-[300px] h-[300px] md:w-[600px] md:h-[600px] bg-purple-600/5 rounded-full blur-[80px] md:blur-[150px] -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-[200px] h-[200px] md:w-[400px] md:h-[400px] bg-cyan-600/5 rounded-full blur-[60px] md:blur-[100px]" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <motion.div

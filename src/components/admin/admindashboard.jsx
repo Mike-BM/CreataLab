@@ -56,7 +56,7 @@ export default function AdminDashboard() {
     { label: 'Total Content', value: stats.posts.count, icon: FileText, color: 'from-purple-500 to-pink-500', change: stats.posts.growth, path: '/admin/posts' },
     { label: 'System Reach', value: stats.views.count, icon: Eye, color: 'from-blue-500 to-cyan-500', change: stats.views.growth, path: '/admin/analytics' },
     { label: 'Live Projects', value: stats.projects.count, icon: Briefcase, color: 'from-green-500 to-emerald-500', change: stats.projects.growth, path: '/admin/portfolio' },
-    { label: 'Inquiries', value: stats.messages.count, icon: MessageSquare, color: 'from-orange-500 to-red-500', change: stats.messages.growth, path: '/admin/analytics' },
+    { label: 'Inquiries', value: stats.messages.count, icon: MessageSquare, color: 'from-orange-500 to-red-500', change: stats.messages.growth, path: '/admin/inquiries' },
   ];
 
   return (

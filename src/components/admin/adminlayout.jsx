@@ -18,7 +18,8 @@ import {
   User,
   Shield,
   Clock,
-  Sparkles
+  Sparkles,
+  MessageSquare // Added
 } from 'lucide-react';
 import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ import { appConfig } from '@/lib/config';
 
 const adminMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
+  { icon: MessageSquare, label: 'Inquiries', path: '/admin/inquiries' }, // Added
   { icon: FileText, label: 'Insights & Sites', path: '/admin/posts' },
   { icon: FolderOpen, label: 'Portfolio', path: '/admin/portfolio' },
   { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
