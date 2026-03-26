@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
 
-const categories = ["All", "Branding", "Digital", "Data", "Web"];
+const categories = ["All", "Branding", "Digital", "Data", "AI Solutions"];
 
 import { appConfig } from '@/lib/config';
 
@@ -117,8 +117,14 @@ export default function Portfolio() {
                   transition={{ duration: 0.4 }}
                   onMouseEnter={() => setHoveredProject(project.id)}
                   onMouseLeave={() => setHoveredProject(null)}
-                  onClick={() => setSelectedProject(project)}
-                  className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300"
+                  onClick={() => {
+                    if (project.link) {
+                      window.open(project.link, '_blank');
+                    } else {
+                      setSelectedProject(project);
+                    }
+                  }}
+                  className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300 shadow-xl"
                 >
                   {/* Image */}
                   <img

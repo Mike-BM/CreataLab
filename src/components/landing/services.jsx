@@ -43,7 +43,7 @@ const services = [
   {
     id: 4,
     icon: Globe,
-    title: "Web & Digital Solutions",
+    title: "AI Solutions",
     description: "Professional websites that convert. From portfolios to business platforms, built for performance and beauty.",
     features: ["Business Websites", "Landing Pages", "Portfolio Sites", "Performance Optimization", "Web Maintenance"],
     gradient: "from-green-500 to-cyan-500",

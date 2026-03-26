@@ -11,7 +11,7 @@ export default function Hero() {
   const valueBullets = [
     { label: 'Branding', category: 'Branding' },
     { label: 'Data Insights', category: 'Data' },
-    { label: 'Web Platforms', category: 'Web' },
+    { label: 'AI Solutions', category: 'AI Solutions' },
     { label: 'Performance Design', category: 'Digital' },
   ];
 

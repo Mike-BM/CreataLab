@@ -37,6 +37,9 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         tools: '',
         features: '',
         link: '',
+        problem: '',
+        solution: '',
+        impact: '',
         published: false,
     });
 
@@ -57,6 +60,9 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                         tools: data.tools ? data.tools.join(', ') : '',
                         features: data.features ? data.features.join(', ') : '',
                         link: data.link ?? '',
+                        problem: data.problem ?? '',
+                        solution: data.solution ?? '',
+                        impact: data.impact ?? '',
                         published: Boolean(data.published),
                     });
                 } catch (error) {
@@ -219,6 +225,36 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                                 className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 min-h-[180px] rounded-2xl text-white font-medium p-6"
                             />
                         </div>
+
+                        <div className="grid md:grid-cols-3 gap-8 pt-6">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">The Problem</label>
+                                <Textarea
+                                    value={formData.problem}
+                                    onChange={handleChange('problem')}
+                                    placeholder="What was the challenge?"
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-red-500/50 min-h-[120px] rounded-2xl text-white font-medium p-4 text-sm"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">The Solution</label>
+                                <Textarea
+                                    value={formData.solution}
+                                    onChange={handleChange('solution')}
+                                    placeholder="How did we solve it?"
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-green-500/50 min-h-[120px] rounded-2xl text-white font-medium p-4 text-sm"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">The Impact</label>
+                                <Textarea
+                                    value={formData.impact}
+                                    onChange={handleChange('impact')}
+                                    placeholder="What was the result?"
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-blue-500/50 min-h-[120px] rounded-2xl text-white font-medium p-4 text-sm"
+                                />
+                            </div>
+                        </div>
                     </section>
 
 
@@ -243,7 +279,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                         </div>
 
                         <div className="space-y-2">
-                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset URL</label>
+                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cover Photo (URL)</label>
                              <Input
                                 value={formData.image_url}
                                 onChange={handleChange('image_url')}
@@ -257,32 +293,14 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                     <section className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05] space-y-6">
                         <div className="flex items-center gap-3 mb-2">
                             <Settings className="w-5 h-5 text-gray-400" />
-                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Asset Parameters</h2>
+                            <h2 className="text-sm font-black text-white uppercase tracking-widest">Deployment & Details</h2>
                         </div>
                         
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Identity (Client)</label>
-                                <Input
-                                    value={formData.client}
-                                    onChange={handleChange('client')}
-                                    placeholder="Organization Name"
-                                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Tech Stack (comma sep)</label>
-                                <Input
-                                    value={formData.tools}
-                                    onChange={handleChange('tools')}
-                                    placeholder="React, Figma, Node..."
-                                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">External Link</label>
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">External Live Link</label>
                                 <div className="relative">
-                                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-500" />
+                                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                     <Input
                                         value={formData.link}
                                         onChange={handleChange('link')}
@@ -290,6 +308,15 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                                         className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl pl-10 text-xs"
                                     />
                                 </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Client / Organization</label>
+                                <Input
+                                    value={formData.client}
+                                    onChange={handleChange('client')}
+                                    placeholder="Organization Name"
+                                    className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl text-sm"
+                                />
                             </div>
                         </div>
                     </section>
