@@ -120,6 +120,11 @@ app.get('/api/posts', async (req, res) => {
   res.json(data || []);
 });
 
+app.get('/api/admin/posts', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('posts').select('*').order('date', { ascending: false });
+  res.json(data || []);
+});
+
 app.get('/api/posts/:id', async (req, res) => {
   const { data } = await supabase.from('posts').select('*').eq('id', req.params.id).single();
   if (!data) return res.status(404).json({ error: 'Post not found' });
@@ -128,6 +133,11 @@ app.get('/api/posts/:id', async (req, res) => {
 
 app.get('/api/projects', async (req, res) => {
   const { data } = await supabase.from('projects').select('*').eq('published', true).order('created_at', { ascending: false });
+  res.json(data || []);
+});
+
+app.get('/api/admin/projects', requireAdmin, async (req, res) => {
+  const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
   res.json(data || []);
 });
 

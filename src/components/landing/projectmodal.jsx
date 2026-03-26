@@ -40,7 +40,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
               {/* Image Container */}
               <div className="relative w-full bg-black/40 flex flex-col items-center justify-center rounded-t-3xl border-b border-white/5 p-4">
                 <img
-                  src={project.image}
+                  src={project.image_url}
                   alt={project.title}
                   loading="lazy"
                   decoding="async"
@@ -67,7 +67,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
 
                 <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-8">
-                  {project.fullDescription || project.description}
+                  {project.full_description || project.description}
                 </p>
 
                 {/* Tools Used */}

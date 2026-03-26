@@ -42,7 +42,10 @@ export default function AdminPosts() {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${appConfig.api.base}/posts`);
+      const token = adminAuth.getToken();
+      const response = await fetch(`${appConfig.api.base}/admin/posts`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (response.ok) {
         const data = await response.json();
         setPosts(data);

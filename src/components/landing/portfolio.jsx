@@ -129,7 +129,7 @@ export default function Portfolio() {
                 >
                   {/* Image */}
                   <img
-                    src={project.image}
+                    src={project.image_url}
                     alt={project.title}
                     loading="lazy"
                     decoding="async"

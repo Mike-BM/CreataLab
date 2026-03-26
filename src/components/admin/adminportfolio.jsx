@@ -37,7 +37,10 @@ export default function AdminPortfolio() {
     const fetchProjects = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${appConfig.api.base}/projects`);
+            const token = adminAuth.getToken();
+            const response = await fetch(`${appConfig.api.base}/admin/projects`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setProjects(data);
