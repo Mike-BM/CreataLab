@@ -107,13 +107,18 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
                 {/* CTA */}
                 {project.link && (
-                  <Button
-                    onClick={() => window.open(project.link, '_blank')}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-6"
-                  >
-                    View Live Project
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </Button>
+                  <div className="flex flex-col gap-4">
+                    <Button
+                      onClick={() => window.open(project.link, '_blank')}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-full px-8 h-12 text-sm font-bold w-fit shadow-xl hover:scale-105 active:scale-95 transition-all"
+                    >
+                      View Live Project
+                      <ExternalLink className="w-4 h-4 ml-2" />
+                    </Button>
+                    <p className="text-sm text-gray-500 italic">
+                      view the live site and maybe leave a feedback
+                    </p>
+                  </div>
                 )}
               </div>
             </motion.div>

@@ -175,7 +175,7 @@ export default function Portfolio() {
                             Visit Live Site
                           </Button>
                           <p className="text-[10px] text-gray-400 font-medium italic animate-pulse">
-                            View the live site and maybe leave a feedback
+                            view the live site and maybe leave a feedback
                           </p>
                         </div>
                       )}

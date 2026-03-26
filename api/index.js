@@ -263,11 +263,21 @@ app.post('/api/projects', requireAdmin, async (req, res) => {
   res.status(201).json(data);
 });
 app.put('/api/projects/:id', requireAdmin, async (req, res) => {
-  await supabase.from('projects').update({ ...req.body, updated_at: new Date().toISOString() }).eq('id', req.params.id);
-  res.json({ ok: true });
+  const { data, error } = await supabase.from('projects')
+    .update({ ...req.body, updated_at: new Date().toISOString() })
+    .eq('id', req.params.id)
+    .select();
+  
+  if (error) {
+    console.error('Update Error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+  res.json({ ok: true, data });
 });
+
 app.delete('/api/projects/:id', requireAdmin, async (req, res) => {
-  await supabase.from('projects').delete().eq('id', req.params.id);
+  const { error } = await supabase.from('projects').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });
 
