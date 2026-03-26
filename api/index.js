@@ -15,9 +15,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'change-this-in-env';
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error('CRITICAL: Supabase environment variables are missing!');
+}
+
 export const supabase = createClient(SUPABASE_URL ?? '', SUPABASE_SERVICE_ROLE_KEY ?? '', {
   auth: { persistSession: false },
 });
+
+// Middleware to catch async errors
+const asyncHandler = (fn) => (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch((err) => {
+        console.error('API Error:', err);
+        res.status(500).json({ error: 'Internal Server Error', details: err.message });
+    });
+};
 
 // Initialization Logic (runs on cold start)
 async function initializeSystem() {
