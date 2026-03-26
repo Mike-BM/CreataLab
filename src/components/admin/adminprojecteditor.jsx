@@ -232,6 +232,29 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                             />
                         </div>
 
+                        <div className="grid md:grid-cols-2 gap-8 pt-6">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Tools & Technologies</label>
+                                <Input
+                                    value={formData.tools}
+                                    onChange={handleChange('tools')}
+                                    placeholder="React, Supabase, Tailwind..."
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-medium pl-4"
+                                />
+                                <p className="text-[8px] text-gray-600 uppercase font-black tracking-widest pl-1">Comma-separated list</p>
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Key Features</label>
+                                <Input
+                                    value={formData.features}
+                                    onChange={handleChange('features')}
+                                    placeholder="Real-time sync, Auth, Analytics..."
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-medium pl-4"
+                                />
+                                <p className="text-[8px] text-gray-600 uppercase font-black tracking-widest pl-1">Comma-separated list</p>
+                            </div>
+                        </div>
+
                         <div className="grid md:grid-cols-3 gap-8 pt-6">
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">The Problem</label>

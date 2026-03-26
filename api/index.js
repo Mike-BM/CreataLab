@@ -92,7 +92,26 @@ const requireAdmin = (req, res, next) => {
   }
 };
 
-// API Routes
+app.get('/api/debug/env', async (req, res) => {
+  const report = {
+    hasSupabaseUrl: !!process.env.SUPABASE_URL,
+    hasSupabaseKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    hasResendKey: !!process.env.RESEND_API_KEY,
+    nodeEnv: process.env.NODE_ENV,
+    dbStatus: 'testing...'
+  };
+  
+  try {
+    const { data, error } = await supabase.from('projects').select('id').limit(1);
+    report.dbStatus = error ? `Error: ${error.message}` : (data?.length >= 0 ? 'Connected' : 'Unexpected response');
+  } catch (err) {
+    report.dbStatus = `Catch: ${err.message}`;
+  }
+  
+  res.json(report);
+});
+
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.post('/api/auth/login', async (req, res) => {
@@ -285,22 +304,25 @@ app.post('/api/projects', requireAdmin, async (req, res) => {
   res.status(201).json(data);
 });
 app.put('/api/projects/:id', requireAdmin, async (req, res) => {
-  console.log(`Updating project ${req.params.id} with body:`, req.body);
+  console.log(`[DB UPDATE] Started for project ${req.params.id}`);
   
-  // Sanitize: never try to update the ID column
+  // Sanitize: never try to update the ID column or created_at
   const { id, created_at, ...updateData } = req.body;
   
+  console.log('[DB UPDATE] Payload Keys:', Object.keys(updateData));
+  if (updateData.link !== undefined) console.log('[DB UPDATE] New Link Value:', updateData.link);
+
   const { data, error } = await supabase.from('projects')
     .update({ ...updateData, updated_at: new Date().toISOString() })
     .eq('id', req.params.id)
     .select();
   
   if (error) {
-    console.error('Update Error:', error);
+    console.error('[DB UPDATE] Error:', error);
     return res.status(500).json({ error: error.message });
   }
   
-  console.log('Update Success:', data);
+  console.log('[DB UPDATE] Success. Records affected:', data?.length);
   res.json({ ok: true, data });
 });
 
