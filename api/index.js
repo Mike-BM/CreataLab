@@ -263,8 +263,13 @@ app.post('/api/projects', requireAdmin, async (req, res) => {
   res.status(201).json(data);
 });
 app.put('/api/projects/:id', requireAdmin, async (req, res) => {
+  console.log(`Updating project ${req.params.id} with body:`, req.body);
+  
+  // Sanitize: never try to update the ID column
+  const { id, created_at, ...updateData } = req.body;
+  
   const { data, error } = await supabase.from('projects')
-    .update({ ...req.body, updated_at: new Date().toISOString() })
+    .update({ ...updateData, updated_at: new Date().toISOString() })
     .eq('id', req.params.id)
     .select();
   
@@ -272,6 +277,8 @@ app.put('/api/projects/:id', requireAdmin, async (req, res) => {
     console.error('Update Error:', error);
     return res.status(500).json({ error: error.message });
   }
+  
+  console.log('Update Success:', data);
   res.json({ ok: true, data });
 });
 
