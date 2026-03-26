@@ -196,12 +196,18 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                             </div>
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Asset Category</label>
-                                <Input
+                                <select
                                     value={formData.category}
                                     onChange={handleChange('category')}
-                                    placeholder="Branding, Web, Data..."
-                                    className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
-                                />
+                                    required
+                                    className="w-full bg-white/[0.03] border border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold px-4 appearance-none hover:bg-white/[0.06] transition-colors cursor-pointer"
+                                >
+                                    <option value="" disabled className="bg-[#111118]">Select Category</option>
+                                    <option value="Branding & Marketing Assets" className="bg-[#111118]">Branding & Marketing Assets</option>
+                                    <option value="Digital" className="bg-[#111118]">Digital</option>
+                                    <option value="Data" className="bg-[#111118]">Data</option>
+                                    <option value="AI Solutions" className="bg-[#111118]">AI Solutions</option>
+                                </select>
                             </div>
                         </div>
 
