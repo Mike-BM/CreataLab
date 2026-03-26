@@ -4,7 +4,7 @@ import { ExternalLink, Eye } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
 import { Button } from '@/ui/button';
 
-const categories = ["All", "Branding", "Digital", "Data", "AI Solutions"];
+const categories = ["All", "Branding & Marketing Assets", "Digital", "Data", "AI Solutions"];
 
 import { appConfig } from '@/lib/config';
 

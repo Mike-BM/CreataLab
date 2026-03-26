@@ -16,7 +16,7 @@ const services = [
   {
     id: 1,
     icon: Palette,
-    title: "Brand Identity & Graphic Design",
+    title: "Branding & Marketing Assets",
     description: "Complete visual brand systems that make your business unforgettable. From logos to merchandise, we craft every touchpoint.",
     features: ["Logo Design", "Visual Identity", "Merchandise", "Brand Guidelines"],
     gradient: "from-purple-600 to-pink-600",

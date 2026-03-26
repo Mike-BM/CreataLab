@@ -9,7 +9,7 @@ export default function Hero() {
   const [bookingOpen, setBookingOpen] = useState(false);
 
   const valueBullets = [
-    { label: 'Branding', category: 'Branding' },
+    { label: 'Branding & Marketing Assets', category: 'Branding & Marketing Assets' },
     { label: 'Data Insights', category: 'Data' },
     { label: 'AI Solutions', category: 'AI Solutions' },
     { label: 'Performance Design', category: 'Digital' },
