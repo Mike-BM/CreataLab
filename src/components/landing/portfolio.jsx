@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
+import { Button } from '@/ui/button';
 
 const categories = ["All", "Branding", "Digital", "Data", "AI Solutions"];
 
@@ -149,26 +150,34 @@ export default function Portfolio() {
                     <p className="text-gray-300 text-sm mb-4">
                       {project.description}
                     </p>
-                    <div className="flex gap-3">
-                      <button
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        variant="ghost"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedProject(project);
                         }}
-                        className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors"
+                        className="bg-white/10 backdrop-blur-md text-white border-white/10 hover:bg-white/20 h-10 px-4 rounded-xl text-xs font-bold w-fit"
                       >
-                        <Eye className="w-4 h-4 text-white" />
-                      </button>
+                        <Eye className="w-3.5 h-3.5 mr-2" />
+                        Explore Project
+                      </Button>
                       {project.link && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(project.link, '_blank');
-                          }}
-                          className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-white/20 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4 text-white" />
-                        </button>
+                        <div className="space-y-2">
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(project.link, '_blank');
+                            }}
+                            className="premium-gradient text-white h-10 px-4 rounded-xl text-xs font-bold w-fit shadow-lg"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5 mr-2" />
+                            Visit Live Site
+                          </Button>
+                          <p className="text-[10px] text-gray-400 font-medium italic animate-pulse">
+                            View the live site and maybe leave a feedback
+                          </p>
+                        </div>
                       )}
                     </div>
                   </div>
