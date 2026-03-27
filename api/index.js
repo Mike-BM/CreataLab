@@ -274,8 +274,8 @@ app.post('/api/contact', async (req, res) => {
     name, email, subject, message, created_at: new Date().toISOString() 
   });
   
-  // Fire and forget email notification
-  sendNotificationEmail(
+  // Wait for email notification to complete so Vercel does not terminate the function early
+  await sendNotificationEmail(
     `New Contact Message: ${subject}`,
     `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h2 style="color: #6d28d9;">New Message Received</h2>
@@ -300,8 +300,8 @@ app.post('/api/bookings', asyncHandler(async (req, res) => {
     name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() 
   });
   
-  // Fire and forget email notification
-  sendNotificationEmail(
+  // Wait for email notification to complete so Vercel does not terminate the function early
+  await sendNotificationEmail(
     `New Booking Request: ${service}`,
     `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
       <h2 style="color: #ec4899;">New Booking Request</h2>
