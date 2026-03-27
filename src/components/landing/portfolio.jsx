@@ -106,7 +106,16 @@ export default function Portfolio() {
             {isLoading ? (
               <div className="col-span-full py-20 text-center text-gray-500">Loading portfolio...</div>
             ) : filteredProjects.length === 0 ? (
-              <div className="col-span-full py-20 text-center text-gray-500">No projects found. Check back later!</div>
+              <div className="col-span-full py-24 flex flex-col items-center justify-center text-center">
+                <div className="w-20 h-20 bg-white/[0.02] border border-white/5 rounded-full flex items-center justify-center mb-6 relative">
+                  <div className="absolute inset-0 border border-purple-500/30 rounded-full animate-ping opacity-20"></div>
+                  <div className="w-8 h-8 border-2 border-dashed border-purple-400/60 rounded-full animate-[spin_8s_linear_infinite]" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3 tracking-tight">Updating Soon</h3>
+                <p className="text-gray-400 max-w-sm mx-auto leading-relaxed text-sm">
+                  We are currently curating our latest {activeFilter !== 'All' ? <span className="text-purple-400 font-medium">{activeFilter}</span> : ''} projects. Check back shortly to see our fresh work!
+                </p>
+              </div>
             ) : (
               filteredProjects.map((project) => (
                 <motion.div
