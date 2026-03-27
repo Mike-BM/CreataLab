@@ -27,7 +27,7 @@ const features = [
 const testimonials = [
   {
     quote: "creatalab transformed our brand identity completely. The results exceeded every expectation.",
-    author: "Christopher Kasiva.",
+    author: "Catherine M",
     role: "Founder"
   },
   {
