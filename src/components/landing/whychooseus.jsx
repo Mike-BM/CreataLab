@@ -4,8 +4,8 @@ import { Zap, Heart, DollarSign, RefreshCw, Quote } from 'lucide-react';
 const features = [
   {
     icon: Zap,
-    title: "Youth-Driven Innovation",
-    description: "Fresh perspectives and bold ideas that push creative boundaries."
+    title: "Results-Driven Innovation",
+    description: "We deliver solutions that create real impact."
   },
   {
     icon: Heart,
