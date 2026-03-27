@@ -236,7 +236,7 @@ app.post('/api/track', async (req, res) => {
 // Utility to send emails via Resend API (no external dependency needed)
 async function sendNotificationEmail(subject, html) {
   const apiKey = process.env.RESEND_API_KEY;
-  const adminEmail = process.env.ADMIN_EMAIL || 'brianmuema928@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'hellocreatalab@gmail.com';
   
   if (!apiKey) {
     console.log('Skipping email notification: RESEND_API_KEY missing');
