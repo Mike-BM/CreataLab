@@ -46,15 +46,17 @@ export default function AdminAnalytics() {
       
       setStats({
         overview: [
-          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: '+5.4%', trend: 'up', icon: Mail, color: 'from-blue-500 to-cyan-500', progress: 75, path: '/admin/inquiries' },
-          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: '+12.2%', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68, path: '/admin/inquiries' },
-          { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: '+1.5%', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82, path: '/admin/portfolio' },
-          { label: 'Blog Insights', value: (data.posts || 0).toString(), change: '+0.3%', trend: 'up', icon: TrendingUp, color: 'from-orange-500 to-red-500', progress: 45, path: '/admin/posts' },
+          { label: 'Total Page Views', value: (data.pageViews || 0).toString(), change: 'Live', trend: 'up', icon: Eye, color: 'from-blue-500 to-cyan-500', progress: 100, path: '#' },
+          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: 'Live', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68, path: '/admin/inquiries' },
+          { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: 'Live', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82, path: '/admin/portfolio' },
+          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: 'Live', trend: 'up', icon: Mail, color: 'from-orange-500 to-red-500', progress: 45, path: '/admin/inquiries' },
         ],
-        topContent: [
-          { title: 'The Future of Creative Tech', views: 1456, growth: 89, category: 'Strategy' },
-          { title: 'Rebranding Case Study: X-Flow', views: 982, growth: 76, category: 'Case Study' },
-          { title: 'Data Visualization Mastery', views: 874, growth: 65, category: 'Tutorial' },
+        topContent: (data.topPaths && data.topPaths.length > 0) ? data.topPaths.map(p => ({
+          title: p.path === '/' ? 'Home Page' : p.path,
+          views: p.count,
+          category: 'Page Path'
+        })) : [
+          { title: 'Waiting for traffic...', views: 0, category: 'System' }
         ],
         geographic: [
           { country: 'United States', visitors: '4.2K', share: 45 },

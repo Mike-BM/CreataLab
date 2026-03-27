@@ -38,7 +38,7 @@ export default function AdminDashboard() {
           const data = await response.json();
           setStats({
             posts: { count: data.posts || 0, growth: 'Total' },
-            views: { count: '2.4K', growth: '+12% this week' }, // Views are still simulated or from external analytics
+            views: { count: data.pageViews || 0, growth: 'Overall Visits' },
             projects: { count: data.projects || 0, growth: 'Live' },
             messages: { count: (data.inquiries || 0) + (data.bookings || 0), growth: 'Total Inquiries' }
           });

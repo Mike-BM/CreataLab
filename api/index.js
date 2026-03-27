@@ -187,19 +187,51 @@ app.put('/api/settings/:key', requireAdmin, asyncHandler(async (req, res) => {
 }));
 
 app.get('/api/stats', requireAdmin, asyncHandler(async (req, res) => {
-  const [projectsRes, postsRes, inquiriesRes, bookingsRes] = await Promise.all([
+  const [projectsRes, postsRes, inquiriesRes, bookingsRes, analyticsRes] = await Promise.all([
     supabase.from('projects').select('*', { count: 'exact', head: true }),
     supabase.from('posts').select('*', { count: 'exact', head: true }),
     supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
     supabase.from('bookings').select('*', { count: 'exact', head: true }),
+    supabase.from('site_settings').select('value').eq('key', 'analytics_data').maybeSingle()
   ]);
+  
+  const analytics = analyticsRes.data?.value || {};
   res.json({ 
     projects: projectsRes.count || 0, 
     posts: postsRes.count || 0, 
     inquiries: inquiriesRes.count || 0, 
-    bookings: bookingsRes.count || 0 
+    bookings: bookingsRes.count || 0,
+    pageViews: analytics.totalViews || 0,
+    topPaths: Object.entries(analytics.paths || {}).map(([path, count]) => ({ path, count }))
   });
 }));
+
+app.post('/api/track', async (req, res) => {
+  const { path } = req.body;
+  if (!path || path.startsWith('/admin')) return res.json({ ok: true });
+  
+  try {
+    const { data: existing } = await supabase.from('site_settings').select('id, value').eq('key', 'analytics_data').maybeSingle();
+    let analytics = existing?.value || { totalViews: 0, paths: {} };
+    
+    analytics.totalViews = (analytics.totalViews || 0) + 1;
+    analytics.paths[path] = (analytics.paths[path] || 0) + 1;
+    
+    // Sort and limit to top 20 paths
+    const sortedPaths = Object.entries(analytics.paths).sort((a,b) => b[1]-a[1]).slice(0, 20);
+    analytics.paths = Object.fromEntries(sortedPaths);
+    
+    if (existing) {
+      await supabase.from('site_settings').update({ value: analytics }).eq('key', 'analytics_data');
+    } else {
+      await supabase.from('site_settings').insert({ key: 'analytics_data', value: analytics });
+    }
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('Tracking Error:', e);
+    res.json({ ok: false });
+  }
+});
 
 // Utility to send emails via Resend API (no external dependency needed)
 async function sendNotificationEmail(subject, html) {
@@ -334,8 +366,17 @@ app.put('/api/projects/:id', requireAdmin, asyncHandler(async (req, res) => {
 }));
 
 app.delete('/api/projects/:id', requireAdmin, asyncHandler(async (req, res) => {
-  const { error } = await supabase.from('projects').delete().eq('id', req.params.id);
-  if (error) return res.status(500).json({ error: error.message });
+  console.log(`[DB DELETE] Trying to delete project ${req.params.id}`);
+  const { data, error } = await supabase.from('projects').delete().eq('id', req.params.id).select();
+  if (error) {
+    console.error('[DB DELETE] Error:', error);
+    return res.status(500).json({ error: error.message });
+  }
+  if (!data || data.length === 0) {
+    console.warn(`[DB DELETE] Project ${req.params.id} not found in Supabase!`);
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  console.log(`[DB DELETE] Successfully deleted project ${req.params.id} from Supabase.`);
   res.json({ ok: true });
 }));
 

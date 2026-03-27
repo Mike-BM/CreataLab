@@ -21,6 +21,20 @@ import { adminAuth } from './lib/admin-auth';
 import { appConfig, syncAppConfig } from './lib/config';
 import { useState, useEffect } from 'react';
 import CustomCursor from './components/CustomCursor';
+import { useLocation } from 'react-router-dom';
+
+const AnalyticsTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    // Fire and forget page view tracking
+    fetch(`${appConfig.api.base}/track`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: location.pathname })
+    }).catch(() => {});
+  }, [location]);
+  return null;
+};
 
 // Reactive auth guard — re-checks localStorage on every render
 const ProtectedAdminRoute = () => {
@@ -87,6 +101,7 @@ function App() {
       <CustomCursor />
       <QueryClientProvider client={queryClientInstance}>
         <Router>
+          <AnalyticsTracker />
           <Routes>
             <Route path="/" element={
               isSyncing ? (
