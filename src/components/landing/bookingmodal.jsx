@@ -128,7 +128,7 @@ export default function BookingModal({ isOpen, onClose }) {
                     <div>
                       <label className="text-gray-400 text-sm mb-2 block">Full Name *</label>
                       <Input
-                        placeholder="John Doe"
+                        placeholder="Brian Michael"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-12 rounded-xl"
@@ -139,7 +139,7 @@ export default function BookingModal({ isOpen, onClose }) {
                       <label className="text-gray-400 text-sm mb-2 block">Email Address *</label>
                       <Input
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="brian@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-12 rounded-xl"

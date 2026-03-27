@@ -20,6 +20,7 @@ import Maintenance from './components/maintenance';
 import { adminAuth } from './lib/admin-auth';
 import { appConfig, syncAppConfig } from './lib/config';
 import { useState, useEffect } from 'react';
+import CustomCursor from './components/CustomCursor';
 
 // Reactive auth guard — re-checks localStorage on every render
 const ProtectedAdminRoute = () => {
@@ -83,6 +84,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <CustomCursor />
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <Routes>

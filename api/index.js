@@ -352,6 +352,9 @@ app.delete('/api/posts/:id', requireAdmin, asyncHandler(async (req, res) => {
   res.json({ ok: true });
 }));
 
+// Execute startup initialization
+initializeSystem().catch(err => console.error('Startup Error:', err));
+
 export default app;
 
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
