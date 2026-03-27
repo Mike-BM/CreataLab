@@ -236,7 +236,8 @@ app.post('/api/track', async (req, res) => {
 // Utility to send emails via Resend API (no external dependency needed)
 async function sendNotificationEmail(subject, html) {
   const apiKey = process.env.RESEND_API_KEY;
-  const adminEmail = process.env.ADMIN_EMAIL || 'hellocreatalab@gmail.com';
+  // Hardcoded to strictly prevent Vercel ENV typos from sending to invalid addresses
+  const adminEmail = 'hellocreatalab@gmail.com';
   
   if (!apiKey) {
     console.log('Skipping email notification: RESEND_API_KEY missing');
@@ -274,6 +275,11 @@ app.post('/api/contact', async (req, res) => {
     name, email, subject, message, created_at: new Date().toISOString() 
   });
   
+  if (error) {
+    console.error('[DB INSERT ERROR] Contact:', error);
+    return res.status(500).json({ error: 'Failed to save contact message' });
+  }
+  
   // Wait for email notification to complete so Vercel does not terminate the function early
   await sendNotificationEmail(
     `New Contact Message: ${subject}`,
@@ -297,8 +303,13 @@ app.get('/api/contact', requireAdmin, asyncHandler(async (req, res) => {
 app.post('/api/bookings', asyncHandler(async (req, res) => {
   const { name, email, phone, service, message, preferredDate } = req.body;
   const { data, error } = await supabase.from('bookings').insert({ 
-    name, email, phone, service, message, preferred_date: preferredDate, created_at: new Date().toISOString() 
+    name, email, phone, service, message, preferred_date: preferredDate || null, created_at: new Date().toISOString() 
   });
+
+  if (error) {
+    console.error('[DB INSERT ERROR] Booking:', error);
+    return res.status(500).json({ error: 'Failed to save booking' });
+  }
   
   // Wait for email notification to complete so Vercel does not terminate the function early
   await sendNotificationEmail(
