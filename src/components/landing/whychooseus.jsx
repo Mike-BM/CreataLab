@@ -37,7 +37,7 @@ const testimonials = [
   },
   {
     quote: "Fast, creative, and genuinely cared about our project. Highly recommended!",
-    author: "Florency Muthina.",
+    author: "John Michael",
     role: "Business Owner"
   }
 ];
