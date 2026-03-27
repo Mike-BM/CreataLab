@@ -91,8 +91,8 @@ export default function Contact() {
     {
       icon: Mail,
       label: "Email Us",
-      value: "hello@creatalab.com",
-      href: "mailto:hello@creatalab.com"
+      value: "hellocreatalab@gmail.com",
+      href: "mailto:hellocreatalab@gmail.com"
     },
     {
       icon: Phone,
