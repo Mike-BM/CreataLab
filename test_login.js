@@ -1,11 +1,16 @@
-
 const API_BASE = 'http://localhost:4000/api';
 
 async function testLogin() {
+    const PASS = process.env.ADMIN_DEFAULT_PASSWORD;
+    if (!PASS) {
+        console.error('FATAL: ADMIN_DEFAULT_PASSWORD is required in .env for this test');
+        process.exit(1);
+    }
+
     const credentials = [
-        { email: 'admin@creatalab.com', password: 'CreataLabAdmin!2026' },
-        { email: 'brianmuema928@gmail.com', password: 'CreataLabAdmin!2026' },
-        { email: 'ADMIN@CREATALAB.COM', password: 'CreataLabAdmin!2026' }, // Test casing
+        { email: 'admin@creatalab.com', password: PASS },
+        { email: 'brianmuema928@gmail.com', password: PASS },
+        { email: 'ADMIN@CREATALAB.COM', password: PASS }, // Test casing
         { email: 'nonexistent@example.com', password: 'password' }
     ];
 

@@ -7,9 +7,15 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+const adminPass = process.env.ADMIN_DEFAULT_PASSWORD;
+if (!adminPass) {
+  console.error("FATAL: ADMIN_DEFAULT_PASSWORD must be set in .env.");
+  process.exit(1);
+}
+
 const adminsToReset = [
-  { email: 'admin@creatalab.com', newPass: 'CreataLabAdmin!2026' },
-  { email: 'brianmuema928@gmail.com', newPass: 'BrianSecure@2026' }
+  { email: 'admin@creatalab.com', newPass: adminPass },
+  { email: 'brianmuema928@gmail.com', newPass: adminPass }
 ];
 
 async function resetAllPasswords() {

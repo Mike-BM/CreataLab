@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Eye } from 'lucide-react';
+import { ExternalLink, Eye, ArrowRight } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
 import { Button } from '@/ui/button';
 
@@ -198,13 +198,22 @@ export default function Portfolio() {
           </AnimatePresence>
         </motion.div>
 
-        {/* View All Button */}
+        {/* View All & CTA Button */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mt-12"
+          className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
+          <button 
+            onClick={() => {
+              const section = document.querySelector('#contact');
+              if (section) section.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="group premium-gradient px-8 py-4 rounded-full text-white font-bold shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 transition-all duration-300"
+          >
+            Start Your Project
+          </button>
           <button className="group inline-flex items-center gap-2 px-8 py-4 rounded-full border border-white/20 text-white hover:bg-white/5 transition-all duration-300">
             View All Projects
             <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Mail, Phone, MessageCircle, MapPin, ArrowRight, CheckCircle } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
@@ -7,6 +7,7 @@ import { Input } from '@/ui/input';
 import { Textarea } from '@/ui/textarea';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const recaptchaRef = useRef(null);
 
   const validateForm = (data) => {
     const trimmed = {
@@ -43,14 +45,21 @@ export default function Contact() {
       const error = validateForm(formData);
       if (error) {
         toast.error(error);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const recaptchaToken = recaptchaRef.current?.getValue();
+      if (!recaptchaToken) {
+        toast.error("Please complete the reCAPTCHA verification.");
+        setIsSubmitting(false);
         return;
       }
 
       const safeData = {
-        name: formData.name.trim(),
-        email: formData.email.trim(),
         subject: formData.subject.trim(),
         message: formData.message.trim(),
+        recaptchaToken,
       };
 
       // If no secure backend is configured, simulate success in demo mode
@@ -78,6 +87,7 @@ export default function Contact() {
       setTimeout(() => {
         setIsSubmitted(false);
         setFormData({ name: '', email: '', subject: '', message: '' });
+        recaptchaRef.current?.reset();
       }, 3000);
     } catch (error) {
       console.error('Submission error:', error);
@@ -396,6 +406,14 @@ export default function Contact() {
                     required
                   />
                 </motion.div>
+
+                <div className="flex justify-center py-2">
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey={appConfig.recaptcha.siteKey}
+                    theme="dark"
+                  />
+                </div>
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}

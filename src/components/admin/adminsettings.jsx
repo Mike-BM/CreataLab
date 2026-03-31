@@ -463,10 +463,6 @@ export default function AdminSettings() {
                   placeholder="Enter active key"
                   className="bg-white/[0.03] border-white/[0.08] h-14 rounded-2xl text-white text-xs"
                 />
-                <div className="flex items-center gap-2 mt-2 ml-1">
-                   <ShieldCheck className="w-3 h-3 text-purple-400" />
-                   <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Active Key: {adminAuth.getCurrentPasswordLabel()}</span>
-                </div>
               </div>
               
               <div className="space-y-3">

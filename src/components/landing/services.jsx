@@ -15,46 +15,28 @@ import BookingModal from './bookingmodal.jsx';
 const services = [
   {
     id: 1,
-    icon: Palette,
-    title: "Branding & Marketing Assets",
-    description: "Complete visual brand systems that make your business unforgettable. From logos to merchandise, we craft every touchpoint.",
-    features: ["Logo Design", "Visual Identity", "Merchandise", "Brand Guidelines"],
-    gradient: "from-purple-600 to-pink-600",
-    bgGradient: "from-purple-600/20 to-pink-600/20"
-  },
-  {
-    id: 2,
-    icon: MonitorPlay,
-    title: "Digital & Media Design",
-    description: "Eye-catching visuals for the digital world. Social media graphics, marketing creatives, and video content that engages.",
-    features: ["Social Media Graphics", "Marketing Creatives", "Ad Campaigns", "Video Editing", "Motion Graphics"],
-    gradient: "from-pink-600 to-orange-500",
-    bgGradient: "from-pink-600/20 to-orange-500/20"
-  },
-  {
-    id: 3,
-    icon: BarChart3,
-    title: "Data Analysis & Visual Insights",
-    description: "Transform complex data into clear, actionable insights. Beautiful dashboards and reports that drive decisions.",
-    features: ["Data Visualization", "Interactive Dashboards", "Report Design", "Analytics Setup", "Insight Reports"],
+    icon: Globe,
+    title: "High-Performance Web Solutions",
+    description: "Your website should be your #1 salesperson. We build custom, conversion-focused platforms that blend elite aesthetics with secure, scalable performance to grow your business.",
+    features: ["Business Platforms", "Dynamic Portfolios", "Booking Systems", "Performance Engine", "Mobile Optimization"],
     gradient: "from-cyan-500 to-blue-600",
     bgGradient: "from-cyan-500/20 to-blue-600/20"
   },
   {
-    id: 4,
-    icon: Globe,
-    title: "AI Solutions",
-    description: "Professional websites that convert. From portfolios to business platforms, built for performance and beauty.",
-    features: ["Business Websites", "Landing Pages", "Portfolio Sites", "Performance Optimization", "Web Maintenance"],
-    gradient: "from-green-500 to-cyan-500",
-    bgGradient: "from-green-500/20 to-cyan-500/20"
+    id: 2,
+    icon: Palette,
+    title: "High-Impact Multi-Media",
+    description: "Graphic design that demands a second look. Professional posters and high-fidelity banners engineered to broadcast your message with clarity and authority.",
+    features: ["Bespoke Poster Design", "Event Brand Banners", "Marketing Visual Kits", "Digital Asset Design", "Social Presence Kits"],
+    gradient: "from-purple-600 to-pink-600",
+    bgGradient: "from-purple-600/20 to-pink-600/20"
   },
   {
-    id: 5,
+    id: 3,
     icon: Sparkles,
-    title: "AI-Assisted Solutions",
-    description: "Leverage cutting-edge AI tools to enhance workflows, automate tasks, and unlock new creative possibilities.",
-    features: ["AI Integration", "Workflow Automation", "Smart Design Tools", "Content Generation", "Process Optimization"],
+    title: "Elite Brand Identity",
+    description: "Build an identity that dominates the competition. We craft world-class logos and brand guidelines that give your business a permanent, professional voice.",
+    features: ["Logo Architecture", "Elite Brand Guidelines", "Visual Strategy", "Industry-Leading UI/UX", "Trust-Building Design"],
     gradient: "from-violet-600 to-purple-600",
     bgGradient: "from-violet-600/20 to-purple-600/20"
   }
@@ -117,7 +99,7 @@ export default function Services() {
               transition={{ delay: index * 0.1 }}
               onMouseEnter={() => setActiveService(service.id)}
               onMouseLeave={() => setActiveService(null)}
-              className={`group relative cursor-pointer ${index === 4 ? 'lg:col-span-2 lg:max-w-2xl lg:mx-auto' : ''}`}
+              className="group relative cursor-pointer"
             >
               {/* Hover glow */}
               <AnimatePresence>

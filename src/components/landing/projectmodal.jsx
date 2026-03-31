@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Tag } from 'lucide-react';
+import { X, ExternalLink, Tag, Sparkles } from 'lucide-react';
 import { Button } from '@/ui/button';
 import PropTypes from 'prop-types';
 
@@ -66,9 +66,58 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
 
 
-                <p className="text-gray-400 text-sm md:text-base leading-relaxed mb-8">
-                  {project.full_description || project.description}
-                </p>
+                {/* Enhanced Case Study Sections */}
+                <div className="grid md:grid-cols-2 gap-10 mb-12">
+                  <div className="space-y-6">
+                    <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5">
+                      <h3 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
+                        <span className="w-1.5 h-6 bg-purple-500 rounded-full" />
+                        The Project
+                      </h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">
+                        {project.description}
+                      </p>
+                    </div>
+
+                    {project.problem && (
+                      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5">
+                        <h3 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
+                          <span className="w-1.5 h-6 bg-pink-500 rounded-full" />
+                          The Problem
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                          {project.problem}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-6">
+                    {project.full_description && (
+                      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5">
+                        <h3 className="text-white font-bold text-lg mb-3 flex items-center gap-2">
+                          <span className="w-1.5 h-6 bg-cyan-500 rounded-full" />
+                          The Outcome
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                          {project.full_description}
+                        </p>
+                      </div>
+                    )}
+
+                    {project.impact && (
+                      <div className="p-6 rounded-2xl bg-white/5 border border-purple-500/20 shadow-[0_0_30px_rgba(168,85,247,0.1)]">
+                        <h3 className="text-purple-400 font-bold text-lg mb-3 flex items-center gap-2">
+                          <Sparkles className="w-5 h-5" />
+                          The Impact
+                        </h3>
+                        <p className="text-gray-300 text-sm leading-relaxed font-medium">
+                          {project.impact}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 {/* Tools Used */}
                 {project.tools && project.tools.length > 0 && (

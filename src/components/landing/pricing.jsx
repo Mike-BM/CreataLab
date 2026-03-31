@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check, Zap, Sparkles, Target, BarChart3, Database } from 'lucide-react';
+import { Check, Zap, Sparkles, Target, BarChart3, Database, Globe, Palette } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { appConfig } from '@/lib/config';
 
@@ -58,9 +58,9 @@ export default function Pricing() {
             >
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center border border-white/10 text-purple-400">
-                  {idx === 0 ? <Sparkles className="w-6 h-6" /> : <Database className="w-6 h-6" />}
+                  {idx === 0 ? <Globe className="w-6 h-6" /> : <Palette className="w-6 h-6" />}
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase">{category.title}</h3>
+                <h3 className="text-2xl font-black text-white tracking-tight uppercase">{category.title === 'Web Development' ? 'Website Design' : category.title}</h3>
               </div>
 
               <div className="space-y-6">

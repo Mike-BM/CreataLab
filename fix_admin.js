@@ -4,10 +4,10 @@ import bcrypt from 'bcryptjs';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const PASSWORD = process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026';
+const PASSWORD = process.env.ADMIN_DEFAULT_PASSWORD;
 
-if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-  console.error('❌ Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env');
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !PASSWORD) {
+  console.error('❌ Missing SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY or ADMIN_DEFAULT_PASSWORD in .env');
   process.exit(1);
 }
 

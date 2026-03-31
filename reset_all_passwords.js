@@ -4,7 +4,11 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const DEFAULT_PASS = 'CreataLabAdmin!2026';
+const DEFAULT_PASS = process.env.ADMIN_DEFAULT_PASSWORD;
+if (!DEFAULT_PASS) {
+    console.error('FATAL: ADMIN_DEFAULT_PASSWORD environment variable is missing.');
+    process.exit(1);
+}
 const ADMIN_EMAILS = ['admin@creatalab.com', 'brianmuema928@gmail.com'];
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);

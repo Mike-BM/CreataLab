@@ -26,11 +26,22 @@ import { useLocation } from 'react-router-dom';
 const AnalyticsTracker = () => {
   const location = useLocation();
   useEffect(() => {
+    // Unique Visitor ID for better accuracy
+    let visitorId = localStorage.getItem('creatalab_visitor_id');
+    if (!visitorId) {
+      visitorId = 'v_' + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+      localStorage.setItem('creatalab_visitor_id', visitorId);
+    }
+
     // Fire and forget page view tracking
     fetch(`${appConfig.api.base}/track`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: location.pathname })
+      body: JSON.stringify({ 
+        path: location.pathname,
+        visitorId,
+        referrer: document.referrer || 'direct'
+      })
     }).catch(() => {});
   }, [location]);
   return null;
@@ -75,7 +86,6 @@ function App() {
         const response = await fetch(`${appConfig.api.base}/settings`);
         if (response.ok) {
           const data = await response.json();
-          console.log('System sync data received:', data);
           if (data.maintenance_mode) setMaintenance(data.maintenance_mode);
           // Sync global config (branding, socials)
           syncAppConfig(data);
@@ -88,11 +98,17 @@ function App() {
         setIsSyncing(false);
       }
     };
+    
+    // Initial sync
     syncSystem();
+    
+    // Poll every 5 seconds so updates reflect instantly without page refresh
+    const syncInterval = setInterval(syncSystem, 5000);
 
     return () => {
       window.removeEventListener('error', handleError);
       window.removeEventListener('unhandledrejection', handleRejection);
+      clearInterval(syncInterval);
     };
   }, []);
 

@@ -46,10 +46,13 @@ export default function AdminAnalytics() {
       
       setStats({
         overview: [
-          { label: 'Total Page Views', value: (data.pageViews || 0).toString(), change: 'Live', trend: 'up', icon: Eye, color: 'from-blue-500 to-cyan-500', progress: 100, path: '#' },
-          { label: 'Service Requests', value: (data.bookings || 0).toString(), change: 'Live', trend: 'up', icon: Clock, color: 'from-purple-500 to-pink-500', progress: 68, path: '/admin/inquiries' },
+          { label: 'Total Page Views', value: (data.pageViews || 0).toLocaleString(), change: 'Live', trend: 'up', icon: Eye, color: 'from-blue-500 to-cyan-500', progress: 100, path: '#' },
+          { label: 'Unique Visitors', value: (data.uniqueVisitors || 0).toLocaleString(), change: 'Live', trend: 'up', icon: Users, color: 'from-purple-500 to-pink-500', progress: 100, path: '#' },
           { label: 'Active Portfolios', value: (data.projects || 0).toString(), change: 'Live', trend: 'up', icon: Target, color: 'from-green-500 to-emerald-500', progress: 82, path: '/admin/portfolio' },
-          { label: 'Contact Proposals', value: (data.inquiries || 0).toString(), change: 'Live', trend: 'up', icon: Mail, color: 'from-orange-500 to-red-500', progress: 45, path: '/admin/inquiries' },
+          { label: 'Inquiries', value: (data.inquiries || 0).toString(), change: 'Live', trend: 'up', icon: Mail, color: 'from-orange-500 to-red-500', progress: 45, path: '/admin/inquiries' },
+        ],
+        referrers: (data.referrers && data.referrers.length > 0) ? data.referrers : [
+          { source: 'Direct / Unknown', count: data.uniqueVisitors || 0 }
         ],
         topContent: (data.topPaths && data.topPaths.length > 0) ? data.topPaths.map(p => ({
           title: p.path === '/' ? 'Home Page' : p.path,
@@ -68,7 +71,7 @@ export default function AdminAnalytics() {
     } catch (err) {
       console.error('Failed to sync analytics:', err);
       toast.error('Insight synchronization failed');
-      setStats({ overview: [], topContent: [], geographic: [] }); // Prevent crash on map
+      setStats({ overview: [], topContent: [], referrers: [] }); // Prevent crash on map
     } finally {
       setLoading(false);
     }
@@ -178,39 +181,43 @@ export default function AdminAnalytics() {
               </div>
             </div>
 
-            {/* Geographic Distribution */}
+            {/* Traffic Sources */}
             <div className="space-y-6">
               <h2 className="text-lg font-black text-white px-2 flex items-center gap-3 uppercase tracking-widest">
-                <Target className="w-5 h-5 text-pink-500" />
-                Geographic Hub
+                <TrendingUp className="w-5 h-5 text-pink-500" />
+                Traffic Sources
               </h2>
               <div className="glass-card rounded-[2.5rem] p-8 border border-white/[0.05]">
                 <div className="space-y-8">
-                  {(stats?.geographic || []).map((geo, i) => (
-                    <div key={i} className="space-y-3">
-                      <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest">
-                        <span className="text-white">{geo.country}</span>
-                        <span className="text-gray-500">{geo.visitors}</span>
+                  {(stats?.referrers || []).slice(0, 5).map((ref, i) => {
+                    const total = stats.overview[0].value.replace(/,/g, '') || 1;
+                    const share = Math.min(100, Math.round((ref.count / total) * 100));
+                    return (
+                      <div key={i} className="space-y-3">
+                        <div className="flex items-center justify-between text-[11px] font-black uppercase tracking-widest">
+                          <span className="text-white truncate max-w-[150px]">{ref.source}</span>
+                          <span className="text-gray-500">{ref.count}</span>
+                        </div>
+                        <div className="h-4 rounded-xl bg-white/[0.03] overflow-hidden p-1">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${share || 10}%` }}
+                            transition={{ delay: i * 0.1, duration: 1 }}
+                            className={`h-full rounded-lg bg-gradient-to-r ${
+                              i === 0 ? 'from-purple-600 to-purple-400' :
+                              i === 1 ? 'from-pink-600 to-pink-400' :
+                              'from-gray-600 to-gray-400'
+                            }`}
+                          />
+                        </div>
                       </div>
-                      <div className="h-4 rounded-xl bg-white/[0.03] overflow-hidden p-1">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${geo.share}%` }}
-                          transition={{ delay: i * 0.1, duration: 1 }}
-                          className={`h-full rounded-lg bg-gradient-to-r ${
-                            i === 0 ? 'from-purple-600 to-purple-400' :
-                            i === 1 ? 'from-pink-600 to-pink-400' :
-                            'from-gray-600 to-gray-400'
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 
-                <Button variant="ghost" className="w-full mt-10 rounded-2xl border border-white/5 text-gray-500 hover:text-white hover:bg-white/5 font-bold text-[10px] uppercase tracking-[0.2em]">
-                   Open Global Map
-                </Button>
+                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-10 text-center">
+                   Real-time referrer tracking enabled
+                </p>
               </div>
             </div>
           </div>

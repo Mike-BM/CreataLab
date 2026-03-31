@@ -61,14 +61,27 @@ export const adminAuth = {
 
   getToken: () => localStorage.getItem(ADMIN_TOKEN_KEY),
 
-  getCurrentPasswordLabel: () => {
-    // Return a hint or label for the current password context
-    return "CreataLabAdmin!2026";
-  },
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      const token = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const response = await fetch(`${appConfig.api.base}/auth/change-password`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
 
-  changePassword: async (current, next) => {
-    // In a real scenario, this would be an API call
-    console.log("Password change requested", { current, next });
-    return { ok: true };
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { success: false, error: errorData.error || 'Update failed' };
+      }
+
+      return { ok: true };
+    } catch (e) {
+      console.error("Password change failed:", e);
+      return { success: false, error: 'Connection failure' };
+    }
   }
 };

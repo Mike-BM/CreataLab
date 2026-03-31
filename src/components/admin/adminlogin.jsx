@@ -20,8 +20,8 @@ BackgroundElements.displayName = 'BackgroundElements';
 
 export default function AdminLogin() {
   // defaulting to the credentials the user liked for convenience
-  const [email, setEmail] = useState('admin@creatalab.com');
-  const [password, setPassword] = useState('CreataLabAdmin!2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();

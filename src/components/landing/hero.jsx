@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Calendar } from 'lucide-react';
+import { ArrowRight, Sparkles, Calendar, MonitorPlay } from 'lucide-react';
 import { Button } from '@/ui/button';
 import { appConfig } from '@/lib/config';
 import BookingModal from './bookingmodal.jsx';
@@ -156,69 +156,36 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Headline - Improved sizing and readability */}
+          {/* Headline - Simplified for high conversion */}
           <div className="mb-8">
             <motion.h1
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.2] mb-6"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-8 tracking-tight"
             >
-              <motion.span
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="inline-block text-white font-semibold"
-              >
-                Where{' '}
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-                className="inline-block bg-gradient-to-r from-cyan-300 via-[#3fb6d6] to-blue-500 bg-clip-text text-transparent animate-gradient font-bold"
-              >
-                Creativity
-              </motion.span>
-              <br className="md:hidden" />
-              <span className="hidden md:inline"> </span>
-              <motion.span
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.7, duration: 0.6 }}
-                className="inline-block text-white font-semibold"
-              >
-                Meets{' '}
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.9, type: 'spring', stiffness: 200 }}
-                className="inline-block bg-gradient-to-l from-cyan-300 via-[#3fb6d6] to-blue-500 bg-clip-text text-transparent animate-gradient font-bold"
-              >
-                Data
-              </motion.span>
+              Transform Your Vision Into a 
+              <span className="relative inline-block ml-2">
+                <span className="relative z-10 bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent animate-gradient">
+                  Digital Powerhouse
+                </span>
+                <motion.span
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.8 }}
+                  className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full blur-sm"
+                />
+              </span>
             </motion.h1>
-
-            {/* Decorative underline - matched to logo color */}
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: '120px' }}
-              transition={{ delay: 1.1, duration: 0.8 }}
-              className="h-0.5 bg-gradient-to-r from-cyan-400 via-[#3fb6d6] to-blue-500 rounded-full mx-auto shadow-[0_0_15px_rgba(63,182,214,0.5)]"
-            />
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-gray-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-10"
+            >
+              Stop settling for average. We engineer modern websites and precision branding that don't just look stunning—they <span className="text-white font-bold underline decoration-purple-500 decoration-2 underline-offset-4">attract customers and fuel business growth.</span>
+            </motion.p>
           </div>
-
-          {/* Improved description with better spacing */}
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="text-base md:text-lg lg:text-xl text-gray-200 max-w-3xl mx-auto mb-10 leading-relaxed px-4"
-          >
-            We partner with startups and NGOs to shape strategic brands, unlock data intelligence,
-            and build innovative digital platforms that convert, perform, and scale.
-          </motion.p>
 
           {/* Value bullets - Enhanced with animations */}
           <motion.div
@@ -246,56 +213,45 @@ export default function Hero() {
             ))}
           </motion.div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - High Conversion */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0, duration: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-5"
           >
             <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button
                 size="lg"
                 onClick={() => setBookingOpen(true)}
-                className="group relative bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-8 py-6 text-base font-semibold rounded-full transition-all duration-300 shadow-[0_0_30px_rgba(63,182,214,0.4)] hover:shadow-[0_0_40px_rgba(63,182,214,0.6)] border-2 border-cyan-400/30 overflow-hidden"
+                className="relative bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white px-10 py-7 text-lg font-bold rounded-2xl transition-all duration-300 shadow-[0_20px_50px_-20px_rgba(6,182,212,0.5)] border border-white/10"
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                />
-                <motion.div
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                />
-                <span className="relative z-10 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Start Your Project
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <span className="flex items-center gap-3">
+                  <MonitorPlay className="w-5 h-5" />
+                  Get a Website
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
             </motion.div>
 
             <motion.div
-              whileHover={{ scale: 1.05, y: -5 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button
                 size="lg"
-                onClick={() => {
-                  const portfolioSection = document.querySelector('#portfolio');
-                  if (portfolioSection) portfolioSection.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="group relative bg-gradient-to-r from-cyan-600/15 to-blue-600/15 border-2 border-cyan-500/40 text-white hover:border-cyan-400/80 hover:bg-gradient-to-r hover:from-cyan-600/25 hover:to-blue-600/25 px-8 py-6 text-base font-semibold rounded-full backdrop-blur-xl transition-all duration-300 shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:shadow-[0_0_35px_rgba(6,182,212,0.5)] overflow-hidden"
+                onClick={() => window.open(appConfig.socialLinks.whatsapp, '_blank')}
+                className="bg-white/5 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 px-10 py-7 text-lg font-bold rounded-2xl transition-all duration-300 shadow-[0_20px_50px_-20px_rgba(255,255,255,0.1)]"
               >
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent"
-                />
-                <span className="relative z-10">View Case Studies</span>
+                <span className="flex items-center gap-3">
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .004 5.412.001 12.048c0 2.123.541 4.196 1.582 6.075L0 24l6.12-1.605a11.827 11.827 0 005.928 1.599h.004c6.636 0 12.046-5.411 12.049-12.047.003-3.21-1.248-6.227-3.522-8.5l-.004-.001z" />
+                  </svg>
+                  Chat on WhatsApp
+                </span>
               </Button>
             </motion.div>
           </motion.div>

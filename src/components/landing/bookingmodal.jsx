@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, CheckCircle } from 'lucide-react';
@@ -8,6 +8,7 @@ import { Textarea } from '@/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/select';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const services = [
   "Brand Identity & Graphic Design",
@@ -28,6 +29,7 @@ export default function BookingModal({ isOpen, onClose }) {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const recaptchaRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,8 +47,21 @@ export default function BookingModal({ isOpen, onClose }) {
 
       if (!safeData.name || !safeData.email || !safeData.service || !safeData.message) {
         toast.error('Please fill in all required fields.');
+        setIsSubmitting(false);
         return;
       }
+
+      const recaptchaToken = recaptchaRef.current?.getValue();
+      if (!recaptchaToken) {
+        toast.error("Please complete the reCAPTCHA verification.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const payload = {
+        ...safeData,
+        recaptchaToken
+      };
 
       if (!appConfig.api.bookings) {
         console.warn('No bookings API configured. Running in demo mode.');
@@ -57,7 +72,7 @@ export default function BookingModal({ isOpen, onClose }) {
         const response = await fetch(appConfig.api.bookings, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(safeData),
+          body: JSON.stringify(payload),
           signal: controller.signal,
         });
 
@@ -72,6 +87,7 @@ export default function BookingModal({ isOpen, onClose }) {
       setTimeout(() => {
         setIsSubmitted(false);
         setFormData({ name: '', email: '', phone: '', service: '', message: '', preferredDate: '' });
+        recaptchaRef.current?.reset();
         onClose();
       }, 2000);
     } catch (error) {
@@ -198,6 +214,14 @@ export default function BookingModal({ isOpen, onClose }) {
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 min-h-[120px] rounded-xl resize-none"
                       required
+                    />
+                  </div>
+                  
+                  <div className="flex justify-center py-2">
+                    <ReCAPTCHA
+                      ref={recaptchaRef}
+                      sitekey={appConfig.recaptcha.siteKey}
+                      theme="dark"
                     />
                   </div>
 

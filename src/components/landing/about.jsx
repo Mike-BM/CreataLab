@@ -1,5 +1,7 @@
-import { motion } from 'framer-motion';
 import { Lightbulb, Target, Rocket, Users } from 'lucide-react';
+import { Button } from '@/ui/button';
+import { appConfig } from '@/lib/config';
+import { motion } from 'framer-motion';
 
 const values = [
   {
@@ -45,10 +47,13 @@ export default function About() {
           <span className="text-purple-400 text-sm font-medium tracking-wider uppercase mb-4 block">
             About Us
           </span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            A Creative Lab for the
-            <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent"> Digital Age</span>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
+            Built Different,
+            <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent"> Designed Better</span>
           </h2>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto font-medium mb-8">
+            Worked with organizations and clients to deliver creative digital solutions that solve real problems.
+          </p>
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
             creatalab is where ideas transform into reality. We're a young, innovative team 
             passionate about helping brands communicate clearly and beautifully through 
@@ -92,13 +97,35 @@ export default function About() {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-cyan-600/10 md:from-purple-600/20 md:via-pink-600/20 md:to-cyan-600/20 rounded-3xl blur-lg md:blur-xl" />
           <div className="relative p-10 md:p-16 rounded-3xl border border-white/10 bg-[#111118]/80 backdrop-blur-sm text-center">
-            <p className="text-2xl md:text-3xl text-white font-light leading-relaxed">
+            <p className="text-2xl md:text-3xl text-white font-light leading-relaxed mb-10">
               "We believe every idea deserves a 
               <span className="text-purple-400 font-medium"> beautiful presentation</span> and every 
               <span className="text-cyan-400 font-medium"> decision</span> deserves 
               <span className="text-pink-400 font-medium"> clear insights</span>."
             </p>
-            <div className="mt-8 flex items-center justify-center gap-4">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <Button
+                size="lg"
+                onClick={() => {
+                  const section = document.querySelector('#contact');
+                  if (section) section.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-purple-600 hover:bg-purple-500 text-white rounded-full px-8 h-14 font-bold"
+              >
+                Start Your Project
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => window.open(appConfig.socialLinks.whatsapp, '_blank')}
+                className="border-white/20 text-white hover:bg-white/5 rounded-full px-8 h-14 font-bold"
+              >
+                Contact Me
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-center gap-4">
               <div className="w-12 h-px bg-gradient-to-r from-transparent to-purple-500" />
               <span className="text-gray-400">creatalab Team</span>
               <div className="w-12 h-px bg-gradient-to-l from-transparent to-cyan-500" />

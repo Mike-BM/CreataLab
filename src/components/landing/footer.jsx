@@ -9,10 +9,11 @@ export default function Footer() {
 
   const links = {
     services: [
-      { label: "Brand Identity", href: "#services" },
-      { label: "Digital Design", href: "#services" },
+      { label: "Website Design", href: "#services" },
+      { label: "Graphic Design", href: "#services" },
+      { label: "Branding", href: "#services" },
       { label: "Data Analysis", href: "#services" },
-      { label: "Web Solutions", href: "#services" },
+      { label: "AI Solutions", href: "#services" },
     ],
     company: [
       { label: "About Us", href: "#about" },

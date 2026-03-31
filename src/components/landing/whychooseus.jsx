@@ -65,10 +65,13 @@ export default function WhyChooseUs() {
           <span className="text-green-400 text-sm font-medium tracking-wider uppercase mb-4 block">
             Why creatalab
           </span>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
             Built Different,
             <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent"> Designed Better</span>
           </h2>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto font-medium">
+            Trusted by industry leaders to deliver high-impact digital experiences.
+          </p>
         </motion.div>
 
         {/* Features Grid */}

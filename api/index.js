@@ -8,8 +8,13 @@ import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
 
 const app = express();
+app.set('trust proxy', 1); // Enable IP tracking behind proxies like Vercel
 const PORT = process.env.PORT || 4000;
-const JWT_SECRET = process.env.JWT_SECRET || 'change-this-in-env';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("FATAL: JWT_SECRET environment variable is missing.");
+}
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -38,10 +43,14 @@ async function initializeSystem() {
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) return;
   
   // Ensure Admin
+  const adminPassword = process.env.ADMIN_DEFAULT_PASSWORD;
+  if (!adminPassword) {
+    console.warn("WARNING: ADMIN_DEFAULT_PASSWORD is not set. Default administrators may not be created.");
+  }
   const admins = [
-    { email: 'admin@creatalab.com', password: process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026' },
-    { email: 'brianmuema928@gmail.com', password: process.env.ADMIN_DEFAULT_PASSWORD || 'CreataLabAdmin!2026' }
-  ];
+    { email: 'admin@creatalab.com', password: adminPassword },
+    { email: 'brianmuema928@gmail.com', password: adminPassword }
+  ].filter(a => a.password);
   for (const admin of admins) {
     const { data: existing } = await supabase.from('admin_users').select('id').ilike('email', admin.email.trim().toLowerCase()).maybeSingle();
     if (!existing) {
@@ -60,15 +69,15 @@ async function initializeSystem() {
     { key: 'branding', value: { name: 'creatalab', logoUrl: '/Logo.png', tagline: 'Creative-Tech Innovation Lab' } },
     { key: 'socials', value: { instagram: 'https://instagram.com/creatalab', whatsapp: '254753436729' } },
     { key: 'pricing', value: { categories: [
-      { title: 'Brand & Creative', items: [
-        { name: 'Identity Essentials', price: 'KSH 45,000', details: 'Logo, Palette, Fonts' },
-        { name: 'Core Brand Design', price: 'KSH 85,000', details: 'Full Identity + Basic Assets' },
-        { name: 'Premium Brand Experience', price: 'Contact', details: 'Digital-First Brand Ecosystem' }
+      { title: 'Web Development', items: [
+        { name: 'Starter Website', price: 'KES 5,000', details: 'Perfect for small businesses & personal portfolios' },
+        { name: 'Business Website', price: 'KES 15,000', details: 'Full booking systems & custom business platforms' },
+        { name: 'Custom Application', price: 'Contact', details: 'Complex full-stack dashboards & custom logic' }
       ]},
-      { title: 'Digital & Web', items: [
-        { name: 'Professional Site', price: 'KSH 65,000', details: 'Custom Design, SEO, Mobile Ready' },
-        { name: 'E-Commerce Solution', price: 'KSH 150,000', details: 'Payments, Inventory, CRM' },
-        { name: 'Complex Application', price: 'Contact', details: 'Full-Stack Dashboards' }
+      { title: 'Design & Branding', items: [
+        { name: 'Poster Design', price: 'KES 500', details: 'High-impact social media & event posters' },
+        { name: 'Logo Design', price: 'KES 3,000', details: 'Unique, professional brand identity kits' },
+        { name: 'Brand Strategy', price: 'KES 10,000', details: 'Full identity + social media guidelines' }
       ]}
     ] } }
   ];
@@ -78,21 +87,38 @@ async function initializeSystem() {
 }
 initializeSystem().catch(console.error);
 
+// Rate Limiting Config
+const globalLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 300, message: { error: 'Too many requests, please slow down.' } });
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 15, message: { error: 'Too many login attempts. Try again in 15 minutes.' } });
+const emailLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10, message: { error: 'Messaging limit reached. Try again in 1 hour.' } });
+
 // Middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ 
+  origin: process.env.NODE_ENV === 'production' 
+    ? (process.env.FRONTEND_URL ? [process.env.FRONTEND_URL, /\.vercel\.app$/] : true) 
+    : true, 
+  credentials: true 
+}));
 app.use(express.json({ limit: '100kb' }));
+app.use('/api/', globalLimiter); // Protect all API endpoints globally
 
-const requireAdmin = (req, res, next) => {
+const requireAdmin = asyncHandler(async (req, res, next) => {
   const token = (req.headers.authorization || '').replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    req.admin = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Security check: ensure user account still exists
+    const { data: user } = await supabase.from('admin_users').select('id').eq('id', decoded.id).maybeSingle();
+    if (!user) return res.status(401).json({ error: 'Account has been deactivated or deleted.' });
+    
+    req.admin = decoded;
     next();
   } catch {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: 'Invalid or expired token' });
   }
-};
+});
 
 app.get('/api/debug/env', asyncHandler(async (req, res) => {
   const report = {
@@ -100,6 +126,7 @@ app.get('/api/debug/env', asyncHandler(async (req, res) => {
     hasSupabaseKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     hasJwtSecret: !!process.env.JWT_SECRET,
     hasResendKey: !!process.env.RESEND_API_KEY,
+    hasRecaptchaSecret: !!process.env.RECAPTCHA_SECRET_KEY,
     nodeEnv: process.env.NODE_ENV,
     dbStatus: 'testing...'
   };
@@ -116,7 +143,7 @@ app.get('/api/debug/env', asyncHandler(async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-app.post('/api/auth/login', asyncHandler(async (req, res) => {
+app.post('/api/auth/login', authLimiter, asyncHandler(async (req, res) => {
   const { email, password } = req.body || {};
   const { data: user } = await supabase.from('admin_users').select('*').ilike('email', (email || '').trim().toLowerCase()).maybeSingle();
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
@@ -202,24 +229,49 @@ app.get('/api/stats', requireAdmin, asyncHandler(async (req, res) => {
     inquiries: inquiriesRes.count || 0, 
     bookings: bookingsRes.count || 0,
     pageViews: analytics.totalViews || 0,
+    uniqueVisitors: analytics.uniqueVisitors || 0,
+    referrers: Object.entries(analytics.referrers || {}).map(([source, count]) => ({ source, count })),
     topPaths: Object.entries(analytics.paths || {}).map(([path, count]) => ({ path, count }))
   });
 }));
 
 app.post('/api/track', async (req, res) => {
-  const { path } = req.body;
-  if (!path || path.startsWith('/admin')) return res.json({ ok: true });
+  const { path, visitorId, referrer } = req.body;
+  if (!path || typeof path !== 'string' || path.length > 200 || path.startsWith('/admin') || !path.startsWith('/')) {
+    return res.json({ ok: true });
+  }
   
   try {
     const { data: existing } = await supabase.from('site_settings').select('id, value').eq('key', 'analytics_data').maybeSingle();
-    let analytics = existing?.value || { totalViews: 0, paths: {} };
+    let analytics = existing?.value || { totalViews: 0, uniqueVisitors: 0, visitors: [], paths: {}, referrers: {} };
     
+    // Global tracking
     analytics.totalViews = (analytics.totalViews || 0) + 1;
     analytics.paths[path] = (analytics.paths[path] || 0) + 1;
     
-    // Sort and limit to top 20 paths
+    // Unique visitor tracking (limit history to 2000 IDs to keep JSON small)
+    if (visitorId && !analytics.visitors?.includes(visitorId)) {
+      analytics.visitors = [...(analytics.visitors || []), visitorId].slice(-2000);
+      analytics.uniqueVisitors = (analytics.uniqueVisitors || 0) + 1;
+    }
+
+    // Referrer tracking
+    if (referrer && referrer !== 'direct') {
+      try {
+        const domain = new URL(referrer).hostname;
+        analytics.referrers = analytics.referrers || {};
+        analytics.referrers[domain] = (analytics.referrers[domain] || 0) + 1;
+      } catch(e) {}
+    }
+    
+    // Sort and limit paths and referrers
     const sortedPaths = Object.entries(analytics.paths).sort((a,b) => b[1]-a[1]).slice(0, 20);
     analytics.paths = Object.fromEntries(sortedPaths);
+    
+    if (analytics.referrers) {
+      const sortedRefs = Object.entries(analytics.referrers).sort((a,b) => b[1]-a[1]).slice(0, 10);
+      analytics.referrers = Object.fromEntries(sortedRefs);
+    }
     
     if (existing) {
       await supabase.from('site_settings').update({ value: analytics }).eq('key', 'analytics_data');
@@ -269,8 +321,38 @@ async function sendNotificationEmail(subject, html) {
   }
 }
 
-app.post('/api/contact', async (req, res) => {
-  const { name, email, subject, message } = req.body;
+// reCAPTCHA verification utility
+async function verifyRecaptcha(token) {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) {
+    console.warn("RECAPTCHA_SECRET_KEY is not set. Skipping verification.");
+    return true; // Bypass if not configured
+  }
+  if (!token) return false;
+  
+  try {
+    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secret}&response=${token}`
+    });
+    const data = await res.json();
+    return data.success;
+  } catch (err) {
+    console.error('reCAPTCHA verification error:', err);
+    return false;
+  }
+}
+
+app.post('/api/contact', emailLimiter, async (req, res) => {
+  const { name, email, subject, message, recaptchaToken } = req.body;
+  
+  // Verify reCAPTCHA
+  const isValid = await verifyRecaptcha(recaptchaToken);
+  if (!isValid) {
+    return res.status(400).json({ error: 'Failed reCAPTCHA verification. Please try again.' });
+  }
+
   const { data, error } = await supabase.from('contact_messages').insert({ 
     name, email, subject, message, created_at: new Date().toISOString() 
   });
@@ -300,8 +382,15 @@ app.get('/api/contact', requireAdmin, asyncHandler(async (req, res) => {
   res.json(data || []);
 }));
 
-app.post('/api/bookings', asyncHandler(async (req, res) => {
-  const { name, email, phone, service, message, preferredDate } = req.body;
+app.post('/api/bookings', emailLimiter, asyncHandler(async (req, res) => {
+  const { name, email, phone, service, message, preferredDate, recaptchaToken } = req.body;
+
+  // Verify reCAPTCHA
+  const isValid = await verifyRecaptcha(recaptchaToken);
+  if (!isValid) {
+    return res.status(400).json({ error: 'Failed reCAPTCHA verification. Please try again.' });
+  }
+
   const { data, error } = await supabase.from('bookings').insert({ 
     name, email, phone, service, message, preferred_date: preferredDate || null, created_at: new Date().toISOString() 
   });

@@ -29,6 +29,11 @@ export const appConfig = {
     get bookings() { return `${this.base}/bookings`; },
     postsBase: import.meta.env.VITE_POSTS_API_BASE || '',
   },
+
+  // reCAPTCHA
+  recaptcha: {
+    siteKey: import.meta.env.VITE_RECAPTCHA_SITE_KEY || '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', // Official test key
+  },
 };
 
 /**
