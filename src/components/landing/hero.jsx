@@ -181,10 +181,35 @@ export default function Hero() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-gray-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-10"
+              className="text-gray-300 text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-8"
             >
               Stop settling for average. We engineer modern websites and precision branding that don't just look stunning—they <span className="text-white font-bold underline decoration-purple-500 decoration-2 underline-offset-4">attract customers and fuel business growth.</span>
             </motion.p>
+
+            {/* Social Proof Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-center gap-4 mb-10"
+            >
+              <div className="flex -space-x-3">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-[#0a0a0f] bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center overflow-hidden">
+                    <div className="w-full h-full bg-purple-500/10 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-purple-400" />
+                    </div>
+                  </div>
+                ))}
+                <div className="w-10 h-10 rounded-full border-2 border-[#0a0a0f] bg-purple-600 flex items-center justify-center text-[10px] font-black text-white">
+                  90+
+                </div>
+              </div>
+              <div className="text-left">
+                <div className="text-white font-black text-sm uppercase tracking-tight">90+ Projects Executed</div>
+                <div className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">Global Creative Excellence</div>
+              </div>
+            </motion.div>
           </div>
 
           {/* Value bullets - Enhanced with animations */}

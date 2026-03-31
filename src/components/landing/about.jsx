@@ -54,11 +54,37 @@ export default function About() {
           <p className="text-gray-300 text-lg max-w-2xl mx-auto font-medium mb-8">
             Worked with organizations and clients to deliver creative digital solutions that solve real problems.
           </p>
-          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed mb-12">
             creatalab is where ideas transform into reality. We're a young, innovative team 
             passionate about helping brands communicate clearly and beautifully through 
             design, data, and digital craftsmanship.
           </p>
+
+          {/* Social Proof Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto py-8 border-y border-white/5">
+            {[
+              { label: 'Projects Completed', value: '90+', color: 'text-purple-400' },
+              { label: 'Happy Clients', value: '40+', color: 'text-cyan-400' },
+              { label: 'Creative Assets', value: '500+', color: 'text-pink-400' },
+              { label: 'Data Insights', value: '1M+', color: 'text-blue-400' }
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="text-center"
+              >
+                <div className={`text-4xl md:text-5xl font-black mb-2 ${stat.color}`}>
+                  {stat.value}
+                </div>
+                <div className="text-[10px] md:text-xs font-black text-gray-500 uppercase tracking-widest">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
         {/* Values Grid */}
