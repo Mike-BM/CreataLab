@@ -256,7 +256,7 @@ export default function Hero() {
               >
                 <span className="flex items-center gap-3">
                   <MonitorPlay className="w-5 h-5" />
-                  Get a Website
+                  Launch Your Idea
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
