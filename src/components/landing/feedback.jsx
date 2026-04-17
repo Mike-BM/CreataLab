@@ -14,29 +14,30 @@ export default function Feedback() {
     
     const formData = new FormData(e.target);
     const name = formData.get('name')?.trim() || 'Anonymous';
-    const email = formData.get('email')?.trim() || 'anonymous@creatalab.com';
+    const email = formData.get('email')?.trim() || '';
     const message = formData.get('message');
 
-    try {
-      const response = await fetch(appConfig.api.contact, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          subject: 'Confidential Feedback',
-          message,
-        }),
-      });
+    // Make Email completely optional in the payload
+    const emailText = email ? `\n*Email:* ${email}` : '';
+    const textPayload = `*Confidential Feedback*\n\n*Name:* ${name}${emailText}\n\n*Message:*\n${message}`;
 
-      if (!response.ok) throw new Error('Failed to send comment');
+    try {
+      // 1. Grab the WhatsApp base URL from config (e.g. https://wa.me/something )
+      const whatsappBaseUrl = appConfig.socialLinks.whatsapp || 'https://wa.me/254753436729';
       
-      toast.success('Comment submitted securely.', {
-        description: 'Your confidential comment has been sent to the admins.',
+      // 2. Append the text safely
+      const url = new URL(whatsappBaseUrl);
+      url.searchParams.set('text', textPayload);
+
+      // 3. Open WhatsApp
+      window.open(url.toString(), '_blank');
+      
+      toast.success('Redirecting to WhatsApp...', {
+        description: 'You can now securely send your comment.',
       });
       e.target.reset();
     } catch (error) {
-      toast.error('Submission failed', { description: 'Please try again later.' });
+      toast.error('Submission failed', { description: 'Please try again later. Make sure WhatsApp is installed.' });
     } finally {
       setIsSubmitting(false);
     }
