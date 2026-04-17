@@ -85,12 +85,12 @@ export default function Portfolio() {
         </motion.div>
 
         {/* Filter Tabs */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
+        <div className="flex overflow-x-auto pb-4 sm:flex-wrap justify-start sm:justify-center gap-3 mb-12 no-scrollbar">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveFilter(category)}
-              className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${activeFilter === category
+              className={`whitespace-nowrap px-6 py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${activeFilter === category
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/25'
                 : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'
                 }`}
@@ -134,7 +134,7 @@ export default function Portfolio() {
                       setSelectedProject(project);
                     }
                   }}
-                  className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300 shadow-xl"
+                  className="group relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer border border-white/5 hover:border-white/20 transition-all duration-300 shadow-xl"
                 >
                   {/* Image */}
                   <img

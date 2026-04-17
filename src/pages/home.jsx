@@ -10,10 +10,11 @@ import Founder from '@/components/landing/founder';
 import Contact from '@/components/landing/contact';
 import Footer from '@/components/landing/footer';
 import Pricing from '@/components/landing/pricing';
+import Feedback from '@/components/landing/feedback';
 import FloatingBookingButton from '@/components/landing/floatingbookingbutton';
 import { Button } from '@/ui/button';
 
-const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'pricing', 'why-us', 'founder'];
+const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'pricing', 'feedback', 'why-us', 'founder'];
 
 const SECTION_COMPONENTS = {
   hero: Hero,
@@ -21,6 +22,7 @@ const SECTION_COMPONENTS = {
   services: Services,
   portfolio: Portfolio,
   pricing: Pricing,
+  feedback: Feedback,
   'why-us': WhyChooseUs,
   founder: Founder,
 };

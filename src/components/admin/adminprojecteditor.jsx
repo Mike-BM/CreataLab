@@ -27,6 +27,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
 
     const [isLoading, setIsLoading] = useState(mode === 'edit');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [availableImages, setAvailableImages] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -74,6 +75,22 @@ export default function AdminProjectEditor({ mode = 'create' }) {
             };
             loadProject();
         }
+        
+        const fetchImages = async () => {
+            try {
+                const token = adminAuth.getToken();
+                const response = await fetch(`${appConfig.api.base}/admin/images`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setAvailableImages(data);
+                }
+            } catch (error) {
+                console.error("Error fetching local images:", error);
+            }
+        };
+        fetchImages();
     }, [mode, id]);
 
     const handleChange = (field) => (e) => {
@@ -307,15 +324,36 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cover Photo (URL)</label>
-                             <Input
-                                value={formData.image_url}
-                                onChange={handleChange('image_url')}
-                                placeholder="https://cdn.creatalab.com/..."
-                                required
-                                className="bg-white/[0.03] border-white/[0.08] focus:border-pink-500/50 h-12 rounded-xl text-xs"
-                             />
+                        <div className="space-y-4">
+                             <div className="space-y-2">
+                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cover Photo (URL/Path)</label>
+                                 <Input
+                                    value={formData.image_url}
+                                    onChange={handleChange('image_url')}
+                                    placeholder="https://cdn.creatalab.com/... or /7.png"
+                                    required
+                                    className="bg-white/[0.03] border-white/[0.08] focus:border-pink-500/50 h-12 rounded-xl text-xs"
+                                 />
+                             </div>
+
+                             {availableImages.length > 0 && (
+                                 <div className="space-y-2">
+                                     <label className="text-[10px] font-black text-pink-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                        <Sparkles className="w-3 h-3" /> Select Shared Image Pathway
+                                     </label>
+                                     <select
+                                        onChange={(e) => {
+                                            if(e.target.value) setFormData(prev => ({...prev, image_url: e.target.value}))
+                                        }}
+                                        className="w-full bg-white/[0.03] border border-pink-500/20 focus:border-pink-500/50 h-12 rounded-xl text-pink-100 text-xs px-4 appearance-none hover:bg-white/[0.06] transition-colors cursor-pointer"
+                                     >
+                                         <option value="" className="bg-[#111118]">-- Or choose a local image --</option>
+                                         {availableImages.map(img => (
+                                             <option key={img} value={img} className="bg-[#111118]">{img}</option>
+                                         ))}
+                                     </select>
+                                 </div>
+                             )}
                         </div>
                     </section>
 

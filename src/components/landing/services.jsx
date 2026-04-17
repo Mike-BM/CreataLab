@@ -7,7 +7,8 @@ import {
   Globe, 
   Sparkles,
   ArrowUpRight,
-  Calendar
+  Calendar,
+  CheckCircle
 } from 'lucide-react';
 import { Button } from '@/ui/button';
 import BookingModal from './bookingmodal.jsx';
@@ -130,20 +131,18 @@ export default function Services() {
                       <ArrowUpRight className="w-5 h-5 text-gray-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
                     </div>
                     
-                    <p className="text-gray-400 mb-6 leading-relaxed">
-                      {service.description}
-                    </p>
-
-                    {/* Features */}
-                    <div className="flex flex-wrap gap-2">
-                      {service.features.map((feature) => (
-                        <span
-                          key={feature}
-                          className="px-3 py-1.5 text-xs font-medium text-gray-300 bg-white/5 rounded-full border border-white/10 group-hover:border-white/20 transition-colors"
-                        >
-                          {feature}
-                        </span>
-                      ))}
+                    <div className="space-y-4 mb-6">
+                      <p className="text-gray-300 text-sm leading-relaxed border-l-2 border-cyan-500/50 pl-4 italic">
+                        {service.description}
+                      </p>
+                      <ul className="space-y-2.5">
+                        {service.features.map((feature) => (
+                          <li key={feature} className="flex items-center gap-3 text-white/90 text-sm font-medium">
+                            <CheckCircle className="w-4 h-4 text-cyan-400 shrink-0" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 </div>

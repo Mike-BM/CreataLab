@@ -6,6 +6,8 @@ import rateLimit from 'express-rate-limit';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
+import fs from 'fs';
+import path from 'path';
 
 const app = express();
 app.set('trust proxy', 1); // Enable IP tracking behind proxies like Vercel
@@ -90,7 +92,7 @@ initializeSystem().catch(console.error);
 // Rate Limiting Config
 const globalLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 300, message: { error: 'Too many requests, please slow down.' } });
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 15, message: { error: 'Too many login attempts. Try again in 15 minutes.' } });
-const emailLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 10, message: { error: 'Messaging limit reached. Try again in 1 hour.' } });
+const emailLimiter = rateLimit({ windowMs: 60 * 60 * 1000, max: 3, message: { error: 'Message limit reached (3 per hour). Try again later.' } });
 
 // Middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
@@ -345,32 +347,73 @@ async function verifyRecaptcha(token) {
 }
 
 app.post('/api/contact', emailLimiter, async (req, res) => {
-  const { name, email, subject, message, recaptchaToken } = req.body;
+  const { name, email, subject, message, recaptchaToken, website } = req.body;
   
-  // Verify reCAPTCHA
-  const isValid = await verifyRecaptcha(recaptchaToken);
-  if (!isValid) {
-    return res.status(400).json({ error: 'Failed reCAPTCHA verification. Please try again.' });
+  // 1. Honeypot check (website field should be empty)
+  if (website) {
+    console.warn('[SECURITY] Honeypot triggered by IP:', req.ip);
+    return res.status(400).json({ error: 'System error. Please try again later.' });
   }
 
+  // 2. Strict Input Validation & Sanitization
+  if (!name || !email || !subject || !message) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
+
+  const cleanName = (name || '').trim().substring(0, 100).replace(/<[^>]*>?/gm, '');
+  const cleanEmail = (email || '').trim().toLowerCase().substring(0, 100);
+  const cleanSubject = (subject || '').trim().substring(0, 200).replace(/<[^>]*>?/gm, '');
+  const cleanMessage = (message || '').trim().substring(0, 5000).replace(/<[^>]*>?/gm, '');
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+    return res.status(400).json({ error: 'Invalid email address.' });
+  }
+
+  // 3. Verify reCAPTCHA v3
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (secret) {
+    try {
+      const v3Res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `secret=${secret}&response=${recaptchaToken}`
+      });
+      const v3Data = await v3Res.json();
+      
+      // score based verification (e.g., < 0.5 is suspicious)
+      if (!v3Data.success || v3Data.score < 0.5) {
+        console.warn(`[SECURITY] Suspicious reCAPTCHA score: ${v3Data.score} for ${cleanEmail}`);
+        return res.status(403).json({ error: 'Security check failed. Please refresh and try again.' });
+      }
+    } catch (err) {
+      console.error('reCAPTCHA error:', err);
+    }
+  }
+
+  // 4. Persistence
   const { data, error } = await supabase.from('contact_messages').insert({ 
-    name, email, subject, message, created_at: new Date().toISOString() 
+    name: cleanName, 
+    email: cleanEmail, 
+    subject: cleanSubject, 
+    message: cleanMessage, 
+    created_at: new Date().toISOString() 
   });
   
   if (error) {
-    console.error('[DB INSERT ERROR] Contact:', error);
-    return res.status(500).json({ error: 'Failed to save contact message' });
+    console.error('[DB ERROR] Contact:', error);
+    return res.status(500).json({ error: 'Failed to save message' });
   }
   
-  // Wait for email notification to complete so Vercel does not terminate the function early
-  await sendNotificationEmail(
-    `New Contact Message: ${subject}`,
+  // 5. Notify Admin (Async/No Wait to avoid timeout, but Resend is fast)
+  sendNotificationEmail(
+    `Secure Inquiry: ${cleanSubject}`,
     `<div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-      <h2 style="color: #6d28d9;">New Message Received</h2>
-      <p><strong>From:</strong> ${name} (&lt;${email}&gt;)</p>
-      <p><strong>Subject:</strong> ${subject}</p>
+      <h2 style="color: #6d28d9;">Secure Message Received</h2>
+      <p><strong>From:</strong> ${cleanName} (&lt;${cleanEmail}&gt;)</p>
+      <p><strong>Subject:</strong> ${cleanSubject}</p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-      <p style="white-space: pre-wrap;">${message}</p>
+      <p style="white-space: pre-wrap;">${cleanMessage}</p>
+      <p style="font-size: 10px; color: #aaa;">IP: ${req.ip} | reCAPTCHA verified</p>
     </div>`
   ).catch(console.error);
 
@@ -435,6 +478,21 @@ app.delete('/api/users/:id', requireAdmin, asyncHandler(async (req, res) => {
   
   await supabase.from('admin_users').delete().eq('id', req.params.id);
   res.json({ ok: true });
+}));
+
+app.get('/api/admin/images', requireAdmin, asyncHandler(async (req, res) => {
+  const publicDir = path.join(process.cwd(), 'public');
+  if (fs.existsSync(publicDir)) {
+    const files = fs.readdirSync(publicDir);
+    const validExts = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];
+    const images = files.filter(f => {
+      const ext = path.extname(f).toLowerCase();
+      return validExts.includes(ext);
+    });
+    res.json(images.map(img => `/${img}`));
+  } else {
+    res.json([]);
+  }
 }));
 
 // Admin management routes (simplified for brevity)

@@ -7,14 +7,14 @@ import { Input } from '@/ui/input';
 import { Textarea } from '@/ui/textarea';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
-import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
+    website: '' // honeypot
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -29,10 +29,13 @@ export default function Contact() {
     };
 
     if (trimmed.name.length < 2) return 'Please enter your full name.';
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed.email)) return 'Please enter a valid email address.';
+    if (trimmed.name.length > 100) return 'Name is too long (max 100).';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed.email)) return 'Please enter a valid email address.';
+    if (trimmed.email.length > 100) return 'Email is too long (max 100).';
     if (trimmed.subject.length < 3) return 'Subject should be at least 3 characters.';
+    if (trimmed.subject.length > 200) return 'Subject is too long (max 200).';
     if (trimmed.message.length < 10) return 'Message should be at least 10 characters.';
-    if (trimmed.message.length > 2000) return 'Message is too long. Please keep it under 2000 characters.';
+    if (trimmed.message.length > 5000) return 'Message is too long (max 5000).';
 
     return null;
   };
@@ -42,6 +45,16 @@ export default function Contact() {
     setIsSubmitting(true);
 
     try {
+      // 1. Honeypot check
+      if (formData.website) {
+        console.warn('Honeypot triggered');
+        toast.success("Message sent successfully!"); // False success for bots
+        setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2. Validation
       const error = validateForm(formData);
       if (error) {
         toast.error(error);
@@ -49,22 +62,24 @@ export default function Contact() {
         return;
       }
 
-      const recaptchaToken = recaptchaRef.current?.getValue();
-      if (!recaptchaToken) {
-        toast.error("Please complete the reCAPTCHA verification.");
-        setIsSubmitting(false);
-        return;
+      // 3. get reCAPTCHA v3 token (invisible)
+      let recaptchaToken = null;
+      if (typeof window.grecaptcha !== 'undefined') {
+        recaptchaToken = await window.grecaptcha.execute(appConfig.recaptcha.siteKey, { action: 'submit_contact' });
       }
 
       const safeData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
         subject: formData.subject.trim(),
         message: formData.message.trim(),
         recaptchaToken,
+        website: formData.website // Should be empty
       };
 
-      // If no secure backend is configured, simulate success in demo mode
       if (!appConfig.api.contact) {
         console.warn('No contact API configured. Running in demo mode.');
+        await new Promise(r => setTimeout(r, 1000));
       } else {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -78,7 +93,10 @@ export default function Contact() {
 
         clearTimeout(timeoutId);
 
-        if (!response.ok) throw new Error('Failed to send message');
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || 'Failed to send message');
+        }
       }
 
       setIsSubmitted(true);
@@ -86,12 +104,11 @@ export default function Contact() {
 
       setTimeout(() => {
         setIsSubmitted(false);
-        setFormData({ name: '', email: '', subject: '', message: '' });
-        recaptchaRef.current?.reset();
+        setFormData({ name: '', email: '', subject: '', message: '', website: '' });
       }, 3000);
     } catch (error) {
       console.error('Submission error:', error);
-      toast.error("Failed to send message. Please try again.");
+      toast.error(error.message || "Failed to send message. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -344,7 +361,7 @@ export default function Contact() {
                       placeholder="Brian Michael"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
                       required
                     />
                   </motion.div>
@@ -363,7 +380,7 @@ export default function Contact() {
                       placeholder="example@gmail.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
                       required
                     />
                   </motion.div>
@@ -383,7 +400,7 @@ export default function Contact() {
                     placeholder="How can we help?"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 h-14 rounded-xl focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
                     required
                   />
                 </motion.div>
@@ -402,16 +419,20 @@ export default function Contact() {
                     placeholder="Tell us about your project..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 min-h-[180px] rounded-xl resize-none focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-400 min-h-[180px] rounded-xl resize-none focus:border-purple-500 focus:ring-purple-500/30 focus:bg-white/10 transition-all duration-300 hover:border-white/20"
                     required
                   />
                 </motion.div>
 
-                <div className="flex justify-center py-2">
-                  <ReCAPTCHA
-                    ref={recaptchaRef}
-                    sitekey={appConfig.recaptcha.siteKey}
-                    theme="dark"
+                {/* Honeypot field (hidden from users) */}
+                <div style={{ display: 'none' }} aria-hidden="true">
+                  <Input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    tabIndex="-1"
+                    autoComplete="off"
                   />
                 </div>
 
@@ -463,6 +484,37 @@ export default function Contact() {
             </div>
           </motion.div>
         </div>
+        {/* How We Work Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-32 pt-20 border-t border-white/5"
+        >
+          <div className="text-center mb-16">
+            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Our Process</h3>
+            <p className="text-gray-400 max-w-xl mx-auto">From concept to delivery, we follow a proven framework for success.</p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-8 relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-purple-500/0 via-purple-500/50 to-purple-500/0 -translate-y-1/2 z-0" />
+            
+            {[
+              { step: "01", title: "Discovery", desc: "We deep-dive into your goals and audience." },
+              { step: "02", title: "Design", desc: "Crafting a visual system that represents you." },
+              { step: "03", title: "Develop", desc: "Building your solution with precision code." },
+              { step: "04", title: "Deliver", desc: "Launching and optimizing for peak results." }
+            ].map((item, i) => (
+              <div key={item.step} className="relative z-10 text-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center text-white font-bold mx-auto mb-6 shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+                  {item.step}
+                </div>
+                <h4 className="text-xl font-bold text-white mb-2">{item.title}</h4>
+                <p className="text-sm text-gray-400">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
