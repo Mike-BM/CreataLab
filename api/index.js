@@ -504,27 +504,35 @@ app.get('/api/admin/images', requireAdmin, asyncHandler(async (req, res) => {
   }
 }));
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    let publicDir = path.join(process.cwd(), 'public');
-    if (!fs.existsSync(publicDir)) publicDir = path.join(process.cwd(), '..', 'public');
-    if (!fs.existsSync(publicDir)) publicDir = path.join(__dirname, '..', 'public');
-    if (!fs.existsSync(publicDir)) publicDir = '/tmp';
-    cb(null, publicDir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname.replace(/[^a-zA-Z0-9.\-]/g, ''));
-  }
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-app.post('/api/admin/images/upload', requireAdmin, upload.single('image'), (req, res) => {
+app.post('/api/admin/images/upload', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No image file uploaded' });
   }
-  res.json({ url: `/${req.file.filename}` });
-});
+
+  const bucketName = 'site-assets';
+
+  // Make sure the bucket exists, ignore if it already does
+  await supabase.storage.createBucket(bucketName, { public: true }).catch(() => {});
+
+  const fileExt = req.file.originalname.split('.').pop() || 'png';
+  const filePath = `${Date.now()}-${Math.round(Math.random() * 100000)}.${fileExt}`;
+
+  const { error } = await supabase.storage.from(bucketName).upload(filePath, req.file.buffer, {
+    contentType: req.file.mimetype,
+    upsert: true,
+  });
+
+  if (error) {
+    console.error('Supabase storage upload error:', error);
+    return res.status(500).json({ error: 'Storage provider injection failed' });
+  }
+
+  const { data: pubData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+  res.json({ url: pubData.publicUrl });
+}));
 
 // Admin management routes (simplified for brevity)
 app.post('/api/projects', requireAdmin, asyncHandler(async (req, res) => {
