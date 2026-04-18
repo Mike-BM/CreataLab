@@ -16,9 +16,10 @@ export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
+    let timeoutId;
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`${appConfig.api.base}/projects`);
+        const response = await fetch(`${appConfig.api.base}/projects`, { cache: 'no-store' });
         if (response.ok) {
           const data = await response.json();
           // Transform image_url to image for compatibility with ProjectModal
@@ -33,8 +34,12 @@ export default function Portfolio() {
       } finally {
         setIsLoading(false);
       }
+      // Poll every 5 seconds to automatically sync data without refresh
+      timeoutId = setTimeout(fetchProjects, 5000);
     };
     fetchProjects();
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   useEffect(() => {
