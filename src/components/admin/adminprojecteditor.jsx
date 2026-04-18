@@ -264,6 +264,46 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                             </div>
                         </div>
 
+                        {formData.category === 'Branding & Marketing Assets' && (
+                            <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                className="space-y-3 p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/20"
+                            >
+                                <label className="text-[10px] font-black text-pink-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <Sparkles className="w-3 h-3" /> Quick Template Fill
+                                </label>
+                                <div className="grid sm:grid-cols-2 gap-4">
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setFormData(prev => ({
+                                            ...prev,
+                                            title: 'Apparel & Merch Mockups',
+                                            description: 'Stylish, photorealistic mockups for apparel and merchandise—designed to showcase branding in a clean, modern, and impactful way.'
+                                        }))}
+                                        className="bg-black/20 hover:bg-pink-500/20 border border-white/5 hover:border-pink-500/50 h-auto py-4 px-5 rounded-xl flex flex-col items-start gap-2 transition-all justify-start"
+                                    >
+                                        <span className="text-sm font-black text-white text-left w-full">1. Apparel & Merch Mockups</span>
+                                        <span className="text-[10px] text-gray-400 leading-relaxed text-left w-full whitespace-normal font-medium">Stylish, photorealistic mockups for apparel and merchandise...</span>
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        onClick={() => setFormData(prev => ({
+                                            ...prev,
+                                            title: 'Collateral Design Suite',
+                                            description: 'A collection of creative designs including posters, flyers, logos, banners, and certificates—crafted to capture attention and communicate ideas across events, promotions, and everyday moments.'
+                                        }))}
+                                        className="bg-black/20 hover:bg-pink-500/20 border border-white/5 hover:border-pink-500/50 h-auto py-4 px-5 rounded-xl flex flex-col items-start gap-2 transition-all justify-start"
+                                    >
+                                        <span className="text-sm font-black text-white text-left w-full">2. Collateral Design Suite</span>
+                                        <span className="text-[10px] text-gray-400 leading-relaxed text-left w-full whitespace-normal font-medium">A collection of creative designs including posters, flyers, logos...</span>
+                                    </Button>
+                                </div>
+                            </motion.div>
+                        )}
+
                         <div className="space-y-3">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Overview Description</label>
                             <Textarea
