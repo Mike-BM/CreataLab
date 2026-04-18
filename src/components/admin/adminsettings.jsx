@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Mail, Lock, Bell, Settings, Shield, ShieldCheck, Cpu, BarChart3 } from 'lucide-react';
+import { Save, Globe, Mail, Lock, Bell, Settings, Shield, ShieldCheck, Cpu, BarChart3, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';
@@ -23,6 +23,37 @@ export default function AdminSettings() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+  const handleLogoUpload = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setIsUploadingLogo(true);
+      try {
+          const formData = new FormData();
+          formData.append('image', file);
+
+          const token = adminAuth.getToken();
+          const response = await fetch(`${appConfig.api.base}/admin/images/upload`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` },
+              body: formData
+          });
+
+          if (!response.ok) throw new Error('Upload failed');
+          const data = await response.json();
+          
+          setBranding(prev => ({...prev, logoUrl: data.url}));
+          toast.success('Logo uploaded and linked.');
+      } catch (error) {
+          console.error("Upload error:", error);
+          toast.error('File upload failed.');
+      } finally {
+          setIsUploadingLogo(false);
+          e.target.value = null;
+      }
+  };
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -235,11 +266,28 @@ export default function AdminSettings() {
             </div>
             <div className="space-y-3">
               <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Logo Resource URL</label>
-              <Input
-                value={branding.logoUrl}
-                onChange={(e) => setBranding({ ...branding, logoUrl: e.target.value })}
-                className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
-              />
+              <div className="flex gap-2">
+                <Input
+                  value={branding.logoUrl}
+                  onChange={(e) => setBranding({ ...branding, logoUrl: e.target.value })}
+                  className="bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 rounded-2xl text-white font-bold"
+                />
+                <Button 
+                   type="button"
+                   variant="ghost" 
+                   disabled={isUploadingLogo}
+                   className="relative h-14 w-14 premium-gradient rounded-2xl text-white shadow-lg overflow-hidden shrink-0"
+                >
+                   {isUploadingLogo ? <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" /> : <Upload className="w-5 h-5" />}
+                   <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleLogoUpload} 
+                      title="Upload Logo"
+                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                   />
+                </Button>
+              </div>
             </div>
           </div>
           <div className="space-y-3">

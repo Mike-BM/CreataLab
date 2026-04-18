@@ -12,7 +12,8 @@ import {
   Globe,
   Settings,
   Sparkles,
-  Rocket
+  Rocket,
+  Upload
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -28,6 +29,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
     const [isLoading, setIsLoading] = useState(mode === 'edit');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [availableImages, setAvailableImages] = useState([]);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -96,6 +98,40 @@ export default function AdminProjectEditor({ mode = 'create' }) {
     const handleChange = (field) => (e) => {
         const value = field === 'published' ? e.target.checked : e.target.value;
         setFormData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploadingImage(true);
+        try {
+            const uploadData = new FormData();
+            uploadData.append('image', file);
+
+            const token = adminAuth.getToken();
+            const response = await fetch(`${appConfig.api.base}/admin/images/upload`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: uploadData
+            });
+
+            if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
+            
+            setFormData(prev => ({...prev, image_url: data.url}));
+            toast.success('Image securely uploaded');
+            
+            if (!availableImages.includes(data.url)) {
+                setAvailableImages(prev => [data.url, ...prev]);
+            }
+        } catch (error) {
+            console.error("Upload error:", error);
+            toast.error('File injection failed.');
+        } finally {
+            setIsUploadingImage(false);
+            e.target.value = null; // reset input
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -354,6 +390,20 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                                      </select>
                                  </div>
                              )}
+
+                             <div className="space-y-2 pt-4 mt-4 border-t border-white/5">
+                                 <label className="text-[10px] font-black text-purple-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                    <Upload className="w-3 h-3" /> Upload Live File
+                                 </label>
+                                 <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileUpload}
+                                    disabled={isUploadingImage}
+                                    className="w-full bg-white/[0.03] border border-purple-500/20 focus:border-purple-500/50 h-12 rounded-xl text-purple-100 text-xs px-2 py-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-purple-500/10 file:text-purple-400 hover:file:bg-purple-500/20 disabled:opacity-50 cursor-pointer"
+                                 />
+                                 {isUploadingImage && <p className="text-[10px] text-purple-400 animate-pulse font-bold ml-1">Uploading asset to server...</p>}
+                             </div>
                         </div>
                     </section>
 

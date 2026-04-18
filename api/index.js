@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
+import multer from 'multer';
 
 const app = express();
 app.set('trust proxy', 1); // Enable IP tracking behind proxies like Vercel
@@ -502,6 +503,28 @@ app.get('/api/admin/images', requireAdmin, asyncHandler(async (req, res) => {
     res.json([]);
   }
 }));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    let publicDir = path.join(process.cwd(), 'public');
+    if (!fs.existsSync(publicDir)) publicDir = path.join(process.cwd(), '..', 'public');
+    if (!fs.existsSync(publicDir)) publicDir = path.join(__dirname, '..', 'public');
+    if (!fs.existsSync(publicDir)) publicDir = '/tmp';
+    cb(null, publicDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname.replace(/[^a-zA-Z0-9.\-]/g, ''));
+  }
+});
+const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+app.post('/api/admin/images/upload', requireAdmin, upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image file uploaded' });
+  }
+  res.json({ url: `/${req.file.filename}` });
+});
 
 // Admin management routes (simplified for brevity)
 app.post('/api/projects', requireAdmin, asyncHandler(async (req, res) => {
