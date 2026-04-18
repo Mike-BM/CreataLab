@@ -24,6 +24,11 @@
       "destination": "/index.html"
     }
   ],
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "public/**"
+    }
+  },
   "buildCommand": "npm run build",
   "outputDirectory": "dist"
 }

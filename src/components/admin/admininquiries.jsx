@@ -34,7 +34,7 @@ export default function AdminInquiries() {
     setLoading(true);
     try {
       const token = adminAuth.getToken();
-      const endpoint = activeTab === 'contact' ? '/api/contact' : '/api/bookings';
+      const endpoint = activeTab === 'contact' ? '/contact' : '/bookings';
       const response = await fetch(`${appConfig.api.base}${endpoint}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });

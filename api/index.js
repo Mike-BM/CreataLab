@@ -481,7 +481,15 @@ app.delete('/api/users/:id', requireAdmin, asyncHandler(async (req, res) => {
 }));
 
 app.get('/api/admin/images', requireAdmin, asyncHandler(async (req, res) => {
-  const publicDir = path.join(process.cwd(), 'public');
+  let publicDir = path.join(process.cwd(), 'public');
+  if (!fs.existsSync(publicDir)) {
+    publicDir = path.join(process.cwd(), '..', 'public');
+  }
+  if (!fs.existsSync(publicDir)) {
+    // fallback if running inside /api folder
+    publicDir = path.join(__dirname, '..', 'public');
+  }
+
   if (fs.existsSync(publicDir)) {
     const files = fs.readdirSync(publicDir);
     const validExts = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];

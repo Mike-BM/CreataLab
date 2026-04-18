@@ -38,7 +38,7 @@ export default function AdminPostEditor({ mode = 'create' }) {
     author: 'Administrator',
     category: 'Innovation',
     date: new Date().toISOString().slice(0, 10),
-    published: false,
+    published: true,
     link: '',
   });
 

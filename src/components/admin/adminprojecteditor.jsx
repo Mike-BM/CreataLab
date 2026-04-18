@@ -41,7 +41,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         problem: '',
         solution: '',
         impact: '',
-        published: false,
+        published: true,
     });
 
     useEffect(() => {

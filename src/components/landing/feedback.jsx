@@ -13,7 +13,7 @@ export default function Feedback() {
     setIsSubmitting(true);
     
     const formData = new FormData(e.target);
-    const name = formData.get('name')?.trim() || 'Anonymous';
+    const name = formData.get('name')?.trim();
     const email = formData.get('email')?.trim() || '';
     const message = formData.get('message');
 
@@ -79,12 +79,13 @@ export default function Feedback() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-white/80 flex items-center gap-2">
-                  <User size={14} /> Name <span className="text-white/30 text-xs">(Optional)</span>
+                  <User size={14} /> Name
                 </label>
                 <input 
                   type="text" 
                   name="name"
-                  placeholder="Anonymous"
+                  required
+                  placeholder="John Doe"
                   className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-purple-500/50 transition-colors"
                 />
               </div>
