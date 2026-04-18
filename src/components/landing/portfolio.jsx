@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ExternalLink, Eye, ArrowRight } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
 import { Button } from '@/ui/button';
+import { toast } from 'sonner';
 
 const categories = ["All", "Branding & Marketing Assets", "Digital", "Data", "AI Solutions"];
 
@@ -27,7 +28,17 @@ export default function Portfolio() {
             ...p,
             image: p.image_url,
           }));
-          setProjects(formattedData);
+          
+          setProjects(prevProjects => {
+            // Only alert if we've already loaded the initial list, and the new list is larger
+            if (prevProjects.length > 0 && formattedData.length > prevProjects.length) {
+              const diff = formattedData.length - prevProjects.length;
+              toast.success(`Live Sync: ${diff} new portfolio asset${diff > 1 ? 's' : ''} just arrived!`, {
+                icon: '🚀',
+              });
+            }
+            return formattedData;
+          });
         }
       } catch (error) {
         console.error('Error fetching projects:', error);
