@@ -144,7 +144,7 @@ export default function BookingModal({ isOpen, onClose }) {
                     <div>
                       <label className="text-foreground text-sm font-semibold mb-2 block">Full Name *</label>
                       <Input
-                        placeholder="Brian Michael"
+                        placeholder="eliza"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="bg-surface border-border text-foreground h-12 rounded-xl focus:border-accent"
@@ -155,7 +155,7 @@ export default function BookingModal({ isOpen, onClose }) {
                       <label className="text-foreground text-sm font-semibold mb-2 block">Email Address *</label>
                       <Input
                         type="email"
-                        placeholder="brian@example.com"
+                        placeholder="elizaexample@gmail.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="bg-surface border-border text-foreground h-12 rounded-xl focus:border-accent"

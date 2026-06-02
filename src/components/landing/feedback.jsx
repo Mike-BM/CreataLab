@@ -80,7 +80,7 @@ export default function Feedback() {
                   type="text" 
                   name="name"
                   required
-                  placeholder="Muema"
+                  placeholder="eliza"
                   className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                 />
               </div>
@@ -91,7 +91,7 @@ export default function Feedback() {
                 <input 
                   type="email" 
                   name="email"
-                  placeholder="john@example.com"
+                  placeholder="elizaexample@gmail.com"
                   className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all"
                 />
               </div>

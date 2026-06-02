@@ -261,7 +261,7 @@ export default function Contact() {
                     Your Name
                   </label>
                   <Input
-                    placeholder="Muema"
+                    placeholder="eliza"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent transition-all w-full"
@@ -274,7 +274,7 @@ export default function Contact() {
                   </label>
                   <Input
                     type="email"
-                    placeholder="john@example.com"
+                    placeholder="elizaexample@gmail.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent transition-all w-full"
