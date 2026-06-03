@@ -14,11 +14,11 @@ module.exports = {
 			foreground: '#1F2937', // Dark gray
 			muted: '#6B7280',
 			accent: {
-				DEFAULT: '#FCA5A5', // Soft coral/pink
-				hover: '#F87171',
+				DEFAULT: '#38bdf8', // Logo color
+				hover: '#0ea5e9', // Darker shade for hover
 			},
 			primary: {
-				DEFAULT: '#FCA5A5',
+				DEFAULT: '#38bdf8',
 				foreground: '#FFFFFF'
 			},
 			card: {
@@ -27,7 +27,7 @@ module.exports = {
 			},
 			border: '#E5E7EB',
 			input: '#E5E7EB',
-			ring: '#FCA5A5',
+			ring: '#38bdf8',
 		},
 		boxShadow: {
 			'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',

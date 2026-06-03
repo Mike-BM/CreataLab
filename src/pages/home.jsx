@@ -5,7 +5,6 @@ import Hero from '@/components/landing/hero';
 import About from '@/components/landing/about';
 import Services from '@/components/landing/services';
 import Portfolio from '@/components/landing/portfolio';
-import AIPartners from '@/components/landing/aipartners';
 import WhyChooseUs from '@/components/landing/whychooseus';
 import Founder from '@/components/landing/founder';
 import Contact from '@/components/landing/contact';
@@ -15,14 +14,13 @@ import Feedback from '@/components/landing/feedback';
 import FloatingBookingButton from '@/components/landing/floatingbookingbutton';
 import { Button } from '@/ui/button';
 
-const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'ai-partners', 'pricing', 'feedback', 'why-us', 'founder'];
+const SECTION_ORDER = ['hero', 'about', 'services', 'portfolio', 'pricing', 'feedback', 'why-us', 'founder'];
 
 const SECTION_COMPONENTS = {
   hero: Hero,
   about: About,
   services: Services,
   portfolio: Portfolio,
-  'ai-partners': AIPartners,
   pricing: Pricing,
   feedback: Feedback,
   'why-us': WhyChooseUs,
