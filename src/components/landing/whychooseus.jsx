@@ -14,7 +14,7 @@ const features = [
   },
   {
     icon: DollarSign,
-    title: "No Bullshit Pricing",
+    title: "Transparent Pricing",
     description: "Premium quality work that actually respects your budget constraints."
   },
   {

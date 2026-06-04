@@ -121,8 +121,8 @@ export default function Contact() {
     {
       icon: Phone,
       label: "Call Us",
-      value: "0753 436 729",
-      href: "tel:0753436729"
+      value: "0793 706 054",
+      href: "tel:0793706054"
     },
     {
       icon: MapPin,
