@@ -84,9 +84,7 @@ export default function WhyChooseUs() {
               transition={{ delay: index * 0.1 }}
               className={`group p-8 rounded-3xl border border-border bg-background hover:bg-surface hover:shadow-soft transition-all duration-300`}
             >
-              <div className="w-16 h-16 mb-6 rounded-2xl bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-8 h-8 text-accent" />
-              </div>
+
               <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
               <p className="text-muted leading-relaxed">{feature.description}</p>
             </motion.div>
