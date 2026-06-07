@@ -11,7 +11,7 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Portfolio", href: "#portfolio" },
   { label: "Why Us", href: "#why-us" },
-  { label: "Feedback", href: "#feedback" },
+  { label: "Media Hub", href: "/media-hub" },
   { label: "Contact", href: "#contact" },
 ];
 
