@@ -1,0 +1,23 @@
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase credentials not found in .env');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function run() {
+  const { data, error } = await supabase.from('site_settings').update({ value: 'SQA26' }).eq('key', 'media_hub_code');
+  if (error) {
+    console.error('Error updating:', error);
+  } else {
+    console.log('Successfully updated the live database! Code is now SQA26.');
+  }
+}
+run();

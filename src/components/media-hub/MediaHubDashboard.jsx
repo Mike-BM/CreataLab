@@ -23,6 +23,7 @@ export default function MediaHubDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [orgLogo, setOrgLogo] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +32,16 @@ export default function MediaHubDashboard() {
     meta.name = "robots";
     meta.content = "noindex, nofollow";
     document.head.appendChild(meta);
+
+    // Fetch organization logo
+    fetch(`${appConfig.api.base}/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.media_hub_org_logo) {
+          setOrgLogo(data.media_hub_org_logo);
+        }
+      })
+      .catch(console.error);
 
     return () => {
       document.head.removeChild(meta);
@@ -129,8 +140,12 @@ export default function MediaHubDashboard() {
       <nav className="sticky top-0 z-50 bg-[#050508]/80 backdrop-blur-xl border-b border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl premium-gradient flex items-center justify-center font-black">
-                MH
+             <div className="w-10 h-10 rounded-xl premium-gradient flex items-center justify-center font-black overflow-hidden">
+                {orgLogo ? (
+                  <img src={orgLogo} alt="Logo" className="w-full h-full object-cover" />
+                ) : (
+                  "MH"
+                )}
              </div>
              <div>
                 <h1 className="font-black tracking-widest uppercase text-sm leading-none">Media Hub</h1>

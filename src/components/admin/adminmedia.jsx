@@ -23,6 +23,7 @@ export default function AdminMedia() {
   const [accessCode, setAccessCode] = useState('');
   const [showCode, setShowCode] = useState(false);
   const [isSavingCode, setIsSavingCode] = useState(false);
+  const [orgLogo, setOrgLogo] = useState('');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -56,6 +57,9 @@ export default function AdminMedia() {
         if (data.media_hub_code) {
           setAccessCode(data.media_hub_code);
         }
+        if (data.media_hub_org_logo) {
+          setOrgLogo(data.media_hub_org_logo);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -77,13 +81,18 @@ export default function AdminMedia() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ value: accessCode.trim() })
       });
-      if (response.ok) {
-        toast.success('Access Code updated successfully');
+      const response2 = await fetch(`${appConfig.api.base}/settings/media_hub_org_logo`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ value: orgLogo })
+      });
+      if (response.ok && response2.ok) {
+        toast.success('Access Code & Logo updated successfully');
       } else {
-        toast.error('Failed to update code');
+        toast.error('Failed to update settings');
       }
     } catch (error) {
-      toast.error('Error saving access code');
+      toast.error('Error saving settings');
     } finally {
       setIsSavingCode(false);
     }
@@ -109,7 +118,11 @@ export default function AdminMedia() {
       if (!response.ok) throw new Error('Upload failed');
       const data = await response.json();
       
-      setFormData(prev => ({...prev, [type === 'thumbnail' ? 'thumbnail_url' : 'file_url']: data.url}));
+      if (type === 'org_logo') {
+        setOrgLogo(data.url);
+      } else {
+        setFormData(prev => ({...prev, [type === 'thumbnail' ? 'thumbnail_url' : 'file_url']: data.url}));
+      }
       toast.success(`${type} uploaded`, { id: toastId });
     } catch (error) {
       toast.error('Upload failed', { id: toastId });
@@ -291,8 +304,24 @@ export default function AdminMedia() {
                     </button>
                   </div>
                 </div>
-                <Button onClick={handleSaveCode} disabled={isSavingCode} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold h-12 rounded-xl">
-                  {isSavingCode ? 'Updating...' : 'Update Master Key'}
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase">Organization Logo (Optional)</label>
+                  <div className="flex gap-2 items-center">
+                    {orgLogo && (
+                      <div className="w-14 h-14 rounded-lg bg-black/40 border border-red-500/30 flex items-center justify-center p-2 shrink-0">
+                        <img src={orgLogo} alt="Org Logo" className="max-w-full max-h-full object-contain" />
+                      </div>
+                    )}
+                    <div className="flex-1 relative h-14 bg-black/40 border border-red-500/30 rounded-xl flex items-center justify-center cursor-pointer hover:bg-red-500/10 transition-colors">
+                      <span className="text-xs font-bold text-gray-400">{orgLogo ? 'Change Logo' : 'Upload Logo'}</span>
+                      <input type="file" accept="image/*" onChange={e => handleFileUpload(e, 'org_logo')} className="absolute inset-0 opacity-0 cursor-pointer" />
+                    </div>
+                  </div>
+                </div>
+
+                <Button onClick={handleSaveCode} disabled={isSavingCode} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold h-12 rounded-xl mt-4">
+                  {isSavingCode ? 'Updating...' : 'Update Settings'}
                 </Button>
                 <p className="text-[10px] text-gray-500 font-medium text-center">
                   Changing this code will require all current users to enter the new code to access the Media Hub.

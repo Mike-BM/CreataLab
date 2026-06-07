@@ -10,7 +10,30 @@ import { appConfig } from '@/lib/config';
 export default function MediaHubLogin() {
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [orgLogo, setOrgLogo] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Inject noindex meta tag to hide from search engines
+    const meta = document.createElement('meta');
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+
+    // Fetch organization logo
+    fetch(`${appConfig.api.base}/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.media_hub_org_logo) {
+          setOrgLogo(data.media_hub_org_logo);
+        }
+      })
+      .catch(console.error);
+
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,10 +72,17 @@ export default function MediaHubLogin() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] -z-10" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/10 rounded-full blur-[80px] -z-10" />
           
-          <div className="text-center space-y-6 mb-10">
-            <div className="w-16 h-16 rounded-2xl premium-gradient flex items-center justify-center mx-auto shadow-lg shadow-purple-500/20">
-              <Lock className="w-8 h-8 text-white" />
+          <div className="flex justify-center mb-8">
+            <div className="w-16 h-16 rounded-2xl premium-gradient flex items-center justify-center shadow-[0_0_40px_rgba(168,85,247,0.3)]">
+              {orgLogo ? (
+                <img src={orgLogo} alt="Organization Logo" className="w-10 h-10 object-contain drop-shadow-md" />
+              ) : (
+                <Lock className="w-8 h-8 text-white" />
+              )}
             </div>
+          </div>
+          
+          <div className="text-center space-y-3 mb-10">
             <div>
               <h1 className="text-2xl font-black text-white uppercase tracking-widest mb-2">Executive Media Hub</h1>
               <p className="text-gray-400 text-sm font-medium">Enter the organization access code to view secure resources.</p>
