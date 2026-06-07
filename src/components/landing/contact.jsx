@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Mail, Phone, MapPin, ArrowRight, CheckCircle, MessageSquare } from 'lucide-react';
-import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
+import { FaInstagram, FaTiktok } from 'react-icons/fa';
 import { Button } from '@/ui/button';
 import { Input } from '@/ui/input';
 import { Textarea } from '@/ui/textarea';

@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Palette, 
-  MonitorPlay, 
-  BarChart3, 
   Globe, 
   Sparkles,
   ArrowUpRight,

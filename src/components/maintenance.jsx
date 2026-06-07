@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Cpu, Construction, Zap, ShieldAlert, Clock, Sparkles } from 'lucide-react';
+import { Cpu, Zap, ShieldAlert, Clock, Sparkles } from 'lucide-react';
 
 export default function Maintenance({ message }) {
   return (

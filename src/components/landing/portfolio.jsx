@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Eye, ArrowRight } from 'lucide-react';
+import { Eye, ArrowRight } from 'lucide-react';
 import ProjectModal from './projectmodal.jsx';
 import { Button } from '@/ui/button';
 import { toast } from 'sonner';

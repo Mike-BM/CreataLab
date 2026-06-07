@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
   Save, 
-  FileText, 
   Calendar, 
   User, 
   Tag, 
   Sparkles,
   Rocket,
   Edit3,
-  Search,
   Type,
   AlignLeft,
   Eye,

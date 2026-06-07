@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Check, Zap, Sparkles, Target, BarChart3, Database, Globe, Palette } from 'lucide-react';
+import { Globe, Palette } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { appConfig } from '@/lib/config';
 

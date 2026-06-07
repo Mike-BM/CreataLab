@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { ArrowUp } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp } from 'react-icons/fa';
 

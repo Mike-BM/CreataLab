@@ -4,11 +4,7 @@ import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
   Save, 
-  FileText, 
-  Image as ImageIcon, 
-  Briefcase, 
-  Tag, 
-  Link as LinkIcon,
+  Image as ImageIcon,
   Globe,
   Settings,
   Sparkles,

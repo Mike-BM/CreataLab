@@ -1,6 +1,5 @@
 import { Download, FileText, FileImage, FileArchive } from 'lucide-react';
 import { Button } from '@/ui/button';
-import { appConfig } from '@/lib/config';
 
 export default function ResourceCard({ resource, onDownload }) {
   const getIcon = (category) => {

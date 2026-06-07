@@ -7,23 +7,14 @@ import {
   Trash2, 
   Eye, 
   Search, 
-  Calendar, 
-  User, 
-  X, 
-  Filter, 
   TrendingUp, 
   Clock, 
-  Sparkles, 
   FileText,
-  BarChart3,
   MessageSquare,
-  ChevronRight,
-  MoreVertical,
   ArrowUpRight,
   Globe
 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { toast } from 'sonner';
 import { adminAuth } from '@/lib/admin-auth';
 import { appConfig } from '@/lib/config';

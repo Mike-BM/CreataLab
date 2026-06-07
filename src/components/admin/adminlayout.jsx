@@ -17,14 +17,11 @@ import {
   Search,
   User,
   Shield,
-  Clock,
-  Sparkles,
   MessageSquare, // Added
   Download // Added
 } from 'lucide-react';
 import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
-import { appConfig } from '@/lib/config';
 
 const adminMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },

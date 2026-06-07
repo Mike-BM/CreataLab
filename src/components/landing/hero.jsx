@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Calendar, MonitorPlay } from 'lucide-react';
+import { ArrowRight, Sparkles, MonitorPlay } from 'lucide-react';
 import { Button } from '@/ui/button';
-import { appConfig } from '@/lib/config';
 import BookingModal from './bookingmodal.jsx';
 
 export default function Hero() {

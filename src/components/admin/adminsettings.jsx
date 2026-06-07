@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Save, Globe, Mail, Lock, Bell, Settings, Shield, ShieldCheck, Cpu, BarChart3, Upload } from 'lucide-react';
+import { Save, Globe, Lock, Bell, Settings, Shield, ShieldCheck, Cpu, BarChart3, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { toast } from 'sonner';

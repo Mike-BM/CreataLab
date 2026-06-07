@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Users, Mail, Calendar, Shield, MoreVertical, UserPlus, CheckCircle2, XCircle } from 'lucide-react';
+import { Users, UserPlus, XCircle } from 'lucide-react';
 import { Button } from './ui/button';
 
 import { useState, useEffect } from 'react';

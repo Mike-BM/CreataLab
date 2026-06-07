@@ -1,7 +1,7 @@
 import { useState, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Eye, EyeOff, Shield, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Shield, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { adminAuth } from '@/lib/admin-auth';

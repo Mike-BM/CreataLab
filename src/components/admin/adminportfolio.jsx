@@ -5,20 +5,15 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  Eye, 
   Search, 
-  X, 
-  Filter, 
   FolderOpen, 
   Image as ImageIcon,
-  MoreVertical,
   ExternalLink,
   Layers,
   CheckCircle2,
   Circle
 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
 import { adminAuth } from '@/lib/admin-auth';

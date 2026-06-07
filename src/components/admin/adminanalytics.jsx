@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   TrendingUp, 
   Eye, 
   Users, 
-  Clock, 
   BarChart3, 
-  ArrowUpRight, 
-  Sparkles, 
-  Activity, 
   Zap, 
   Target,
   Mail,
-  ChevronDown,
-  Filter,
   Download,
   Loader2
 } from 'lucide-react';

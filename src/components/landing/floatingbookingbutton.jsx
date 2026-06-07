@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, X } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import BookingModal from './bookingmodal.jsx';
 import { appConfig } from '@/lib/config';
 

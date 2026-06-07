@@ -3,8 +3,6 @@ import { motion } from 'framer-motion';
 import { 
   FileText, 
   Eye, 
-  TrendingUp, 
-  Users, 
   Clock, 
   ArrowUpRight, 
   Sparkles, 

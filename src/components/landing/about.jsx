@@ -1,5 +1,3 @@
-import { Button } from '@/ui/button';
-import { appConfig } from '@/lib/config';
 import { motion } from 'framer-motion';
 
 export default function About() {
