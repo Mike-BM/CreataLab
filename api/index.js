@@ -84,7 +84,8 @@ async function initializeSystem() {
       ]}
     ] } },
     { key: 'media_hub_code', value: 'SQA26' },
-    { key: 'media_hub_org_logo', value: '' }
+    { key: 'media_hub_org_logo', value: '' },
+    { key: 'media_hub_org_color', value: '#A855F7' } // Default purple
   ];
   for (const s of defaultSettings) {
     if (!existingKeys.includes(s.key)) await supabase.from('site_settings').insert(s);

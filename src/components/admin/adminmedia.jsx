@@ -24,6 +24,7 @@ export default function AdminMedia() {
   const [showCode, setShowCode] = useState(false);
   const [isSavingCode, setIsSavingCode] = useState(false);
   const [orgLogo, setOrgLogo] = useState('');
+  const [orgColor, setOrgColor] = useState('#A855F7');
 
   const [formData, setFormData] = useState({
     title: '',
@@ -60,6 +61,9 @@ export default function AdminMedia() {
         if (data.media_hub_org_logo) {
           setOrgLogo(data.media_hub_org_logo);
         }
+        if (data.media_hub_org_color) {
+          setOrgColor(data.media_hub_org_color);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -86,8 +90,13 @@ export default function AdminMedia() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ value: orgLogo })
       });
-      if (response.ok && response2.ok) {
-        toast.success('Access Code & Logo updated successfully');
+      const response3 = await fetch(`${appConfig.api.base}/settings/media_hub_org_color`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ value: orgColor })
+      });
+      if (response.ok && response2.ok && response3.ok) {
+        toast.success('Access Code & Branding updated successfully');
       } else {
         toast.error('Failed to update settings');
       }
@@ -317,6 +326,24 @@ export default function AdminMedia() {
                       <span className="text-xs font-bold text-gray-400">{orgLogo ? 'Change Logo' : 'Upload Logo'}</span>
                       <input type="file" accept="image/*" onChange={e => handleFileUpload(e, 'org_logo')} className="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-400 uppercase">Brand Primary Color</label>
+                  <div className="flex gap-2">
+                    <input 
+                      type="color" 
+                      value={orgColor} 
+                      onChange={e => setOrgColor(e.target.value)}
+                      className="w-14 h-14 rounded-xl cursor-pointer bg-black/40 border border-red-500/30 p-1"
+                    />
+                    <Input 
+                      type="text" 
+                      value={orgColor} 
+                      onChange={e => setOrgColor(e.target.value)}
+                      className="flex-1 bg-black/40 border-red-500/30 focus:border-red-500 h-14 rounded-xl text-white font-bold tracking-widest uppercase text-center"
+                    />
                   </div>
                 </div>
 

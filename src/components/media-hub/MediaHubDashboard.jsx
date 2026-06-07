@@ -129,7 +129,7 @@ export default function MediaHubDashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#050508] flex items-center justify-center">
-         <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+         <Loader2 className="w-10 h-10 animate-spin" style={{ color: orgColor || '#A855F7' }} />
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function MediaHubDashboard() {
       <nav className="sticky top-0 z-50 bg-[#050508]/80 backdrop-blur-xl border-b border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-xl premium-gradient flex items-center justify-center font-black overflow-hidden">
+             <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black overflow-hidden" style={{ backgroundColor: orgColor || '#A855F7' }}>
                 {orgLogo ? (
                   <img src={orgLogo} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
@@ -198,7 +198,7 @@ export default function MediaHubDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.05, 0.5) }}
               >
-                <ResourceCard resource={resource} onDownload={handleDownload} />
+                <ResourceCard resource={resource} onDownload={handleDownload} orgColor={orgColor || '#A855F7'} />
               </motion.div>
             ))}
           </div>

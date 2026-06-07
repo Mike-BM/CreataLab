@@ -1,7 +1,7 @@
 import { Download, FileText, FileImage, FileArchive } from 'lucide-react';
 import { Button } from '@/ui/button';
 
-export default function ResourceCard({ resource, onDownload }) {
+export default function ResourceCard({ resource, onDownload, orgColor }) {
   const getIcon = (category) => {
     switch(category) {
       case 'Logos and Brand Assets':
@@ -22,7 +22,7 @@ export default function ResourceCard({ resource, onDownload }) {
   };
 
   return (
-    <div className="group glass-card rounded-3xl border border-white/[0.05] overflow-hidden flex flex-col hover:border-purple-500/30 transition-colors">
+    <div className="group glass-card rounded-3xl border border-white/[0.05] overflow-hidden flex flex-col hover:border-white/20 transition-colors" style={{ '--card-hover': orgColor }}>
       <div className="aspect-video bg-[#0A0A0F] relative overflow-hidden">
         {resource.thumbnail_url ? (
           <img src={resource.thumbnail_url} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -48,7 +48,8 @@ export default function ResourceCard({ resource, onDownload }) {
           <Button 
             onClick={handleDownload}
             size="sm"
-            className="rounded-xl premium-gradient text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
+            className="rounded-xl text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
+            style={{ backgroundColor: orgColor }}
           >
             <Download className="w-4 h-4 mr-2" />
             Download

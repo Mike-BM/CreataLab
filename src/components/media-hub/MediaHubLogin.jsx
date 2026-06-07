@@ -11,6 +11,7 @@ export default function MediaHubLogin() {
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [orgLogo, setOrgLogo] = useState('');
+  const [orgColor, setOrgColor] = useState('#A855F7');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +27,9 @@ export default function MediaHubLogin() {
       .then(data => {
         if (data.media_hub_org_logo) {
           setOrgLogo(data.media_hub_org_logo);
+        }
+        if (data.media_hub_org_color) {
+          setOrgColor(data.media_hub_org_color);
         }
       })
       .catch(console.error);
@@ -69,11 +73,11 @@ export default function MediaHubLogin() {
         className="w-full max-w-md"
       >
         <div className="glass-card rounded-[2.5rem] p-8 md:p-12 border border-white/[0.05] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] -z-10" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/10 rounded-full blur-[80px] -z-10" />
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-[80px] -z-10" style={{ backgroundColor: orgColor, opacity: 0.15 }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full blur-[80px] -z-10" style={{ backgroundColor: orgColor, opacity: 0.1 }} />
           
           <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 rounded-2xl premium-gradient flex items-center justify-center shadow-[0_0_40px_rgba(168,85,247,0.3)]">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: orgColor, boxShadow: `0 0 40px ${orgColor}4D` }}>
               {orgLogo ? (
                 <img src={orgLogo} alt="Organization Logo" className="w-10 h-10 object-contain drop-shadow-md" />
               ) : (
@@ -105,7 +109,8 @@ export default function MediaHubLogin() {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full premium-gradient text-white font-bold rounded-2xl h-14 shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              className="w-full text-white font-bold rounded-2xl h-14 shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              style={{ backgroundColor: orgColor, boxShadow: `0 4px 14px 0 ${orgColor}66` }}
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
