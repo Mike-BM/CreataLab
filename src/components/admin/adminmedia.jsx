@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Plus, Trash2, KeyRound, Upload, Save, Eye, EyeOff } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
+import { Textarea } from '@/ui/textarea';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
 import { adminAuth } from '@/lib/admin-auth';

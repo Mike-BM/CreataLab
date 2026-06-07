@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, ArrowRight } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
+import { Button } from '@/ui/button';
+import { Input } from '@/ui/input';
 import { toast } from 'sonner';
 import { appConfig } from '@/lib/config';
 
