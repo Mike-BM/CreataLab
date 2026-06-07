@@ -83,7 +83,7 @@ async function initializeSystem() {
         { name: 'Brand Strategy', price: 'KES 10,000', details: 'Full identity + social media guidelines' }
       ]}
     ] } },
-    { key: 'media_hub_code', value: 'CREATALAB2026' }
+    { key: 'media_hub_code', value: 'SQA26' }
   ];
   for (const s of defaultSettings) {
     if (!existingKeys.includes(s.key)) await supabase.from('site_settings').insert(s);
