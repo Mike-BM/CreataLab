@@ -24,6 +24,7 @@ export default function MediaHubDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [orgLogo, setOrgLogo] = useState('');
+  const [orgColor, setOrgColor] = useState('#A855F7');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,6 +40,9 @@ export default function MediaHubDashboard() {
       .then(data => {
         if (data.media_hub_org_logo) {
           setOrgLogo(data.media_hub_org_logo);
+        }
+        if (data.media_hub_org_color) {
+          setOrgColor(data.media_hub_org_color);
         }
       })
       .catch(console.error);
