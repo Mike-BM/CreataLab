@@ -32,10 +32,10 @@ export default function AdminSettings() {
       setIsUploadingLogo(true);
       try {
           const formData = new FormData();
-          formData.append('image', file);
+          formData.append('file', file);
 
           const token = adminAuth.getToken();
-          const response = await fetch(`${appConfig.api.base}/admin/images/upload`, {
+          const response = await fetch(`${appConfig.api.base}/admin/files/upload`, {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${token}` },
               body: formData

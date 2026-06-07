@@ -82,7 +82,8 @@ async function initializeSystem() {
         { name: 'Logo Design', price: 'KES 3,000', details: 'Unique, professional brand identity kits' },
         { name: 'Brand Strategy', price: 'KES 10,000', details: 'Full identity + social media guidelines' }
       ]}
-    ] } }
+    ] } },
+    { key: 'media_hub_code', value: 'CREATALAB2026' }
   ];
   for (const s of defaultSettings) {
     if (!existingKeys.includes(s.key)) await supabase.from('site_settings').insert(s);
@@ -507,9 +508,9 @@ app.get('/api/admin/images', requireAdmin, asyncHandler(async (req, res) => {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
-app.post('/api/admin/images/upload', requireAdmin, upload.single('image'), asyncHandler(async (req, res) => {
+app.post('/api/admin/files/upload', requireAdmin, upload.single('file'), asyncHandler(async (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ error: 'No image file uploaded' });
+    return res.status(400).json({ error: 'No file uploaded' });
   }
 
   const bucketName = 'site-assets';
@@ -587,6 +588,79 @@ app.put('/api/posts/:id', requireAdmin, asyncHandler(async (req, res) => {
 }));
 app.delete('/api/posts/:id', requireAdmin, asyncHandler(async (req, res) => {
   await supabase.from('posts').delete().eq('id', req.params.id);
+  res.json({ ok: true });
+}));
+
+// --- Media Hub API ---
+const requireMediaCode = asyncHandler(async (req, res, next) => {
+  const code = req.headers['x-media-code'];
+  if (!code) return res.status(401).json({ error: 'Access code required' });
+  
+  const { data: setting } = await supabase.from('site_settings').select('value').eq('key', 'media_hub_code').maybeSingle();
+  if (!setting || setting.value !== code) {
+    return res.status(401).json({ error: 'Invalid access code' });
+  }
+  next();
+});
+
+app.post('/api/media/verify-code', asyncHandler(async (req, res) => {
+  const { code } = req.body;
+  const { data: setting } = await supabase.from('site_settings').select('value').eq('key', 'media_hub_code').maybeSingle();
+  if (setting && setting.value === code) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: 'Invalid access code' });
+  }
+}));
+
+app.get('/api/media', requireMediaCode, asyncHandler(async (req, res) => {
+  const { data, error } = await supabase.from('media_resources').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+}));
+
+app.post('/api/media/:id/download', requireMediaCode, asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { data: resource, error: fetchError } = await supabase.from('media_resources').select('*').eq('id', id).maybeSingle();
+  
+  if (fetchError || !resource) {
+    return res.status(404).json({ error: 'Resource not found' });
+  }
+
+  // Increment download count
+  await supabase.from('media_resources')
+    .update({ downloads_count: (resource.downloads_count || 0) + 1 })
+    .eq('id', id);
+
+  res.json({ url: resource.file_url });
+}));
+
+// Admin Media Hub API
+app.get('/api/admin/media', requireAdmin, asyncHandler(async (req, res) => {
+  const { data, error } = await supabase.from('media_resources').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+}));
+
+app.post('/api/admin/media', requireAdmin, asyncHandler(async (req, res) => {
+  const { data, error } = await supabase.from('media_resources').insert({ ...req.body, created_at: new Date().toISOString() }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.status(201).json(data);
+}));
+
+app.put('/api/admin/media/:id', requireAdmin, asyncHandler(async (req, res) => {
+  const { id, created_at, ...updateData } = req.body;
+  const { data, error } = await supabase.from('media_resources')
+    .update({ ...updateData, updated_at: new Date().toISOString() })
+    .eq('id', req.params.id)
+    .select();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true, data });
+}));
+
+app.delete('/api/admin/media/:id', requireAdmin, asyncHandler(async (req, res) => {
+  const { error } = await supabase.from('media_resources').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 }));
 

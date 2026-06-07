@@ -107,10 +107,10 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         setIsUploadingImage(true);
         try {
             const uploadData = new FormData();
-            uploadData.append('image', file);
+            uploadData.append('file', file);
 
             const token = adminAuth.getToken();
-            const response = await fetch(`${appConfig.api.base}/admin/images/upload`, {
+            const response = await fetch(`${appConfig.api.base}/admin/files/upload`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: uploadData

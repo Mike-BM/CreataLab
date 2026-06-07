@@ -82,3 +82,18 @@ ALTER TABLE public.bookings DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.projects DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings DISABLE ROW LEVEL SECURITY;
+
+-- 7. Create media_resources table
+CREATE TABLE IF NOT EXISTS public.media_resources (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    category TEXT NOT NULL,
+    file_url TEXT NOT NULL,
+    thumbnail_url TEXT,
+    downloads_count INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.media_resources DISABLE ROW LEVEL SECURITY;

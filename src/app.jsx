@@ -16,7 +16,10 @@ import AdminSettings from './components/admin/adminsettings';
 import AdminPortfolio from './components/admin/adminportfolio';
 import AdminProjectEditor from './components/admin/adminprojecteditor';
 import AdminInquiries from './components/admin/admininquiries'; // Added
+import AdminMedia from './components/admin/adminmedia';
 import Maintenance from './components/maintenance';
+import MediaHubLogin from './components/media-hub/MediaHubLogin';
+import MediaHubDashboard from './components/media-hub/MediaHubDashboard';
 import { adminAuth } from './lib/admin-auth';
 import { appConfig, syncAppConfig } from './lib/config';
 import { useState, useEffect } from 'react';
@@ -148,6 +151,10 @@ function App() {
               />
             ))}
 
+            {/* Media Hub Routes */}
+            <Route path="/media-hub/login" element={<MediaHubLogin />} />
+            <Route path="/media-hub" element={<MediaHubDashboard />} />
+
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<ProtectedAdminRoute />}>
@@ -160,6 +167,7 @@ function App() {
               <Route path="analytics" element={<AdminAnalytics />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="settings" element={<AdminSettings />} />
+              <Route path="media" element={<AdminMedia />} />
               <Route path="portfolio" element={<AdminPortfolio />} />
               <Route path="portfolio/new" element={<AdminProjectEditor mode="create" />} />
               <Route path="portfolio/edit/:id" element={<AdminProjectEditor mode="edit" />} />
