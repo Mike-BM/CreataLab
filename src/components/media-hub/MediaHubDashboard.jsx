@@ -102,23 +102,48 @@ export default function MediaHubDashboard() {
     if (resource.file_url) {
       toast.success('Download starting...');
       
-      // Trigger download immediately
-      const a = document.createElement('a');
-      a.href = resource.file_url;
-      a.download = resource.title || 'download';
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      try {
+        // Fetch the file as a blob to force a download prompt, especially on mobile devices
+        const response = await fetch(resource.file_url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        // Trigger download immediately
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = resource.title || 'download';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
 
-      // Track download in the background without blocking
-      fetch(`${appConfig.api.base}/media/${resource.id}/download`, {
-        method: 'POST',
-        headers: { 'x-media-code': code }
-      }).catch(console.error);
-      
-      return;
+        // Track download in the background without blocking
+        fetch(`${appConfig.api.base}/media/${resource.id}/download`, {
+          method: 'POST',
+          headers: { 'x-media-code': code }
+        }).catch(console.error);
+        
+        return;
+      } catch (err) {
+        console.error("Direct download failed, falling back to standard link.", err);
+        // Fallback to standard link if blob fetch fails (e.g. CORS issues)
+        const a = document.createElement('a');
+        a.href = resource.file_url;
+        a.download = resource.title || 'download';
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Track download in the background without blocking
+        fetch(`${appConfig.api.base}/media/${resource.id}/download`, {
+          method: 'POST',
+          headers: { 'x-media-code': code }
+        }).catch(console.error);
+
+        return;
+      }
     }
 
     // Fallback if file_url is not present
@@ -134,15 +159,31 @@ export default function MediaHubDashboard() {
       
       toast.success('Download starting...', { id: toastId });
       
-      // Trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = resource.title;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      try {
+        const fileResponse = await fetch(url);
+        const blob = await fileResponse.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        // Trigger download
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = resource.title;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        console.error("Direct download failed, falling back to standard link.", err);
+        // Trigger download via link fallback
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = resource.title;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
       
     } catch (err) {
       toast.error('Failed to download resource.', { id: toastId });
