@@ -204,6 +204,21 @@ app.get('/api/projects/:id', asyncHandler(async (req, res) => {
 app.get('/api/settings', asyncHandler(async (req, res) => {
   const { data } = await supabase.from('site_settings').select('*');
   const settings = (data || []).reduce((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {});
+  
+  let isAdmin = false;
+  const token = (req.headers.authorization || '').replace('Bearer ', '');
+  if (token) {
+    try {
+      jwt.verify(token, process.env.JWT_SECRET);
+      isAdmin = true;
+    } catch(e) {}
+  }
+
+  if (!isAdmin) {
+    delete settings.media_hub_code;
+    delete settings.analytics_data;
+  }
+
   res.json(settings);
 }));
 

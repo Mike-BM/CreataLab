@@ -52,7 +52,10 @@ export default function AdminMedia() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch(`${appConfig.api.base}/settings`);
+      const token = adminAuth.getToken();
+      const response = await fetch(`${appConfig.api.base}/settings`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       if (response.ok) {
         const data = await response.json();
         if (data.media_hub_code) {
