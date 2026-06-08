@@ -96,6 +96,31 @@ export default function MediaHubDashboard() {
 
   const handleDownload = async (resource) => {
     const code = localStorage.getItem('creatalab_media_hub_code');
+    
+    // Fast download path if file_url is available
+    if (resource.file_url) {
+      toast.success('Download starting...');
+      
+      // Trigger download immediately
+      const a = document.createElement('a');
+      a.href = resource.file_url;
+      a.download = resource.title || 'download';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Track download in the background without blocking
+      fetch(`${appConfig.api.base}/media/${resource.id}/download`, {
+        method: 'POST',
+        headers: { 'x-media-code': code }
+      }).catch(console.error);
+      
+      return;
+    }
+
+    // Fallback if file_url is not present
     const toastId = toast.loading('Initiating download...');
     try {
       const response = await fetch(`${appConfig.api.base}/media/${resource.id}/download`, {

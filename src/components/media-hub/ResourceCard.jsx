@@ -1,4 +1,4 @@
-import { Download, FileText, FileImage, FileArchive } from 'lucide-react';
+import { Download, FileText, FileImage, FileArchive, Eye } from 'lucide-react';
 import { Button } from '@/ui/button';
 
 export default function ResourceCard({ resource, onDownload, orgColor }) {
@@ -45,15 +45,30 @@ export default function ResourceCard({ resource, onDownload, orgColor }) {
           <span className="text-[10px] font-black uppercase text-gray-500 tracking-widest">
             {new Date(resource.created_at).toLocaleDateString()}
           </span>
-          <Button 
-            onClick={handleDownload}
-            size="sm"
-            className="rounded-xl text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
-            style={{ backgroundColor: orgColor }}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download
-          </Button>
+          <div className="flex gap-2">
+            {resource.file_url && (
+              <Button 
+                asChild
+                variant="outline"
+                size="sm"
+                className="rounded-xl border-white/10 hover:bg-white/5 text-white h-9 px-3"
+              >
+                <a href={resource.file_url} target="_blank" rel="noopener noreferrer">
+                  <Eye className="w-4 h-4 mr-2" />
+                  View
+                </a>
+              </Button>
+            )}
+            <Button 
+              onClick={handleDownload}
+              size="sm"
+              className="rounded-xl text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
+              style={{ backgroundColor: orgColor }}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download
+            </Button>
+          </div>
         </div>
       </div>
     </div>
