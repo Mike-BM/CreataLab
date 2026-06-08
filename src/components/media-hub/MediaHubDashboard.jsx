@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, LogOut, Loader2, X } from 'lucide-react';
+import { Search, Loader2, X } from 'lucide-react';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
 import { toast } from 'sonner';
@@ -90,10 +90,7 @@ export default function MediaHubDashboard() {
     fetchResources();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('creatalab_media_hub_code');
-    navigate('/media-hub/login');
-  };
+
 
   const handleDownload = async (resource) => {
     const code = localStorage.getItem('creatalab_media_hub_code');
@@ -182,9 +179,7 @@ export default function MediaHubDashboard() {
                 <p className="text-[9px] text-gray-500 uppercase tracking-widest font-bold">Secure Access</p>
              </div>
           </div>
-          <Button variant="ghost" onClick={handleLogout} className="text-gray-400 hover:text-white rounded-xl">
-             <LogOut className="w-4 h-4 mr-2" /> Exit
-          </Button>
+
         </div>
       </nav>
 

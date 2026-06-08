@@ -1,4 +1,4 @@
-import { Download, FileText, FileImage, FileArchive, Eye } from 'lucide-react';
+import { Download, FileText, FileImage, FileArchive } from 'lucide-react';
 import { Button } from '@/ui/button';
 
 export default function ResourceCard({ resource, onDownload, onView, orgColor }) {
@@ -22,7 +22,11 @@ export default function ResourceCard({ resource, onDownload, onView, orgColor })
   };
 
   return (
-    <div className="group glass-card rounded-3xl border border-white/[0.05] overflow-hidden flex flex-col hover:border-white/20 transition-colors" style={{ '--card-hover': orgColor }}>
+    <div 
+      className="group glass-card rounded-3xl border border-white/[0.05] overflow-hidden flex flex-col hover:border-white/20 transition-colors cursor-pointer" 
+      style={{ '--card-hover': orgColor }}
+      onClick={() => resource.file_url && onView(resource)}
+    >
       <div className="aspect-video bg-[#0A0A0F] relative overflow-hidden">
         {resource.thumbnail_url ? (
           <img src={resource.thumbnail_url} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -46,19 +50,11 @@ export default function ResourceCard({ resource, onDownload, onView, orgColor })
             {new Date(resource.created_at).toLocaleDateString()}
           </span>
           <div className="flex gap-2">
-            {resource.file_url && (
-              <Button 
-                onClick={() => onView(resource)}
-                variant="outline"
-                size="sm"
-                className="rounded-xl border-white/10 hover:bg-white/5 text-white h-9 px-3"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                View
-              </Button>
-            )}
             <Button 
-              onClick={handleDownload}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDownload();
+              }}
               size="sm"
               className="rounded-xl text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
               style={{ backgroundColor: orgColor }}
