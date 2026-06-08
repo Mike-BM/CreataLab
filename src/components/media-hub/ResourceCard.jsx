@@ -21,6 +21,13 @@ export default function ResourceCard({ resource, onDownload, onView, orgColor })
     await onDownload(resource);
   };
 
+  const isImageFile = resource.file_url && (
+    resource.file_url.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || 
+    (resource.category && resource.category.match(/(Posters|Flyers|Graphics|Logos)/i))
+  );
+
+  const displayImage = resource.thumbnail_url || (isImageFile ? resource.file_url : null);
+
   return (
     <div 
       className="group glass-card rounded-3xl border border-white/[0.05] overflow-hidden flex flex-col hover:border-white/20 transition-colors cursor-pointer" 
@@ -28,8 +35,8 @@ export default function ResourceCard({ resource, onDownload, onView, orgColor })
       onClick={() => resource.file_url && onView(resource)}
     >
       <div className="aspect-video bg-[#0A0A0F] relative overflow-hidden">
-        {resource.thumbnail_url ? (
-          <img src={resource.thumbnail_url} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        {displayImage ? (
+          <img src={displayImage} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
           <div className="w-full h-full flex items-center justify-center opacity-50 group-hover:scale-110 transition-transform duration-500">
              {getIcon(resource.category)}

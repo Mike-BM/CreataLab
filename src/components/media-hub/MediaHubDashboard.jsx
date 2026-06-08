@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Loader2, X } from 'lucide-react';
+import { Search, Loader2, X, LogOut, Home } from 'lucide-react';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
 import { toast } from 'sonner';
@@ -90,7 +90,10 @@ export default function MediaHubDashboard() {
     fetchResources();
   }, [navigate]);
 
-
+  const handleLogout = () => {
+    localStorage.removeItem('creatalab_media_hub_code');
+    navigate('/media-hub/login');
+  };
 
   const handleDownload = async (resource) => {
     const code = localStorage.getItem('creatalab_media_hub_code');
@@ -180,6 +183,14 @@ export default function MediaHubDashboard() {
              </div>
           </div>
 
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={() => navigate('/')} className="text-gray-400 hover:text-white rounded-xl">
+               <Home className="w-4 h-4 mr-2" /> Live Site
+            </Button>
+            <Button variant="ghost" onClick={handleLogout} className="text-gray-400 hover:text-white rounded-xl">
+               <LogOut className="w-4 h-4 mr-2" /> Exit Hub
+            </Button>
+          </div>
         </div>
       </nav>
 
