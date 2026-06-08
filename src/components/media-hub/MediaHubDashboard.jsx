@@ -166,12 +166,12 @@ export default function MediaHubDashboard() {
         {/* Header Area */}
         <div className="mb-12 space-y-8">
           <div className="relative max-w-2xl">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 z-10 pointer-events-none" />
             <Input 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources, posters, guidelines..."
-              className="w-full bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 pl-12 rounded-2xl text-white font-medium text-lg"
+              className="w-full bg-white/[0.03] border-white/[0.08] focus:border-purple-500/50 h-14 pl-12 rounded-2xl text-white placeholder:text-gray-500 font-medium text-lg relative z-0"
             />
           </div>
 
