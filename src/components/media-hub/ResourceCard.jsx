@@ -1,7 +1,7 @@
 import { Download, FileText, FileImage, FileArchive, Eye } from 'lucide-react';
 import { Button } from '@/ui/button';
 
-export default function ResourceCard({ resource, onDownload, orgColor }) {
+export default function ResourceCard({ resource, onDownload, onView, orgColor }) {
   const getIcon = (category) => {
     switch(category) {
       case 'Logos and Brand Assets':
@@ -48,15 +48,13 @@ export default function ResourceCard({ resource, onDownload, orgColor }) {
           <div className="flex gap-2">
             {resource.file_url && (
               <Button 
-                asChild
+                onClick={() => onView(resource)}
                 variant="outline"
                 size="sm"
                 className="rounded-xl border-white/10 hover:bg-white/5 text-white h-9 px-3"
               >
-                <a href={resource.file_url} target="_blank" rel="noopener noreferrer">
-                  <Eye className="w-4 h-4 mr-2" />
-                  View
-                </a>
+                <Eye className="w-4 h-4 mr-2" />
+                View
               </Button>
             )}
             <Button 

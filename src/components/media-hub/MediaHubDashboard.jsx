@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, LogOut, Loader2 } from 'lucide-react';
+import { Search, LogOut, Loader2, X } from 'lucide-react';
 import { Input } from '@/ui/input';
 import { Button } from '@/ui/button';
 import { toast } from 'sonner';
@@ -25,6 +25,7 @@ export default function MediaHubDashboard() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [orgLogo, setOrgLogo] = useState('');
   const [orgColor, setOrgColor] = useState('#A855F7');
+  const [viewingResource, setViewingResource] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -227,7 +228,7 @@ export default function MediaHubDashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.05, 0.5) }}
               >
-                <ResourceCard resource={resource} onDownload={handleDownload} orgColor={orgColor || '#A855F7'} />
+                <ResourceCard resource={resource} onDownload={handleDownload} onView={setViewingResource} orgColor={orgColor || '#A855F7'} />
               </motion.div>
             ))}
           </div>
@@ -239,6 +240,41 @@ export default function MediaHubDashboard() {
           </div>
         )}
       </main>
+
+      {/* Viewer Modal */}
+      {viewingResource && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative w-full max-w-5xl max-h-[90vh] bg-[#0A0A0F] border border-white/10 rounded-2xl overflow-hidden flex flex-col shadow-2xl"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-white/5 bg-[#050508]">
+              <h3 className="text-lg font-bold text-white line-clamp-1">{viewingResource.title}</h3>
+              <div className="flex items-center gap-2">
+                <Button 
+                  onClick={() => handleDownload(viewingResource)}
+                  size="sm"
+                  className="rounded-xl text-white font-bold h-9 px-4 hover:scale-105 transition-transform"
+                  style={{ backgroundColor: orgColor || '#A855F7' }}
+                >
+                  Download
+                </Button>
+                <button onClick={() => setViewingResource(null)} className="p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#0A0A0F]/50 min-h-[50vh]">
+              {viewingResource.file_url.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || (viewingResource.category && viewingResource.category.match(/(Posters|Flyers|Graphics|Logos)/i)) ? (
+                <img src={viewingResource.file_url} alt={viewingResource.title} className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg" />
+              ) : (
+                <iframe src={viewingResource.file_url} className="w-full h-[70vh] rounded-lg bg-white shadow-lg" title={viewingResource.title} />
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
