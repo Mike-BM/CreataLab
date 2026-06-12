@@ -55,11 +55,12 @@ export default function MediaHubDashboard() {
 
   useEffect(() => {
     const fetchResources = async () => {
-      const code = localStorage.getItem('creatalab_media_hub_code');
-      if (!code) {
-        navigate('/media-hub/login');
-        return;
-      }
+      // const code = localStorage.getItem('creatalab_media_hub_code');
+      // if (!code) {
+      //   navigate('/media-hub/login');
+      //   return;
+      // }
+      const code = 'bypass'; // Bypassed for now
 
       try {
         const response = await fetch(`${appConfig.api.base}/media`, {
@@ -96,7 +97,8 @@ export default function MediaHubDashboard() {
   };
 
   const handleDownload = async (resource) => {
-    const code = localStorage.getItem('creatalab_media_hub_code');
+    // const code = localStorage.getItem('creatalab_media_hub_code');
+    const code = 'bypass'; // Bypassed for now
     
     // Fast download path if file_url is available
     if (resource.file_url) {

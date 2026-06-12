@@ -610,6 +610,9 @@ app.delete('/api/posts/:id', requireAdmin, asyncHandler(async (req, res) => {
 
 // --- Media Hub API ---
 const requireMediaCode = asyncHandler(async (req, res, next) => {
+  // Bypassed for now
+  return next();
+  /*
   const code = req.headers['x-media-code'];
   if (!code) return res.status(401).json({ error: 'Access code required' });
   
@@ -618,6 +621,7 @@ const requireMediaCode = asyncHandler(async (req, res, next) => {
     return res.status(401).json({ error: 'Invalid access code' });
   }
   next();
+  */
 });
 
 app.post('/api/media/verify-code', asyncHandler(async (req, res) => {
