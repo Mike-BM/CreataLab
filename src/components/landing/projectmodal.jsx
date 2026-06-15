@@ -39,18 +39,35 @@ export default function ProjectModal({ project, isOpen, onClose }) {
 
               {/* Image Container */}
               <div className="relative w-full bg-surface flex flex-col items-center justify-center rounded-t-3xl border-b border-border p-4">
-                <img
-                  src={project.image_url || 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview'}
-                  alt={project.title}
-                  loading="lazy"
-                  decoding="async"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
-                  }}
-                  className="max-w-full h-auto block shadow-lg rounded-xl"
-                  style={{ maxHeight: '500px', width: 'auto' }}
-                />
+                {project.link ? (
+                  <a href={project.link} target="_blank" rel="noopener noreferrer" className="block group">
+                    <img
+                      src={project.image_url || 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview'}
+                      alt={project.title}
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
+                      }}
+                      className="max-w-full h-auto block shadow-lg rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
+                      style={{ maxHeight: '500px', width: 'auto' }}
+                    />
+                  </a>
+                ) : (
+                  <img
+                    src={project.image_url || 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview'}
+                    alt={project.title}
+                    loading="lazy"
+                    decoding="async"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
+                    }}
+                    className="max-w-full h-auto block shadow-lg rounded-xl"
+                    style={{ maxHeight: '500px', width: 'auto' }}
+                  />
+                )}
               </div>
 
               {/* Content */}
