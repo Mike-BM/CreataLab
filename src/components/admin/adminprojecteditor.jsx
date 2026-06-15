@@ -132,9 +132,10 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         }
     };
 
-    const handleFetchPreview = async () => {
+    const handleFetchPreview = async (isSilent = false) => {
+        const silent = isSilent === true;
         if (!formData.link) {
-            toast.error('Please enter a link first');
+            if (!silent) toast.error('Please enter a link first');
             return;
         }
         setIsFetchingPreview(true);
@@ -152,20 +153,31 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                 const data = await response.json();
                 if (data.image_url) {
                     setFormData(prev => ({...prev, image_url: data.image_url}));
-                    toast.success('Preview image fetched successfully!');
+                    if (!silent) toast.success('Preview image fetched successfully!');
                 } else {
-                    toast.error('No preview image found on that website.');
+                    if (!silent) toast.error('No preview image found on that website.');
                 }
             } else {
-                toast.error('Failed to fetch preview image.');
+                if (!silent) toast.error('Failed to fetch preview image.');
             }
         } catch (error) {
             console.error('Error fetching preview:', error);
-            toast.error('Network error while fetching preview.');
+            if (!silent) toast.error('Network error while fetching preview.');
         } finally {
             setIsFetchingPreview(false);
         }
     };
+
+    useEffect(() => {
+        if (!formData.link || !formData.link.startsWith('http')) return;
+        
+        const timeoutId = setTimeout(() => {
+            handleFetchPreview(true);
+        }, 1500);
+
+        return () => clearTimeout(timeoutId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData.link]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -501,7 +513,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                                     </div>
                                     <Button 
                                         type="button" 
-                                        onClick={handleFetchPreview}
+                                        onClick={() => handleFetchPreview(false)}
                                         disabled={isFetchingPreview || !formData.link}
                                         className="h-12 bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 font-bold px-4 rounded-xl shrink-0 transition-all text-xs border border-white/[0.05]"
                                     >
