@@ -42,7 +42,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 {project.link ? (
                   <div 
                     onClick={() => {
-                      if (window.confirm("You are about to visit the live site. Do you want to continue?")) {
+                      if (window.confirm("View the live site?")) {
                         window.open(project.link, '_blank');
                       }
                     }} 

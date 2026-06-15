@@ -141,7 +141,7 @@ export default function Portfolio() {
                   onMouseLeave={() => setHoveredProject(null)}
                   onClick={() => {
                     if (project.link) {
-                      if (window.confirm("You are about to visit the live site. Do you want to continue?")) {
+                      if (window.confirm("View the live site?")) {
                         window.open(project.link, '_blank');
                       }
                     } else {
