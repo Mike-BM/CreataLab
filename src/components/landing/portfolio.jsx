@@ -148,10 +148,10 @@ export default function Portfolio() {
                       setSelectedProject(project);
                     }
                   }}
-                  className={`group relative cursor-pointer flex flex-col col-span-1 aspect-[4/3] transform transition-transform duration-500 hover:-translate-y-1`}
+                  className={`group relative cursor-pointer flex flex-col col-span-1 transform transition-transform duration-500 hover:-translate-y-1`}
                 >
                   {/* Image Container */}
-                  <div className="relative w-full h-full rounded-2xl overflow-hidden bg-surface mb-4 shadow-soft">
+                  <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-surface mb-4 shadow-soft">
                     <img
                       src={project.image_url || 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview'}
                       alt={project.title}
@@ -161,7 +161,7 @@ export default function Portfolio() {
                         e.target.onerror = null;
                         e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
                       }}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
                     {/* Dark overlay on hover */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">

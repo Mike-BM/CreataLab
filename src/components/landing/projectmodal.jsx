@@ -57,8 +57,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                         e.target.onerror = null;
                         e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
                       }}
-                      className="max-w-full h-auto block shadow-lg rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
-                      style={{ maxHeight: '500px', width: 'auto' }}
+                      className="w-full h-auto block shadow-lg rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                   </div>
                 ) : (
@@ -71,8 +70,7 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                       e.target.onerror = null;
                       e.target.src = 'https://placehold.co/800x600/1a1a2e/8b5cf6?text=No+Preview';
                     }}
-                    className="max-w-full h-auto block shadow-lg rounded-xl"
-                    style={{ maxHeight: '500px', width: 'auto' }}
+                    className="w-full h-auto block shadow-lg rounded-xl"
                   />
                 )}
               </div>
