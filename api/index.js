@@ -685,6 +685,46 @@ app.delete('/api/admin/media/:id', requireAdmin, asyncHandler(async (req, res) =
   res.json({ ok: true });
 }));
 
+app.post('/api/admin/fetch-link-preview', requireAdmin, asyncHandler(async (req, res) => {
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'URL required' });
+  
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+      }
+    });
+    
+    if (!response.ok) {
+      return res.json({ image_url: null });
+    }
+    
+    const html = await response.text();
+    
+    // Regex to match Open Graph or Twitter image
+    let match = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["'][^>]*>/i) ||
+                html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*property=["']og:image["'][^>]*>/i) ||
+                html.match(/<meta[^>]*name=["']twitter:image["'][^>]*content=["']([^"']+)["'][^>]*>/i) ||
+                html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']twitter:image["'][^>]*>/i);
+                
+    if (match && match[1]) {
+      let imageUrl = match[1];
+      // Handle relative URLs
+      if (imageUrl.startsWith('/')) {
+        const urlObj = new URL(url);
+        imageUrl = `${urlObj.protocol}//${urlObj.host}${imageUrl}`;
+      }
+      return res.json({ image_url: imageUrl });
+    }
+    
+    res.json({ image_url: null });
+  } catch (err) {
+    console.error('Fetch Link Preview Error:', err.message);
+    res.json({ image_url: null });
+  }
+}));
+
 // Execute startup initialization
 initializeSystem().catch(err => console.error('Startup Error:', err));
 

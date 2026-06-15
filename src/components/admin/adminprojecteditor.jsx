@@ -9,7 +9,8 @@ import {
   Settings,
   Sparkles,
   Rocket,
-  Upload
+  Upload,
+  Search
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -26,6 +27,7 @@ export default function AdminProjectEditor({ mode = 'create' }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [availableImages, setAvailableImages] = useState([]);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [isFetchingPreview, setIsFetchingPreview] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         category: '',
@@ -127,6 +129,41 @@ export default function AdminProjectEditor({ mode = 'create' }) {
         } finally {
             setIsUploadingImage(false);
             e.target.value = null; // reset input
+        }
+    };
+
+    const handleFetchPreview = async () => {
+        if (!formData.link) {
+            toast.error('Please enter a link first');
+            return;
+        }
+        setIsFetchingPreview(true);
+        try {
+            const token = adminAuth.getToken();
+            const response = await fetch(`${appConfig.api.base}/admin/fetch-link-preview`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: formData.link })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.image_url) {
+                    setFormData(prev => ({...prev, image_url: data.image_url}));
+                    toast.success('Preview image fetched successfully!');
+                } else {
+                    toast.error('No preview image found on that website.');
+                }
+            } else {
+                toast.error('Failed to fetch preview image.');
+            }
+        } catch (error) {
+            console.error('Error fetching preview:', error);
+            toast.error('Network error while fetching preview.');
+        } finally {
+            setIsFetchingPreview(false);
         }
     };
 
@@ -452,14 +489,31 @@ export default function AdminProjectEditor({ mode = 'create' }) {
                         <div className="space-y-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">External Live Link</label>
-                                <div className="relative">
-                                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                                    <Input
-                                        value={formData.link}
-                                        onChange={handleChange('link')}
-                                        placeholder="https://..."
-                                        className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl pl-10 text-xs"
-                                    />
+                                <div className="relative flex gap-2">
+                                    <div className="relative flex-1">
+                                        <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                        <Input
+                                            value={formData.link}
+                                            onChange={handleChange('link')}
+                                            placeholder="https://..."
+                                            className="bg-white/[0.03] border-white/[0.08] h-12 rounded-xl pl-10 text-xs w-full"
+                                        />
+                                    </div>
+                                    <Button 
+                                        type="button" 
+                                        onClick={handleFetchPreview}
+                                        disabled={isFetchingPreview || !formData.link}
+                                        className="h-12 bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 font-bold px-4 rounded-xl shrink-0 transition-all text-xs border border-white/[0.05]"
+                                    >
+                                        {isFetchingPreview ? (
+                                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                        ) : (
+                                            <>
+                                                <Search className="w-4 h-4 mr-2" />
+                                                Fetch Image
+                                            </>
+                                        )}
+                                    </Button>
                                 </div>
                             </div>
                             <div className="space-y-2">
