@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Tag, Sparkles, Share2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { X, ExternalLink, Tag, Sparkles } from 'lucide-react';
 import { Button } from '@/ui/button';
 import PropTypes from 'prop-types';
 
@@ -182,26 +181,20 @@ export default function ProjectModal({ project, isOpen, onClose }) {
                 )}
 
                 {/* CTA */}
-                <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-border">
-                  {project.link && (
+                {project.link && (
+                  <div className="flex flex-col gap-4">
                     <Button
                       onClick={() => window.open(project.link, '_blank')}
-                      className="bg-accent hover:bg-accent-hover text-white rounded-full px-8 h-12 text-sm font-bold shadow-soft hover:shadow-md hover:-translate-y-1 transition-all flex items-center gap-2"
+                      className="bg-accent hover:bg-accent-hover text-white rounded-full px-8 h-12 text-sm font-bold w-fit shadow-soft hover:shadow-md hover:-translate-y-1 transition-all"
                     >
-                      <span>View Live Project</span>
-                      <ExternalLink className="w-4 h-4" />
+                      View Live Project
+                      <ExternalLink className="w-4 h-4 ml-2" />
                     </Button>
-                  )}
-                  <Link to={`/portfolio/${project.id}`} onClick={onClose}>
-                    <Button
-                      variant="outline"
-                      className="rounded-full px-8 h-12 text-sm font-bold border-border text-foreground hover:bg-surface hover:-translate-y-1 transition-all flex items-center gap-2"
-                    >
-                      <span>Open Full Case Study</span>
-                      <Share2 className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
+                    <p className="text-sm text-muted italic">
+                      view the live site and maybe leave a feedback
+                    </p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>
