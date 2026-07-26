@@ -13,7 +13,6 @@ import ReCAPTCHA from "react-google-recaptcha";
 const services = [
   "Brand Identity & Graphic Design",
   "Digital & Media Design",
-  "Data Analysis & Visual Insights",
   "Web & Digital Solutions",
   "AI-Assisted Solutions"
 ];

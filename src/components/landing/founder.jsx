@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Palette, BarChart3, Globe, Sparkles, ArrowRight, Calendar } from 'lucide-react';
+import { Palette, Globe, Sparkles, ArrowRight, Calendar } from 'lucide-react';
 import { Button } from '@/ui/button';
 import BookingModal from './bookingmodal.jsx';
 
@@ -11,13 +11,6 @@ const timeline = [
     title: "Design",
     description: "Started with graphic design and brand identity",
     color: "from-accent to-accent-hover"
-  },
-  {
-    year: "2024",
-    icon: BarChart3,
-    title: "Data",
-    description: "Expanded into data visualization and analytics",
-    color: "from-secondary to-accent"
   },
   {
     year: "2025",
@@ -41,12 +34,6 @@ const techStack = [
     icon: Palette,
     description: "Posters, brand systems, and visual storytelling.",
     tools: ["Figma", "Adobe Illustrator", "Photoshop", "After Effects"],
-  },
-  {
-    label: "Data Analysis",
-    icon: BarChart3,
-    description: "From raw datasets to decision-ready dashboards.",
-    tools: ["Python", "RStudio", "SQL", "Power BI", "Excel", "Tableau"],
   },
   {
     label: "Web Development",

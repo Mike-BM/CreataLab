@@ -17,8 +17,7 @@ import {
   Search,
   User,
   Shield,
-  MessageSquare, // Added
-  Download // Added
+  MessageSquare // Added
 } from 'lucide-react';
 import { adminAuth } from '@/lib/admin-auth';
 import { toast } from 'sonner';
@@ -28,7 +27,6 @@ const adminMenuItems = [
   { icon: MessageSquare, label: 'Inquiries', path: '/admin/inquiries' }, // Added
   { icon: FileText, label: 'Insights & Sites', path: '/admin/posts' },
   { icon: FolderOpen, label: 'Portfolio', path: '/admin/portfolio' },
-  { icon: Download, label: 'Media Hub', path: '/admin/media' }, // Added
   { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
   { icon: Users, label: 'Users', path: '/admin/users' },
   { icon: Settings, label: 'Settings', path: '/admin/settings' },

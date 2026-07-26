@@ -11,7 +11,6 @@ export default function Footer() {
       { label: "Website Design", href: "#services" },
       { label: "Graphic Design", href: "#services" },
       { label: "Branding", href: "#services" },
-      { label: "Data Analysis", href: "#services" },
       { label: "AI Solutions", href: "#services" },
     ],
     company: [
