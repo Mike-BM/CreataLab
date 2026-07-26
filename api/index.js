@@ -180,7 +180,8 @@ app.get('/api/admin/posts', requireAdmin, asyncHandler(async (req, res) => {
 }));
 
 app.get('/api/posts/:id', asyncHandler(async (req, res) => {
-  const { data } = await supabase.from('posts').select('*').eq('id', req.params.id).single();
+  const field = /^\d+$/.test(req.params.id) ? 'id' : 'slug';
+  const { data } = await supabase.from('posts').select('*').eq(field, req.params.id).maybeSingle();
   if (!data) return res.status(404).json({ error: 'Post not found' });
   res.json(data);
 }));
@@ -196,7 +197,7 @@ app.get('/api/admin/projects', requireAdmin, asyncHandler(async (req, res) => {
 }));
 
 app.get('/api/projects/:id', asyncHandler(async (req, res) => {
-  const { data } = await supabase.from('projects').select('*').eq('id', req.params.id).single();
+  const { data } = await supabase.from('projects').select('*').eq('id', req.params.id).maybeSingle();
   if (!data) return res.status(404).json({ error: 'Project not found' });
   res.json(data);
 }));
